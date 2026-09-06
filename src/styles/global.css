@@ -1,6 +1,6 @@
 /* ---------------------------------------------------------------
    Lauren Becherer Pottery — design tokens
-   Palette: summer sunset. Type: Fraunces (display) + Karla (body).
+   Palette: summer sunset. Type: Cormorant Garamond (display, italic headlines) + Karla (body).
    --------------------------------------------------------------- */
 :root {
   /* sunset palette */
@@ -28,7 +28,7 @@
   --sunset: linear-gradient(135deg, var(--gold) 0%, var(--apricot) 28%, var(--coral) 55%, var(--rose) 78%, var(--dusk) 100%);
 
   /* type */
-  --font-display: 'Fraunces', 'Iowan Old Style', Georgia, serif;
+  --font-display: 'Cormorant Garamond', 'Iowan Old Style', Georgia, serif;
   --font-body: 'Karla', 'Helvetica Neue', Arial, sans-serif;
 
   /* layout */
@@ -56,16 +56,15 @@ button { font: inherit; cursor: pointer; }
 
 h1, h2, h3, h4 {
   font-family: var(--font-display);
-  font-variation-settings: 'SOFT' 100, 'WONK' 1, 'opsz' 144;
   font-weight: 500;
-  letter-spacing: -0.01em;
-  line-height: 1.08;
+  letter-spacing: 0;
+  line-height: 1.02;
   margin: 0 0 0.5em;
   color: var(--plum);
 }
-h1 { font-size: clamp(2.6rem, 6vw, 4.6rem); }
-h2 { font-size: clamp(1.9rem, 3.6vw, 2.8rem); }
-h3 { font-size: clamp(1.3rem, 2.2vw, 1.7rem); }
+h1 { font-size: clamp(3.2rem, 7.5vw, 5.8rem); font-style: italic; font-weight: 400; }
+h2 { font-size: clamp(2.3rem, 4.4vw, 3.4rem); font-style: italic; font-weight: 400; }
+h3 { font-size: clamp(1.5rem, 2.4vw, 1.95rem); }
 p { margin: 0 0 1em; }
 .lead { font-size: 1.2rem; color: var(--fg-soft); max-width: 60ch; }
 .eyebrow {
@@ -77,7 +76,8 @@ p { margin: 0 0 1em; }
   color: var(--accent-2);
   margin-bottom: 0.75rem;
 }
-.italic { font-style: italic; font-variation-settings: 'SOFT' 100, 'WONK' 1, 'opsz' 144; }
+.italic { font-style: italic; }
+.upright { font-style: normal; }
 
 .wrap { width: min(100% - 2 * var(--gutter), var(--max)); margin-inline: auto; }
 .section { padding-block: clamp(3rem, 8vw, 6rem); }
@@ -120,7 +120,7 @@ p { margin: 0 0 1em; }
 .card .media img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease; }
 .card:hover .media img { transform: scale(1.03); }
 .card .body { padding: 1rem 1.15rem 1.25rem; }
-.card h3 { margin-bottom: 0.2rem; font-size: 1.25rem; }
+.card h3 { margin-bottom: 0.2rem; font-size: 1.5rem; }
 .card .meta { color: var(--fg-soft); font-size: 0.92rem; display: flex; justify-content: space-between; gap: 0.5rem; }
 
 .badge {
