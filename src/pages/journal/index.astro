@@ -1,0 +1,42 @@
+---
+import Base from '../../layouts/Base.astro';
+import { getCollection } from 'astro:content';
+
+const posts = (await getCollection('posts', ({ data }) => !data.draft))
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+const fmt = (d: Date) => d.toLocaleDateString('en-US', { timeZone: 'UTC', month: 'long', day: 'numeric', year: 'numeric' });
+---
+<Base title="Journal" description="Studio notes, kiln openings, and what's in progress.">
+  <section class="section">
+    <div class="wrap narrow">
+      <p class="eyebrow">Journal</p>
+      <h1>Studio notes</h1>
+      <p class="lead">Kiln openings, glaze tests, market dates, and the occasional cracked pot.</p>
+
+      <div class="list">
+        {posts.map((post) => (
+          <a class="entry" href={`/journal/${post.id}/`}>
+            {post.data.cover && <img src={post.data.cover} alt="" loading="lazy" />}
+            <div>
+              <p class="eyebrow">{fmt(post.data.date)}</p>
+              <h2>{post.data.title}</h2>
+              {post.data.excerpt && <p class="lead small">{post.data.excerpt}</p>}
+            </div>
+          </a>
+        ))}
+        {posts.length === 0 && <p class="notice">Nothing here yet.</p>}
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .narrow { max-width: 860px; }
+  .list { display: grid; gap: 2rem; margin-top: 2rem; }
+  .entry { display: grid; grid-template-columns: 200px 1fr; gap: 1.5rem; align-items: center; padding: 1.25rem; border: 1px solid var(--line); border-radius: var(--radius); background: var(--card); transition: transform .2s ease, box-shadow .2s ease; }
+  .entry:hover { transform: translateY(-2px); box-shadow: var(--shadow); color: inherit; }
+  .entry img { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: var(--radius-sm); }
+  .entry h2 { font-size: 1.6rem; margin-bottom: 0.3rem; }
+  .lead.small { font-size: 1rem; margin: 0; }
+  @media (max-width: 600px) { .entry { grid-template-columns: 1fr; } }
+</style>

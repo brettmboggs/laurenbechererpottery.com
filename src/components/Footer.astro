@@ -1,0 +1,40 @@
+---
+interface Props { settings: { title: string; email?: string; instagram?: string; location?: string } }
+const { settings } = Astro.props;
+const year = new Date().getFullYear();
+const ig = settings.instagram?.replace('@', '');
+---
+<footer class="site-footer">
+  <div class="wrap grid">
+    <div>
+      <p class="tag">Wheel-thrown, hand-built,<br /><span class="italic">fired at sunset.</span></p>
+    </div>
+    <div class="links">
+      <a href="/portfolio/">Portfolio</a>
+      <a href="/shop/">Shop</a>
+      <a href="/journal/">Journal</a>
+      <a href="/about/">About</a>
+      <a href="/client/">Client Portal</a>
+    </div>
+    <div class="contact">
+      {settings.email && <a href={`mailto:${settings.email}`}>{settings.email}</a>}
+      {ig && <a href={`https://instagram.com/${ig}`} rel="noopener" target="_blank">@{ig}</a>}
+      {settings.location && <span>{settings.location}</span>}
+    </div>
+  </div>
+  <div class="wrap fine">
+    <span>© {year} {settings.title}. All pieces are one of a kind.</span>
+    <a href="/admin/" class="admin">Studio login</a>
+  </div>
+</footer>
+
+<style>
+  .site-footer { margin-top: 4rem; border-top: 1px solid var(--line); background: var(--bg-soft); padding: 3rem 0 1.5rem; }
+  .grid { grid-template-columns: 1.4fr 1fr 1fr; gap: 2rem; }
+  .tag { font-family: var(--font-display); font-size: 1.6rem; line-height: 1.2; font-variation-settings: 'SOFT' 100, 'WONK' 1; margin: 0; }
+  .links, .contact { display: flex; flex-direction: column; gap: 0.5rem; font-weight: 600; }
+  .contact { color: var(--fg-soft); }
+  .fine { display: flex; justify-content: space-between; gap: 1rem; flex-wrap: wrap; margin-top: 2.5rem; font-size: 0.85rem; color: var(--fg-soft); }
+  .admin { opacity: 0.6; }
+  @media (max-width: 700px) { .grid { grid-template-columns: 1fr; } }
+</style>

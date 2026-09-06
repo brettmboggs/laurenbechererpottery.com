@@ -1,0 +1,24 @@
+---
+import type { CollectionEntry } from 'astro:content';
+interface Props { piece: CollectionEntry<'pieces'>; showPrice?: boolean }
+const { piece, showPrice = false } = Astro.props;
+const d = piece.data;
+const href = `/portfolio/${piece.id}/`;
+const money = (n: number) => n.toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 });
+---
+<a class="card" href={href}>
+  <div class="media">
+    <img src={d.cover} alt={d.title} loading="lazy" width="800" height="1000" />
+    {d.status === 'sold' && <span class="badge sold">Sold</span>}
+    {d.status === 'reserved' && <span class="badge reserved">Reserved</span>}
+    {d.status === 'commission' && <span class="badge">Commission</span>}
+    {d.model && <span class="badge threed">3D</span>}
+  </div>
+  <div class="body">
+    <h3>{d.title}</h3>
+    <div class="meta">
+      <span>{d.collection ?? d.materials ?? ''}</span>
+      {showPrice && d.price != null && <strong>{money(d.price)}</strong>}
+    </div>
+  </div>
+</a>

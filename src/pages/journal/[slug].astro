@@ -1,0 +1,28 @@
+---
+import Base from '../../layouts/Base.astro';
+import { getCollection, render } from 'astro:content';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('posts', ({ data }) => !data.draft);
+  return posts.map((p) => ({ params: { slug: p.id }, props: { post: p } }));
+}
+const { post } = Astro.props;
+const { Content } = await render(post);
+const fmt = (d: Date) => d.toLocaleDateString('en-US', { timeZone: 'UTC', month: 'long', day: 'numeric', year: 'numeric' });
+---
+<Base title={post.data.title} description={post.data.excerpt} image={post.data.cover || undefined}>
+  <article class="section">
+    <div class="wrap narrow">
+      <p class="eyebrow">{fmt(post.data.date)}</p>
+      <h1>{post.data.title}</h1>
+      {post.data.cover && <img class="cover" src={post.data.cover} alt="" />}
+      <div class="prose"><Content /></div>
+      <p><a class="btn ghost small" href="/journal/">← All posts</a></p>
+    </div>
+  </article>
+</Base>
+
+<style>
+  .narrow { max-width: 760px; }
+  .cover { border-radius: var(--radius); margin: 1.5rem 0 2.5rem; aspect-ratio: 16 / 9; object-fit: cover; width: 100%; }
+</style>

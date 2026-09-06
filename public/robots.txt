@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /client/
+Disallow: /admin/
+Sitemap: https://laurenbechererpottery.com/sitemap-index.xml

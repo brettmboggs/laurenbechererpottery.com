@@ -1,0 +1,80 @@
+---
+import Base from '../../layouts/Base.astro';
+import { getEntry } from 'astro:content';
+
+const settings = (await getEntry('settings', 'site'))!.data;
+const endpoint = settings.formEndpoint || '';
+---
+<Base title="Client Portal" description="Start a commission or check on your project." noindex>
+  <section class="section">
+    <div class="wrap portal">
+      <div class="lookup">
+        <p class="eyebrow">Client portal</p>
+        <h1>Your project, <span class="italic">in progress.</span></h1>
+        <p class="lead">Have a project code? Enter it to see progress photos, notes, and payment links for your commission.</p>
+        <form id="code-form" class="code">
+          <div class="field">
+            <label for="code">Project code</label>
+            <input id="code" name="code" placeholder="e.g. demo-sunset-8841" autocomplete="off" required />
+          </div>
+          <button class="btn sunset" type="submit">Open my project</button>
+        </form>
+        <p class="tiny">Your code was in the email confirming your deposit. Lost it? {settings.email && <a href={`mailto:${settings.email}`}>Email me</a>}.</p>
+      </div>
+
+      <div class="request">
+        <h2>{settings.commissionsOpen ? 'Start a commission' : 'Join the waitlist'}</h2>
+        <p>Tell me what you're picturing — piece type, size, colors, when you'd like it — and I'll get back to you within a few days.</p>
+        <form id="request-form" class="req" method="POST" action={endpoint || undefined} data-endpoint={endpoint} data-email={settings.email ?? ''}>
+          <div class="field"><label for="name">Your name</label><input id="name" name="name" required /></div>
+          <div class="field"><label for="email">Email</label><input id="email" name="email" type="email" required /></div>
+          <div class="field"><label for="type">What are you dreaming of?</label>
+            <select id="type" name="type">
+              <option>Mugs / cups</option><option>Bowls</option><option>Plates / dinnerware set</option><option>Vase</option><option>Planter</option><option>Sculptural piece</option><option>Something else</option>
+            </select>
+          </div>
+          <div class="field"><label for="details">Details</label><textarea id="details" name="details" rows="5" placeholder="Size, quantity, colors, occasion, timeline…" required></textarea></div>
+          <div class="field"><label for="budget">Budget (optional)</label><input id="budget" name="budget" placeholder="$" /></div>
+          <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" style="display:none" />
+          <button class="btn" type="submit">Send request</button>
+          <p class="tiny sent" hidden>Thanks — your request is on its way!</p>
+        </form>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .portal { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(2rem, 6vw, 6rem); align-items: start; }
+  .code { display: grid; gap: 0.5rem; max-width: 420px; margin-top: 1rem; }
+  .tiny { font-size: 0.85rem; color: var(--fg-soft); margin-top: 1rem; }
+  .request { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: clamp(1.25rem, 3vw, 2.25rem); }
+  .request h2 { font-size: 1.8rem; }
+  @media (max-width: 860px) { .portal { grid-template-columns: 1fr; } }
+</style>
+
+<script>
+  // Project-code lookup: pages live at /client/<code>/
+  document.getElementById('code-form')?.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const code = (document.getElementById('code') as HTMLInputElement).value.trim().toLowerCase().replace(/\s+/g, '-');
+    if (code) location.href = `/client/${encodeURIComponent(code)}/`;
+  });
+
+  // Commission request: POST to the form service if configured, otherwise open an email draft.
+  const form = document.getElementById('request-form') as HTMLFormElement | null;
+  form?.addEventListener('submit', async (e) => {
+    const endpoint = form.dataset.endpoint;
+    const data = new FormData(form);
+    if (!endpoint) {
+      e.preventDefault();
+      const body = ['Name: ' + data.get('name'), 'Email: ' + data.get('email'), 'Type: ' + data.get('type'), 'Budget: ' + data.get('budget'), '', String(data.get('details'))].join('\n');
+      location.href = `mailto:${form.dataset.email}?subject=${encodeURIComponent('Commission request from ' + data.get('name'))}&body=${encodeURIComponent(body)}`;
+      return;
+    }
+    e.preventDefault();
+    const res = await fetch(endpoint, { method: 'POST', body: data, headers: { Accept: 'application/json' } });
+    if (res.ok) { form.reset(); form.querySelector<HTMLElement>('.sent')!.hidden = false; }
+    else alert('Sorry, something went wrong sending that. Please email me directly.');
+  });
+</script>

@@ -1,0 +1,163 @@
+/* ---------------------------------------------------------------
+   Lauren Becherer Pottery — design tokens
+   Palette: summer sunset. Type: Fraunces (display) + Karla (body).
+   --------------------------------------------------------------- */
+:root {
+  /* sunset palette */
+  --sand: #fff7ee;
+  --cream: #fcebd6;
+  --peach: #ffd2ad;
+  --apricot: #ffb577;
+  --coral: #ff6b57;
+  --rose: #e0476b;
+  --dusk: #6b3f6e;
+  --plum: #3e1f3c;
+  --gold: #f7c059;
+  --lavender: #c9b3e6;
+
+  /* semantic */
+  --bg: var(--sand);
+  --bg-soft: var(--cream);
+  --fg: var(--plum);
+  --fg-soft: #6e5468;
+  --accent: var(--coral);
+  --accent-2: var(--rose);
+  --line: rgba(62, 31, 60, 0.12);
+  --card: #fffdfa;
+  --shadow: 0 10px 30px -14px rgba(62, 31, 60, 0.35);
+  --sunset: linear-gradient(135deg, var(--gold) 0%, var(--apricot) 28%, var(--coral) 55%, var(--rose) 78%, var(--dusk) 100%);
+
+  /* type */
+  --font-display: 'Fraunces', 'Iowan Old Style', Georgia, serif;
+  --font-body: 'Karla', 'Helvetica Neue', Arial, sans-serif;
+
+  /* layout */
+  --max: 1180px;
+  --gutter: clamp(1rem, 4vw, 2.5rem);
+  --radius: 18px;
+  --radius-sm: 10px;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-body);
+  font-size: 1.05rem;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+img, video, svg { max-width: 100%; display: block; }
+a { color: inherit; text-decoration: none; }
+a:hover { color: var(--accent-2); }
+button { font: inherit; cursor: pointer; }
+
+h1, h2, h3, h4 {
+  font-family: var(--font-display);
+  font-variation-settings: 'SOFT' 100, 'WONK' 1, 'opsz' 144;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  line-height: 1.08;
+  margin: 0 0 0.5em;
+  color: var(--plum);
+}
+h1 { font-size: clamp(2.6rem, 6vw, 4.6rem); }
+h2 { font-size: clamp(1.9rem, 3.6vw, 2.8rem); }
+h3 { font-size: clamp(1.3rem, 2.2vw, 1.7rem); }
+p { margin: 0 0 1em; }
+.lead { font-size: 1.2rem; color: var(--fg-soft); max-width: 60ch; }
+.eyebrow {
+  font-family: var(--font-body);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--accent-2);
+  margin-bottom: 0.75rem;
+}
+.italic { font-style: italic; font-variation-settings: 'SOFT' 100, 'WONK' 1, 'opsz' 144; }
+
+.wrap { width: min(100% - 2 * var(--gutter), var(--max)); margin-inline: auto; }
+.section { padding-block: clamp(3rem, 8vw, 6rem); }
+.section-head { display: flex; align-items: end; justify-content: space-between; gap: 1rem; flex-wrap: wrap; margin-bottom: 2rem; }
+.section-head h2 { margin: 0; }
+
+/* buttons */
+.btn {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  padding: 0.85rem 1.4rem;
+  border-radius: 999px;
+  border: 1.5px solid var(--plum);
+  background: var(--plum);
+  color: var(--sand);
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+}
+.btn:hover { transform: translateY(-1px); box-shadow: var(--shadow); color: var(--sand); }
+.btn.sunset { background: var(--sunset); border-color: transparent; color: #fff; }
+.btn.ghost { background: transparent; color: var(--plum); }
+.btn.ghost:hover { background: var(--plum); color: var(--sand); }
+.btn.small { padding: 0.55rem 1rem; font-size: 0.9rem; }
+.btn[aria-disabled="true"] { opacity: 0.5; pointer-events: none; }
+
+/* cards & grids */
+.grid { display: grid; gap: clamp(1rem, 2.5vw, 2rem); }
+.grid.cols-3 { grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr)); }
+.grid.cols-2 { grid-template-columns: repeat(auto-fill, minmax(min(100%, 360px), 1fr)); }
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  overflow: hidden;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.card:hover { transform: translateY(-3px); box-shadow: var(--shadow); }
+.card .media { aspect-ratio: 4 / 5; background: var(--bg-soft); overflow: hidden; position: relative; }
+.card .media img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease; }
+.card:hover .media img { transform: scale(1.03); }
+.card .body { padding: 1rem 1.15rem 1.25rem; }
+.card h3 { margin-bottom: 0.2rem; font-size: 1.25rem; }
+.card .meta { color: var(--fg-soft); font-size: 0.92rem; display: flex; justify-content: space-between; gap: 0.5rem; }
+
+.badge {
+  position: absolute; top: 0.8rem; left: 0.8rem;
+  padding: 0.3rem 0.7rem; border-radius: 999px;
+  font-size: 0.72rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+  background: rgba(255, 247, 238, 0.92); color: var(--plum);
+  backdrop-filter: blur(6px);
+}
+.badge.sold { background: var(--plum); color: var(--sand); }
+.badge.reserved { background: var(--gold); }
+.badge.threed { right: 0.8rem; left: auto; background: var(--sunset); color: #fff; }
+
+/* prose (markdown bodies) */
+.prose { max-width: 68ch; font-size: 1.08rem; }
+.prose h2, .prose h3 { margin-top: 2em; }
+.prose img { border-radius: var(--radius); margin: 1.5rem 0; }
+.prose blockquote { border-left: 3px solid var(--apricot); margin: 1.5rem 0; padding: 0.25rem 0 0.25rem 1.25rem; color: var(--fg-soft); font-style: italic; }
+.prose a { text-decoration: underline; text-decoration-color: var(--apricot); text-underline-offset: 3px; }
+
+/* forms */
+.field { display: grid; gap: 0.35rem; margin-bottom: 1rem; }
+.field label { font-weight: 700; font-size: 0.92rem; }
+.field input, .field textarea, .field select {
+  font: inherit; padding: 0.8rem 1rem; border-radius: var(--radius-sm);
+  border: 1.5px solid var(--line); background: #fff; color: var(--fg);
+}
+.field input:focus, .field textarea:focus, .field select:focus { outline: 2px solid var(--apricot); border-color: transparent; }
+
+.notice {
+  padding: 1rem 1.25rem; border-radius: var(--radius-sm);
+  background: var(--bg-soft); border: 1px dashed rgba(62, 31, 60, 0.25);
+  color: var(--fg-soft); font-size: 0.95rem;
+}
+
+.divider { height: 1px; background: var(--line); margin-block: clamp(2rem, 5vw, 4rem); }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+}

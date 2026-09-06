@@ -1,0 +1,45 @@
+---
+import Base from '../../layouts/Base.astro';
+import PieceCard from '../../components/PieceCard.astro';
+import { getCollection, getEntry } from 'astro:content';
+
+const settings = (await getEntry('settings', 'site'))!.data;
+const forSale = (await getCollection('pieces', ({ data }) => data.forSale))
+  .sort((a, b) => {
+    const rank = (s: string) => (s === 'available' ? 0 : s === 'reserved' ? 1 : 2);
+    return rank(a.data.status) - rank(b.data.status) || b.data.date.valueOf() - a.data.date.valueOf();
+  });
+const available = forSale.filter((p) => p.data.status === 'available');
+---
+<Base title="Shop" description="Buy one-of-a-kind handmade pottery by Lauren Becherer.">
+  <section class="section">
+    <div class="wrap">
+      <p class="eyebrow">Shop</p>
+      <h1>Available work</h1>
+      <p class="lead">Each piece is one of a kind. When it's gone, it's gone — but I'm always making more.</p>
+
+      {available.length === 0 && (
+        <div class="notice">
+          The shelves are empty right now. {settings.commissionsOpen ? <a href="/client/">Commission something</a> : <span>Follow along</span>} or check back after the next firing.
+        </div>
+      )}
+
+      <div class="grid cols-3">
+        {forSale.map((p) => <PieceCard piece={p} showPrice />)}
+      </div>
+
+      <div class="divider"></div>
+      <div class="faq grid cols-3">
+        <div><h3>Shipping</h3><p>Pieces ship within the US, packed with care. Local pickup is free.</p></div>
+        <div><h3>Payment</h3><p>Secure checkout by Stripe — cards, Apple Pay, and Google Pay.</p></div>
+        <div><h3>Questions</h3><p>{settings.email ? <a href={`mailto:${settings.email}`}>Email me</a> : 'Reach out'} about sizing, gifting, or custom sets.</p></div>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .notice { margin-bottom: 2rem; }
+  .faq h3 { font-size: 1.15rem; }
+  .faq p { color: var(--fg-soft); }
+</style>

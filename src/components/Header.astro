@@ -1,0 +1,73 @@
+---
+interface Props { announcement?: string }
+const { announcement } = Astro.props;
+const path = Astro.url.pathname;
+const links = [
+  { href: '/portfolio/', label: 'Portfolio' },
+  { href: '/shop/', label: 'Shop' },
+  { href: '/journal/', label: 'Journal' },
+  { href: '/about/', label: 'About' },
+  { href: '/client/', label: 'Client Portal' },
+];
+const isActive = (href: string) => path === href || (href !== '/' && path.startsWith(href));
+---
+{announcement && <div class="announce">{announcement}</div>}
+<header class="site-header">
+  <div class="wrap bar">
+    <a href="/" class="brand" aria-label="Lauren Becherer Pottery — home">
+      <svg class="mark" aria-hidden="true" viewBox="0 0 64 64" width="30" height="30">
+        <defs>
+          <linearGradient id="hdr-sun" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#f7c059"/><stop offset=".45" stop-color="#ffb577"/><stop offset=".75" stop-color="#ff6b57"/><stop offset="1" stop-color="#e0476b"/>
+          </linearGradient>
+          <clipPath id="hdr-above"><rect x="0" y="0" width="64" height="41"/></clipPath>
+        </defs>
+        <circle cx="32" cy="34" r="19" fill="url(#hdr-sun)" clip-path="url(#hdr-above)"/>
+        <rect x="8" y="41" width="48" height="4" rx="2" fill="#3e1f3c"/>
+        <rect x="16" y="50" width="32" height="3" rx="1.5" fill="#6b3f6e"/>
+        <rect x="24" y="58" width="16" height="2.5" rx="1.25" fill="#c9b3e6"/>
+      </svg>
+      <span class="name">Lauren Becherer <em>Pottery</em></span>
+    </a>
+    <nav aria-label="Primary">
+      <button class="menu-btn" aria-expanded="false" aria-controls="nav-list">Menu</button>
+      <ul id="nav-list">
+        {links.map((l) => (
+          <li><a href={l.href} aria-current={isActive(l.href) ? 'page' : undefined}>{l.label}</a></li>
+        ))}
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<style>
+  .announce {
+    background: var(--sunset); color: #fff; text-align: center;
+    font-size: 0.9rem; font-weight: 700; padding: 0.5rem var(--gutter); letter-spacing: 0.02em;
+  }
+  .site-header { position: sticky; top: 0; z-index: 50; background: rgba(255, 247, 238, 0.85); backdrop-filter: blur(10px); border-bottom: 1px solid var(--line); }
+  .bar { display: flex; align-items: center; justify-content: space-between; gap: 1rem; min-height: 72px; position: relative; }
+  .brand { display: inline-flex; align-items: center; gap: 0.7rem; }
+  .mark { width: 30px; height: 30px; flex: 0 0 auto; }
+  .name { font-family: var(--font-display); font-size: 1.25rem; font-weight: 600; letter-spacing: -0.01em; font-variation-settings: 'SOFT' 100, 'WONK' 1; }
+  .name em { font-style: italic; font-weight: 400; color: var(--dusk); }
+  ul { list-style: none; display: flex; gap: clamp(0.8rem, 2vw, 1.6rem); margin: 0; padding: 0; }
+  li a { font-weight: 700; font-size: 0.95rem; padding: 0.4rem 0; border-bottom: 2px solid transparent; }
+  li a[aria-current="page"] { border-bottom-color: var(--coral); }
+  .menu-btn { display: none; background: none; border: 1.5px solid var(--plum); border-radius: 999px; padding: 0.4rem 0.9rem; font-weight: 700; }
+  @media (max-width: 760px) {
+    .menu-btn { display: inline-block; }
+    ul { display: none; position: absolute; left: calc(-1 * var(--gutter)); right: calc(-1 * var(--gutter)); top: 100%; flex-direction: column; gap: 0; background: var(--sand); border-bottom: 1px solid var(--line); padding: 0.5rem var(--gutter) 1rem; }
+    ul.open { display: flex; }
+    li a { display: block; padding: 0.7rem 0; font-size: 1.1rem; }
+  }
+</style>
+
+<script>
+  const btn = document.querySelector<HTMLButtonElement>('.menu-btn');
+  const list = document.getElementById('nav-list');
+  btn?.addEventListener('click', () => {
+    const open = list?.classList.toggle('open');
+    btn.setAttribute('aria-expanded', String(!!open));
+  });
+</script>

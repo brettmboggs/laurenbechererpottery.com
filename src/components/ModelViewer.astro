@@ -1,0 +1,59 @@
+---
+/**
+ * Full 3D viewer for .glb / .gltf files (Google <model-viewer>).
+ * - drag / pinch to rotate & zoom, optional auto-rotate
+ * - plays embedded animations ("4D" assets) automatically
+ * - "View in your space" AR button on supporting phones
+ */
+interface Props {
+  src: string;
+  poster?: string;
+  alt: string;
+  autoRotate?: boolean;
+  height?: string;
+}
+const { src, poster, alt, autoRotate = true, height = '520px' } = Astro.props;
+---
+<div class="mv-wrap" style={`--h:${height}`}>
+  <model-viewer
+    src={src}
+    poster={poster}
+    alt={alt}
+    camera-controls
+    touch-action="pan-y"
+    auto-rotate={autoRotate ? '' : undefined}
+    rotation-per-second="18deg"
+    autoplay
+    ar
+    ar-modes="webxr scene-viewer quick-look"
+    shadow-intensity="1.1"
+    shadow-softness="0.9"
+    exposure="1.05"
+    environment-image="neutral"
+    interaction-prompt="auto"
+    loading="eager"
+  >
+    <button slot="ar-button" class="btn small ghost ar-btn">View in your space</button>
+    <div slot="progress-bar" class="progress"><div class="bar"></div></div>
+  </model-viewer>
+  <p class="hint">Drag to spin · scroll or pinch to zoom</p>
+</div>
+
+<style>
+  .mv-wrap { position: relative; }
+  model-viewer {
+    width: 100%; height: var(--h);
+    border-radius: var(--radius);
+    background: radial-gradient(120% 100% at 50% 100%, var(--peach) 0%, var(--cream) 45%, var(--sand) 100%);
+    --poster-color: transparent;
+    --progress-bar-color: var(--coral);
+  }
+  .ar-btn { position: absolute; right: 1rem; bottom: 1rem; background: rgba(255,247,238,.9); }
+  .progress { position: absolute; left: 0; right: 0; top: 0; height: 3px; }
+  .progress .bar { height: 100%; width: 0; background: var(--sunset); transition: width .2s ease; }
+  .hint { text-align: center; font-size: 0.85rem; color: var(--fg-soft); margin: 0.6rem 0 0; }
+</style>
+
+<script>
+  import '@google/model-viewer';
+</script>

@@ -1,0 +1,46 @@
+---
+import Base from '../../layouts/Base.astro';
+import PieceCard from '../../components/PieceCard.astro';
+import { getCollection } from 'astro:content';
+
+const pieces = (await getCollection('pieces', ({ data }) => data.showInPortfolio))
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+const collections = [...new Set(pieces.map((p) => p.data.collection).filter(Boolean))] as string[];
+---
+<Base title="Portfolio" description="A gallery of wheel-thrown and hand-built ceramics by Lauren Becherer.">
+  <section class="section">
+    <div class="wrap">
+      <p class="eyebrow">Portfolio</p>
+      <h1>The work</h1>
+      <p class="lead">Functional pieces and one-off experiments. Spin the ones marked <strong>3D</strong>.</p>
+
+      {collections.length > 1 && (
+        <div class="filters" role="group" aria-label="Filter by collection">
+          <button class="chip" data-filter="all" aria-pressed="true">All</button>
+          {collections.map((c) => <button class="chip" data-filter={c} aria-pressed="false">{c}</button>)}
+        </div>
+      )}
+
+      <div class="grid cols-3" id="pieces">
+        {pieces.map((p) => <div data-collection={p.data.collection ?? ''}><PieceCard piece={p} /></div>)}
+      </div>
+      {pieces.length === 0 && <p class="notice">No pieces yet — add some from the studio login.</p>}
+    </div>
+  </section>
+</Base>
+
+<style>
+  .filters { display: flex; gap: 0.5rem; flex-wrap: wrap; margin: 1.5rem 0 2rem; }
+  .chip { border: 1.5px solid var(--line); background: var(--card); border-radius: 999px; padding: 0.45rem 1rem; font-weight: 700; color: var(--fg-soft); }
+  .chip[aria-pressed="true"] { background: var(--plum); color: var(--sand); border-color: var(--plum); }
+</style>
+
+<script>
+  const chips = document.querySelectorAll<HTMLButtonElement>('.chip');
+  const items = document.querySelectorAll<HTMLElement>('#pieces > [data-collection]');
+  chips.forEach((chip) => chip.addEventListener('click', () => {
+    chips.forEach((c) => c.setAttribute('aria-pressed', String(c === chip)));
+    const f = chip.dataset.filter;
+    items.forEach((el) => { el.hidden = f !== 'all' && el.dataset.collection !== f; });
+  }));
+</script>

@@ -1,0 +1,238 @@
+# ------------------------------------------------------------------
+# Studio admin (Sveltia CMS) configuration
+# Docs: https://github.com/sveltia/sveltia-cms
+#
+# ONE-TIME SETUP (see docs/ADMIN-SETUP.md):
+#   1. Create a GitHub OAuth App and deploy the free sveltia-cms-auth
+#      Cloudflare Worker.
+#   2. Replace base_url below with the Worker URL.
+# Until then, "Work with Local Repository" in Chrome/Edge lets you edit
+# content on this computer while running `npm run dev`.
+# ------------------------------------------------------------------
+backend:
+  name: github
+  repo: brettmboggs/laurenbechererpottery.com
+  branch: main
+  base_url: https://REPLACE-WITH-YOUR-WORKER.workers.dev
+  commit_messages:
+    create: "Studio: add {{collection}} “{{slug}}”"
+    update: "Studio: update {{collection}} “{{slug}}”"
+    delete: "Studio: delete {{collection}} “{{slug}}”"
+    uploadMedia: "Studio: upload {{path}}"
+    deleteMedia: "Studio: delete {{path}}"
+
+site_url: https://laurenbechererpottery.com
+display_url: https://laurenbechererpottery.com
+logo_url: /favicon.svg
+
+media_folder: public/images/uploads
+public_folder: /images/uploads
+
+# Automatically shrink huge phone photos on upload so pages stay fast.
+media_libraries:
+  default:
+    config:
+      max_file_size: 15000000
+      transformations:
+        raster_image:
+          format: webp
+          quality: 82
+          width: 2400
+          height: 2400
+
+slug:
+  encoding: ascii
+  clean_accents: true
+
+collections:
+  # ---------------------------------------------------------------- Pieces
+  - name: pieces
+    label: Pieces
+    label_singular: Piece
+    description: Every pot you make. Toggle “Show in portfolio” and “For sale” to control where it appears.
+    folder: src/content/pieces
+    create: true
+    delete: true
+    slug: "{{slug}}"
+    summary: "{{title}} — {{status}}"
+    sortable_fields: [date, title, status]
+    view_filters:
+      - label: For sale
+        field: forSale
+        pattern: true
+      - label: Sold
+        field: status
+        pattern: sold
+    editor:
+      preview: false
+    fields:
+      - { label: Title, name: title, widget: string }
+      - { label: Date made, name: date, widget: datetime, time_format: false, format: "YYYY-MM-DD", date_format: "MMM D, YYYY" }
+      - label: Cover photo
+        name: cover
+        widget: image
+        hint: The main photo shown on cards. Square-ish or portrait works best.
+      - { label: Featured on home page, name: featured, widget: boolean, default: false }
+      - { label: Show in portfolio, name: showInPortfolio, widget: boolean, default: true }
+      - { label: For sale (show in shop), name: forSale, widget: boolean, default: false }
+      - label: Status
+        name: status
+        widget: select
+        options:
+          - { label: Available, value: available }
+          - { label: Reserved, value: reserved }
+          - { label: Sold, value: sold }
+          - { label: Commission (not for sale), value: commission }
+        default: available
+      - { label: Price (USD), name: price, widget: number, value_type: float, min: 0, required: false, hint: "Whole dollars are fine, e.g. 120" }
+      - label: Stripe payment link
+        name: stripeLink
+        widget: string
+        required: false
+        hint: "In Stripe → Payment Links → New, create a link for this piece and paste it here. Leave blank to show an “Inquire” button instead."
+      - { label: Collection / series, name: collection, widget: string, required: false, hint: "e.g. Golden Hour. Used for portfolio filters." }
+      - label: More photos
+        name: gallery
+        widget: list
+        required: false
+        collapsed: true
+        summary: "{{fields.alt}}"
+        fields:
+          - { label: Photo, name: image, widget: image }
+          - { label: Description (for accessibility), name: alt, widget: string, required: false }
+      - label: 3D model (.glb)
+        name: model
+        widget: file
+        required: false
+        media_folder: /public/models
+        public_folder: /models
+        accept: ".glb,.gltf"
+        hint: "Upload a .glb file to get the interactive 3D spinner. Animated models play automatically."
+      - { label: Auto-rotate the 3D model, name: modelAutoRotate, widget: boolean, default: true }
+      - label: 360° photo frames
+        name: spinFrames
+        widget: list
+        required: false
+        collapsed: true
+        field: { label: Frame, name: frame, widget: image }
+        hint: "Optional. Upload 12–36 photos taken in order around the piece to create a drag-to-spin view without a 3D scan."
+      - { label: Dimensions, name: dimensions, widget: string, required: false, hint: "e.g. 9\" tall × 4.5\" wide" }
+      - { label: Materials / glaze, name: materials, widget: string, required: false }
+      - { label: Firing, name: firing, widget: string, required: false, hint: "e.g. Cone 6 oxidation" }
+      - { label: Description, name: body, widget: markdown, required: false }
+
+  # ---------------------------------------------------------------- Journal
+  - name: posts
+    label: Journal
+    label_singular: Post
+    description: Studio notes, kiln openings, market announcements.
+    folder: src/content/posts
+    create: true
+    delete: true
+    slug: "{{year}}-{{month}}-{{slug}}"
+    summary: "{{title}} ({{date}})"
+    editor:
+      preview: false
+    fields:
+      - { label: Title, name: title, widget: string }
+      - { label: Date, name: date, widget: datetime, time_format: false, format: "YYYY-MM-DD" }
+      - { label: Short summary, name: excerpt, widget: string, required: false, hint: "One sentence shown in lists." }
+      - { label: Cover photo, name: cover, widget: image, required: false }
+      - { label: Draft (hide from site), name: draft, widget: boolean, default: false }
+      - { label: Post, name: body, widget: markdown }
+
+  # ---------------------------------------------------------------- Clients
+  - name: clients
+    label: Clients
+    label_singular: Client project
+    description: One private page per commission. Share the link laurenbechererpottery.com/client/CODE/ with the client.
+    folder: src/content/clients
+    create: true
+    delete: true
+    slug: "{{code}}"
+    summary: "{{name}} — {{project}} ({{status}})"
+    editor:
+      preview: false
+    fields:
+      - { label: Client name, name: name, widget: string }
+      - label: Project code
+        name: code
+        widget: string
+        pattern: ["^[a-z0-9-]{6,}$", "Lowercase letters, numbers and dashes only, at least 6 characters"]
+        hint: "Make it unguessable, e.g. smith-plates-7h3k. The page will be at /client/<code>/"
+      - { label: Project, name: project, widget: string, hint: "e.g. Set of six dinner plates, coral rim" }
+      - label: Stage
+        name: status
+        widget: select
+        options:
+          - { label: Inquiry, value: inquiry }
+          - { label: Deposit, value: deposit }
+          - { label: Making, value: in-progress }
+          - { label: Drying, value: drying }
+          - { label: Bisque fire, value: firing }
+          - { label: Glazing, value: glazing }
+          - { label: Ready, value: ready }
+          - { label: Shipped, value: shipped }
+          - { label: Complete, value: complete }
+        default: inquiry
+      - { label: Estimated completion, name: estimatedCompletion, widget: string, required: false, hint: "e.g. October 2026" }
+      - { label: Deposit payment link (Stripe), name: depositLink, widget: string, required: false }
+      - { label: Balance payment link (Stripe), name: balanceLink, widget: string, required: false }
+      - label: Progress updates
+        name: updates
+        widget: list
+        required: false
+        collapsed: false
+        summary: "{{fields.date}} — {{fields.note}}"
+        fields:
+          - { label: Date, name: date, widget: datetime, time_format: false, format: "YYYY-MM-DD" }
+          - { label: Note, name: note, widget: text }
+          - { label: Photo, name: image, widget: image, required: false }
+      - { label: Active (show page), name: active, widget: boolean, default: true, hint: "Turn off to take the page down once the project is done." }
+      - { label: Welcome message, name: body, widget: markdown, required: false }
+
+  # ---------------------------------------------------------------- Pages
+  - name: pages
+    label: Pages
+    description: The About page and other standalone pages.
+    editor:
+      preview: false
+    files:
+      - name: about
+        label: About page
+        file: src/content/pages/about.md
+        fields:
+          - { label: Heading, name: title, widget: string }
+          - { label: Subheading, name: subtitle, widget: string, required: false }
+          - { label: Portrait photo, name: portrait, widget: image, required: false }
+          - label: Studio photos
+            name: studioImages
+            widget: list
+            required: false
+            fields:
+              - { label: Photo, name: image, widget: image }
+              - { label: Description, name: alt, widget: string, required: false }
+          - { label: Your story, name: body, widget: markdown }
+
+  # ---------------------------------------------------------------- Settings
+  - name: settings
+    label: Site settings
+    description: Name, tagline, home page text, contact info, and the announcement banner.
+    editor:
+      preview: false
+    files:
+      - name: site
+        label: Site settings
+        file: src/content/settings/site.json
+        fields:
+          - { label: Site name, name: title, widget: string }
+          - { label: Tagline, name: tagline, widget: string, hint: "Shows in the browser tab and search results." }
+          - { label: Home page headline, name: heroHeading, widget: string }
+          - { label: Home page intro, name: heroSubheading, widget: text }
+          - { label: Home page photo, name: heroImage, widget: image, required: false, hint: "Optional. Replaces the sunset illustration." }
+          - { label: Announcement banner, name: announcement, widget: string, required: false, hint: "Leave blank to hide. e.g. “Holiday orders close Dec 10!”" }
+          - { label: Contact email, name: email, widget: string, required: false }
+          - { label: Instagram handle, name: instagram, widget: string, required: false, hint: "Just the handle, e.g. laurenbechererpottery" }
+          - { label: Location, name: location, widget: string, required: false, hint: "e.g. St. Louis, MO" }
+          - { label: Commissions open, name: commissionsOpen, widget: boolean, default: true }
+          - { label: Form service endpoint, name: formEndpoint, widget: string, required: false, hint: "Advanced. A Formspree/Web3Forms URL for the commission form. Blank = opens the visitor's email app." }

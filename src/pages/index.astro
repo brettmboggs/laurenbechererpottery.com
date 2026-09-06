@@ -1,0 +1,111 @@
+---
+import Base from '../layouts/Base.astro';
+import PieceCard from '../components/PieceCard.astro';
+import { getCollection, getEntry } from 'astro:content';
+
+const settings = (await getEntry('settings', 'site'))!.data;
+const pieces = (await getCollection('pieces')).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+const featured = pieces.filter((p) => p.data.featured).slice(0, 3);
+const latest = featured.length ? featured : pieces.slice(0, 3);
+const posts = (await getCollection('posts', ({ data }) => !data.draft))
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
+  .slice(0, 2);
+---
+<Base>
+  <section class="hero">
+    <div class="wrap hero-grid">
+      <div class="copy">
+        <p class="eyebrow">Handmade ceramics</p>
+        <h1>{settings.heroHeading}</h1>
+        <p class="lead">{settings.heroSubheading}</p>
+        <div class="cta">
+          <a class="btn sunset" href="/shop/">Shop available work</a>
+          <a class="btn ghost" href="/portfolio/">See the portfolio</a>
+        </div>
+      </div>
+      <div class="art" aria-hidden="true">
+        {settings.heroImage ? (
+          <img src={settings.heroImage} alt="" />
+        ) : (
+          <div class="sun">
+            <div class="disc"></div>
+            <div class="vase"></div>
+          </div>
+        )}
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <div class="section-head">
+        <div><p class="eyebrow">Fresh from the kiln</p><h2>Featured pieces</h2></div>
+        <a class="btn ghost small" href="/portfolio/">All work →</a>
+      </div>
+      <div class="grid cols-3">
+        {latest.map((p) => <PieceCard piece={p} showPrice={p.data.forSale} />)}
+      </div>
+    </div>
+  </section>
+
+  <section class="section band">
+    <div class="wrap band-grid">
+      <div>
+        <p class="eyebrow">Made to order</p>
+        <h2>Commission a piece</h2>
+        <p class="lead">Dinnerware for your table, a vase for the mantel, mugs for the whole family. Tell me what you're dreaming of and follow the progress on your own private project page.</p>
+        <a class="btn" href="/client/">{settings.commissionsOpen ? 'Start a commission' : 'Join the waitlist'}</a>
+      </div>
+      <ul class="steps">
+        <li><span>1</span> Tell me your idea</li>
+        <li><span>2</span> Deposit &amp; sketch approval</li>
+        <li><span>3</span> Watch it take shape in your portal</li>
+        <li><span>4</span> Delivered to your door</li>
+      </ul>
+    </div>
+  </section>
+
+  {posts.length > 0 && (
+    <section class="section">
+      <div class="wrap">
+        <div class="section-head">
+          <div><p class="eyebrow">Studio notes</p><h2>From the journal</h2></div>
+          <a class="btn ghost small" href="/journal/">All posts →</a>
+        </div>
+        <div class="grid cols-2">
+          {posts.map((post) => (
+            <a class="card post" href={`/journal/${post.id}/`}>
+              {post.data.cover && <div class="media wide"><img src={post.data.cover} alt="" loading="lazy" /></div>}
+              <div class="body">
+                <p class="eyebrow">{post.data.date.toLocaleDateString('en-US', { timeZone: 'UTC', month: 'long', day: 'numeric', year: 'numeric' })}</p>
+                <h3>{post.data.title}</h3>
+                {post.data.excerpt && <p class="meta">{post.data.excerpt}</p>}
+              </div>
+            </a>
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
+</Base>
+
+<style>
+  .hero { padding-block: clamp(2.5rem, 7vw, 6rem); overflow: hidden; }
+  .hero-grid { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: clamp(2rem, 5vw, 5rem); align-items: center; }
+  .cta { display: flex; gap: 0.75rem; flex-wrap: wrap; margin-top: 1.5rem; }
+  .art img { border-radius: var(--radius); aspect-ratio: 4 / 5; object-fit: cover; width: 100%; }
+  .sun { position: relative; aspect-ratio: 4 / 5; border-radius: var(--radius); overflow: hidden;
+    background: linear-gradient(180deg, var(--lavender) 0%, var(--gold) 38%, var(--apricot) 55%, var(--coral) 72%, var(--rose) 86%, var(--dusk) 100%); }
+  .disc { position: absolute; left: 50%; top: 34%; width: 46%; aspect-ratio: 1; transform: translate(-50%, -50%); border-radius: 50%;
+    background: radial-gradient(circle at 50% 40%, #fff6d8 0%, var(--gold) 55%, rgba(247,192,89,0) 100%); filter: blur(1px); animation: rise 14s ease-in-out infinite alternate; }
+  .vase { position: absolute; left: 50%; bottom: 8%; width: 30%; height: 52%; transform: translateX(-50%); background: var(--plum);
+    border-radius: 30% 30% 45% 45% / 10% 10% 50% 50%; clip-path: polygon(38% 0, 62% 0, 58% 18%, 80% 32%, 92% 62%, 82% 100%, 18% 100%, 8% 62%, 20% 32%, 42% 18%); }
+  @keyframes rise { from { top: 36%; } to { top: 30%; } }
+  .band { background: var(--bg-soft); }
+  .band-grid { display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 3rem; align-items: center; }
+  .steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.75rem; }
+  .steps li { display: flex; align-items: center; gap: 0.9rem; font-weight: 600; padding: 0.9rem 1.1rem; background: var(--card); border: 1px solid var(--line); border-radius: var(--radius-sm); }
+  .steps span { display: grid; place-items: center; width: 32px; height: 32px; border-radius: 50%; background: var(--sunset); color: #fff; font-weight: 800; font-size: 0.9rem; }
+  .post .media.wide { aspect-ratio: 16 / 9; }
+  @media (max-width: 860px) { .hero-grid, .band-grid { grid-template-columns: 1fr; } .art { max-width: 420px; } }
+</style>
