@@ -18,3 +18,6 @@ npm-debug.log*
 Thumbs.db
 .vscode/
 .idea/
+
+# handwriting-font build artifacts (regenerate with scripts/handfont)
+build/

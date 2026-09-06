@@ -23,7 +23,7 @@ const fontFile = settings.customFontFile || '';
 const fontFormat = fontFile.endsWith('.woff2') ? 'woff2' : fontFile.endsWith('.woff') ? 'woff' : fontFile.endsWith('.otf') ? 'opentype' : 'truetype';
 const customFontCss = fontFile
   ? `@font-face{font-family:'Lauren Hand';src:url('${fontFile}') format('${fontFormat}');font-weight:400;font-style:normal;font-display:swap}
-:root{--font-display:'Lauren Hand','Young Serif','Iowan Old Style',Georgia,serif}`
+:root{--font-display:'Lauren Hand','Segoe Print',cursive}`
   : '';
 ---
 <!doctype html>
@@ -47,7 +47,7 @@ const customFontCss = fontFile
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Young+Serif&family=Karla:ital,wght@0,400..800;1,400..800&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Karla:ital,wght@0,400..800;1,400..800&display=swap"
       rel="stylesheet"
     />
     {fontFile && <link rel="preload" href={fontFile} as="font" type={`font/${fontFormat === 'opentype' ? 'otf' : fontFormat === 'truetype' ? 'ttf' : fontFormat}`} crossorigin />}

@@ -1,46 +1,60 @@
-# Hand-drawn lettering and font
+# Lauren Hand — the site's font, made from Lauren's handwriting
 
-The site has three hooks for Lauren's own lettering. Use any or all of them.
-Each one is a field in the admin under **Site settings**, so nothing needs code.
+The headings, logo, navigation, and buttons use **Lauren Hand**, a real OpenType
+font traced from the lettering sheet Lauren drew (marker = Bold, pen = Regular).
+Body paragraphs stay in Karla for long-form readability.
 
-| Hook | What it does | Best for |
-| --- | --- | --- |
-| **Hand-drawn logo** | Replaces the typed "Lauren Becherer Pottery" in the header with an image | The one thing everyone sees, on every page |
-| **Hand-lettered home headline** | Replaces the big home-page headline with an image (the typed text still exists for Google and screen readers) | A single showpiece line |
-| **Hand-drawn font file** | Loads a real font made from her handwriting and uses it for *every* heading on the site (with Young Serif as fallback while it loads) | Everything else: page titles, piece names, journal headings |
+| File | What |
+| --- | --- |
+| `design/handwriting/sheet-b.jpg` | The source photo (sheet-a is the second shot, not used) |
+| `public/fonts/lauren-hand-{regular,bold}.{woff2,otf}` | The fonts the site loads (`src/styles/fonts.css`) |
+| `scripts/handfont/segment.py` | Finds and labels every drawn character on the sheet |
+| `scripts/handfont/build_font.py` | Traces the ink to Bézier outlines and assembles the fonts |
 
-Recommended: do the logo + headline as drawn images (highest quality, full control
-over every letter), and make a font for the rest.
+Nothing in the pipeline invents letterforms. Every outline is traced from the ink.
+The only "made" glyphs are ones she didn't draw: space, quotes (her comma, raised),
+colon and semicolon (her period and comma stacked), ellipsis (three periods),
+en/em dashes (her hyphen stretched), and a middle dot. Punctuation is placed
+where type expects it (period on the baseline, comma straddling it, dashes centred
+on the x-height) but the shapes are hers.
 
----
+## Rebuilding the font (after a new or corrected sheet)
 
-## Route A: lettered images (logo, headline)
+Requirements: Python 3 with `opencv-python numpy fonttools potracer brotli`
+(`pip install --user fonttools potracer brotli`; OpenCV and NumPy are already installed here).
 
-1. Draw on white paper with a dark pen, or on an iPad (Procreate: 300 dpi, transparent background, export PNG).
-2. Paper route: photograph flat in daylight, then remove the background. Free options: remove.bg, Photoshop's *Select Subject*, or Adobe Express *Remove background*.
-3. Make it a vector so it stays crisp at any size (optional but worth it): Illustrator *Image Trace → Black and White Logo → Expand*, or Inkscape *Path → Trace Bitmap*. Export **SVG**. If you skip this, export a **PNG at least 2000 px wide with a transparent background**.
-4. Colour: plum `#3e1f3c` for the logo. For the headline, plum, or the sunset gradient if you want to get fancy in Illustrator.
-5. Admin → Site settings → upload to **Hand-drawn logo** and/or **Hand-lettered home headline**. Save.
+```bash
+python scripts/handfont/segment.py design/handwriting/sheet-b.jpg build/handfont-b
+```
 
-Sizing: the header logo displays 44 px tall, so a wide horizontal lockup works best. The headline image scales to the width of the text column (about 560 px on desktop).
+Check `build/handfont-b/debug.png`: every character should have a red box and the
+right green label, and the console should print `mapping OK`. The row order and
+character order are defined at the top of `segment.py` (`ROWS`); if a new sheet uses
+a different layout, update that list.
 
-## Route B: a font from her handwriting (everything else)
+```bash
+python scripts/handfont/build_font.py build/handfont-b public/fonts
+```
 
-Free tool: **Calligraphr** (https://www.calligraphr.com). The free tier makes one font with up to 75 characters, which covers upper case, lower case, digits and the punctuation we need.
+Check `build/handfont-b/specimen.png`, then commit the four files in `public/fonts/`.
 
-1. Sign up → *Templates* → select **Minimal English** (A–Z, a–z, 0–9) and add `. , ' ! ? & -` from the Punctuation set. Keep the total ≤ 75.
-2. Download the template PDF, print it, and have Lauren letter each box with a felt-tip or brush pen. Consistent pen and pressure matters more than perfection. Slightly irregular is the charm.
-3. Scan or photograph the sheets (flat, bright, no shadows) → *My Fonts* → *Upload Template*.
-4. Adjust baseline and size in Calligraphr's editor if a few letters sit oddly. *Build Font* → download the **TTF**.
-5. Optional but recommended: convert TTF → WOFF2 for a smaller download. Free: https://transfonter.org (tick WOFF2 only) or https://cloudconvert.com/ttf-to-woff2.
-6. Admin → Site settings → **Hand-drawn font file** → upload the `.woff2` (or `.ttf`). Save.
+## Fixing a single letter
 
-Every heading now uses her font. If a letter looks wrong, fix it in Calligraphr, rebuild, and re-upload; the file name can stay the same.
+If one glyph needs redrawing, Lauren can letter just that character on a fresh
+sheet and Brett can splice it in: run `segment.py` on the new sheet, copy the new
+glyph's box from its `glyphs.json` into the old one (same `char` and `weight`),
+paste the pixels into `bw.png` with any image editor, and rebuild. Or, in
+Illustrator: open `public/fonts/lauren-hand-bold.otf` glyphs via a font editor
+such as FontForge (free) and replace the outline directly.
 
-### If it ends up too loose for smaller headings
+## Photographing a sheet well
 
-Say so and I'll limit the handwriting font to the big headlines and keep Young Serif for piece names and cards. That's a two-line CSS change.
+Flat, even daylight, no shadows across the page, phone parallel to the paper,
+dark pen on white or cream paper, one character per position with clear gaps.
+The current sheet worked at 3024×4032 from a phone camera without special setup.
 
-## Paid shortcut
+## Also available: lettered images
 
-If you'd rather not fiddle: **Fontself** (Illustrator/Photoshop extension, ~$50) or **iFontMaker** (iPad, ~$8) build fonts from drawn letters in an afternoon and export OTF/TTF directly.
+Site settings in the admin still has **Hand-drawn logo** and **Hand-lettered home
+headline** image fields, in case Lauren wants a one-off lockup drawn as art rather
+than typed in the font.

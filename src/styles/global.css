@@ -1,7 +1,9 @@
 /* ---------------------------------------------------------------
    Lauren Becherer Pottery — design tokens
-   Palette: summer sunset. Type: Young Serif (soft chunky display) + Karla (body).
+   Palette: summer sunset. Type: Lauren Hand (her handwriting) + Karla (body).
    --------------------------------------------------------------- */
+@import './fonts.css';
+
 :root {
   /* sunset palette */
   --sand: #fff7ee;
@@ -28,7 +30,7 @@
   --sunset: linear-gradient(135deg, var(--gold) 0%, var(--apricot) 28%, var(--coral) 55%, var(--rose) 78%, var(--dusk) 100%);
 
   /* type */
-  --font-display: 'Young Serif', 'Iowan Old Style', Georgia, serif;
+  --font-display: 'Lauren Hand', 'Segoe Print', 'Bradley Hand', cursive;
   --font-body: 'Karla', 'Helvetica Neue', Arial, sans-serif;
 
   /* layout */
@@ -56,17 +58,19 @@ button { font: inherit; cursor: pointer; }
 
 h1, h2, h3, h4 {
   font-family: var(--font-display);
-  font-weight: 400;
-  letter-spacing: -0.02em;
-  line-height: 1.05;
+  font-weight: 700;              /* marker */
+  letter-spacing: 0.01em;
+  line-height: 1.15;
   margin: 0 0 0.5em;
   color: var(--plum);
 }
-h1 { font-size: clamp(2.6rem, 5.8vw, 4.4rem); }
+h1 { font-size: clamp(2.6rem, 5.6vw, 4.2rem); }
 h2 { font-size: clamp(1.9rem, 3.4vw, 2.7rem); }
-h3 { font-size: clamp(1.25rem, 2vw, 1.55rem); }
-/* Young Serif has no italic; emphasise a word with colour instead of a faux slant. */
-h1 .italic, h2 .italic { font-style: normal; color: var(--rose); }
+h3 { font-size: clamp(1.3rem, 2vw, 1.6rem); font-weight: 400; }   /* pen */
+/* Handwriting has no italic; emphasise a word with colour instead of a faux slant. */
+h1 .italic, h2 .italic, .tag .italic { font-style: normal; color: var(--rose); }
+/* Handwritten UI text: nav, buttons, tabs, filter chips */
+.hand { font-family: var(--font-display); font-weight: 700; letter-spacing: 0.02em; }
 p { margin: 0 0 1em; }
 .lead { font-size: 1.2rem; color: var(--fg-soft); max-width: 60ch; }
 .eyebrow {
@@ -94,15 +98,17 @@ p { margin: 0 0 1em; }
   border: 1.5px solid var(--plum);
   background: var(--plum);
   color: var(--sand);
+  font-family: var(--font-display);
   font-weight: 700;
-  letter-spacing: 0.01em;
+  font-size: 1.1rem;
+  letter-spacing: 0.02em;
   transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
 }
 .btn:hover { transform: translateY(-1px); box-shadow: var(--shadow); color: var(--sand); }
 .btn.sunset { background: var(--sunset); border-color: transparent; color: #fff; }
 .btn.ghost { background: transparent; color: var(--plum); }
 .btn.ghost:hover { background: var(--plum); color: var(--sand); }
-.btn.small { padding: 0.55rem 1rem; font-size: 0.9rem; }
+.btn.small { padding: 0.5rem 1rem; font-size: 1rem; }
 .btn[aria-disabled="true"] { opacity: 0.5; pointer-events: none; }
 
 /* cards & grids */
