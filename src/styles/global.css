@@ -1,6 +1,6 @@
 /* ---------------------------------------------------------------
    Lauren Becherer Pottery — design tokens
-   Palette: summer sunset. Type: Cormorant Garamond (display, italic headlines) + Karla (body).
+   Palette: summer sunset. Type: Gwendolyn (cursive display for h1/h2/logo) + Karla (body, h3+).
    --------------------------------------------------------------- */
 :root {
   /* sunset palette */
@@ -28,7 +28,7 @@
   --sunset: linear-gradient(135deg, var(--gold) 0%, var(--apricot) 28%, var(--coral) 55%, var(--rose) 78%, var(--dusk) 100%);
 
   /* type */
-  --font-display: 'Cormorant Garamond', 'Iowan Old Style', Georgia, serif;
+  --font-display: 'Gwendolyn', 'Brush Script MT', cursive;
   --font-body: 'Karla', 'Helvetica Neue', Arial, sans-serif;
 
   /* layout */
@@ -54,17 +54,21 @@ a { color: inherit; text-decoration: none; }
 a:hover { color: var(--accent-2); }
 button { font: inherit; cursor: pointer; }
 
-h1, h2, h3, h4 {
+/* Big moments (h1, h2, logo) are set in the cursive display face;
+   smaller headings stay in the clean body face so cards and lists stay legible. */
+h1, h2 {
   font-family: var(--font-display);
-  font-weight: 500;
+  font-weight: 700;
   letter-spacing: 0;
-  line-height: 1.02;
-  margin: 0 0 0.5em;
+  line-height: 1.1;
+  margin: 0 0 0.45em;
   color: var(--plum);
 }
-h1 { font-size: clamp(3.2rem, 7.5vw, 5.8rem); font-style: italic; font-weight: 400; }
-h2 { font-size: clamp(2.3rem, 4.4vw, 3.4rem); font-style: italic; font-weight: 400; }
-h3 { font-size: clamp(1.5rem, 2.4vw, 1.95rem); }
+h1 { font-size: clamp(3.6rem, 8vw, 6.4rem); }
+h2 { font-size: clamp(2.6rem, 5vw, 3.9rem); }
+h3, h4 { font-family: var(--font-body); font-weight: 700; letter-spacing: -0.01em; line-height: 1.2; margin: 0 0 0.5em; color: var(--plum); }
+h3 { font-size: clamp(1.15rem, 1.8vw, 1.4rem); }
+h1 .italic, h2 .italic { font-style: normal; color: var(--rose); }
 p { margin: 0 0 1em; }
 .lead { font-size: 1.2rem; color: var(--fg-soft); max-width: 60ch; }
 .eyebrow {
@@ -120,7 +124,7 @@ p { margin: 0 0 1em; }
 .card .media img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease; }
 .card:hover .media img { transform: scale(1.03); }
 .card .body { padding: 1rem 1.15rem 1.25rem; }
-.card h3 { margin-bottom: 0.2rem; font-size: 1.5rem; }
+.card h3 { margin-bottom: 0.2rem; font-size: 1.2rem; }
 .card .meta { color: var(--fg-soft); font-size: 0.92rem; display: flex; justify-content: space-between; gap: 0.5rem; }
 
 .badge {
