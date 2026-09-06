@@ -14,7 +14,8 @@ project pages.
 | Hosting + SSL | GitHub Pages (this repo, auto-deployed by GitHub Actions) | Free |
 | Site framework | [Astro 5](https://astro.build) + TypeScript, static output | Free |
 | Admin portal | [Sveltia CMS](https://github.com/sveltia/sveltia-cms) at `/admin/` — edits commit straight to this repo | Free |
-| Admin login | GitHub OAuth via a tiny Cloudflare Worker (see `docs/ADMIN-SETUP.md`) | Free |
+| Admin login | GitHub personal access token, or GitHub OAuth via a tiny Cloudflare Worker (see `docs/ADMIN-SETUP.md`) | Free |
+| Hand-drawn branding | Logo, headline, and font-file hooks in Site settings (see `docs/HAND-DRAWN-FONT.md`) | Free |
 | 3D viewer | Google `<model-viewer>` for `.glb`/`.gltf` (animated models = "4D", AR on phones) | Free |
 | 360° viewer | Built-in photo turntable (`SpinViewer.astro`) | Free |
 | Payments | Stripe Payment Links pasted into each piece | Per-sale fee only |
@@ -59,7 +60,8 @@ npm run make-model
 ## Docs
 
 - `docs/LAUREN-GUIDE.md` — plain-English guide for running the site day to day
-- `docs/ADMIN-SETUP.md` — one-time setup of the admin login (GitHub OAuth + Cloudflare Worker)
+- `docs/ADMIN-SETUP.md` — one-time setup of the admin login (access token, or GitHub OAuth + Cloudflare Worker)
+- `docs/HAND-DRAWN-FONT.md` — turning Lauren's lettering into the site's logo, headline, and font
 - `docs/DNS.md` — Namecheap DNS records for GitHub Pages
 - `docs/ASSETS.md` — photo and 3D-model specs for the viewers
 

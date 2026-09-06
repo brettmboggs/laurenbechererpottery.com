@@ -230,6 +230,24 @@ collections:
           - { label: Home page headline, name: heroHeading, widget: string }
           - { label: Home page intro, name: heroSubheading, widget: text }
           - { label: Home page photo, name: heroImage, widget: image, required: false, hint: "Optional. Replaces the sunset illustration." }
+          - label: Hand-drawn logo
+            name: logoImage
+            widget: image
+            required: false
+            hint: "Optional. A lettered logo (SVG or PNG with transparent background) shown in the header instead of the typed name."
+          - label: Hand-lettered home headline
+            name: heroHeadingImage
+            widget: image
+            required: false
+            hint: "Optional. A lettered version of the home page headline (SVG/PNG, transparent). The typed headline is still used for search engines."
+          - label: Hand-drawn font file
+            name: customFontFile
+            widget: file
+            required: false
+            media_folder: /public/fonts
+            public_folder: /fonts
+            accept: ".woff2,.woff,.ttf,.otf"
+            hint: "Optional. Upload a font made from Lauren's handwriting (see docs/HAND-DRAWN-FONT.md) and every heading will use it."
           - { label: Announcement banner, name: announcement, widget: string, required: false, hint: "Leave blank to hide. e.g. “Holiday orders close Dec 10!”" }
           - { label: Contact email, name: email, widget: string, required: false }
           - { label: Instagram handle, name: instagram, widget: string, required: false, hint: "Just the handle, e.g. laurenbechererpottery" }

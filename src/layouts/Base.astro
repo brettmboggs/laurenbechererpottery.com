@@ -15,7 +15,16 @@ const settings = (await getEntry('settings', 'site'))!.data;
 const { title, description = settings.tagline, image, noindex = false } = Astro.props;
 const fullTitle = title ? `${title} · ${settings.title}` : `${settings.title} — ${settings.tagline}`;
 const canonical = new URL(Astro.url.pathname, Astro.site);
-const ogImage = image ? new URL(image, Astro.site) : new URL('/images/placeholders/og.svg', Astro.site);
+const ogImage = new URL(image ?? '/images/og.png', Astro.site);
+
+// Hand-drawn font: when a font file is uploaded in Site settings, load it and put it
+// first in the display stack. Nothing is requested when the field is empty.
+const fontFile = settings.customFontFile || '';
+const fontFormat = fontFile.endsWith('.woff2') ? 'woff2' : fontFile.endsWith('.woff') ? 'woff' : fontFile.endsWith('.otf') ? 'opentype' : 'truetype';
+const customFontCss = fontFile
+  ? `@font-face{font-family:'Lauren Hand';src:url('${fontFile}') format('${fontFormat}');font-weight:400;font-style:normal;font-display:swap}
+:root{--font-display:'Lauren Hand','Young Serif','Iowan Old Style',Georgia,serif}`
+  : '';
 ---
 <!doctype html>
 <html lang="en">
@@ -28,6 +37,7 @@ const ogImage = image ? new URL(image, Astro.site) : new URL('/images/placeholde
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <meta name="theme-color" content="#fff7ee" />
     {noindex && <meta name="robots" content="noindex, nofollow" />}
+    <meta property="og:site_name" content={settings.title} />
     <meta property="og:title" content={fullTitle} />
     <meta property="og:description" content={description} />
     <meta property="og:type" content="website" />
@@ -40,13 +50,22 @@ const ogImage = image ? new URL(image, Astro.site) : new URL('/images/placeholde
       href="https://fonts.googleapis.com/css2?family=Young+Serif&family=Karla:ital,wght@0,400..800;1,400..800&display=swap"
       rel="stylesheet"
     />
+    {fontFile && <link rel="preload" href={fontFile} as="font" type={`font/${fontFormat === 'opentype' ? 'otf' : fontFormat === 'truetype' ? 'ttf' : fontFormat}`} crossorigin />}
+    {customFontCss && <style set:html={customFontCss} />}
     <link rel="sitemap" href="/sitemap-index.xml" />
+    <link rel="alternate" type="application/rss+xml" title={`${settings.title} — Journal`} href="/rss.xml" />
   </head>
   <body>
-    <Header announcement={settings.announcement} />
+    <a class="skip" href="#main">Skip to content</a>
+    <Header announcement={settings.announcement} logoImage={settings.logoImage} siteTitle={settings.title} />
     <main id="main">
       <slot />
     </main>
     <Footer settings={settings} />
   </body>
 </html>
+
+<style>
+  .skip { position: absolute; left: 1rem; top: -100px; z-index: 100; padding: 0.6rem 1rem; background: var(--plum); color: var(--sand); border-radius: 999px; }
+  .skip:focus { top: 1rem; }
+</style>

@@ -1,6 +1,6 @@
 ---
-interface Props { announcement?: string }
-const { announcement } = Astro.props;
+interface Props { announcement?: string; logoImage?: string; siteTitle?: string }
+const { announcement, logoImage, siteTitle = 'Lauren Becherer Pottery' } = Astro.props;
 const path = Astro.url.pathname;
 const links = [
   { href: '/portfolio/', label: 'Portfolio' },
@@ -14,7 +14,10 @@ const isActive = (href: string) => path === href || (href !== '/' && path.starts
 {announcement && <div class="announce">{announcement}</div>}
 <header class="site-header">
   <div class="wrap bar">
-    <a href="/" class="brand" aria-label="Lauren Becherer Pottery — home">
+    <a href="/" class="brand" aria-label={`${siteTitle} — home`}>
+      {logoImage ? (
+        <img class="logo-img" src={logoImage} alt={siteTitle} />
+      ) : (
       <svg class="mark" aria-hidden="true" viewBox="0 0 64 64" width="30" height="30">
         <defs>
           <linearGradient id="hdr-sun" x1="0" y1="0" x2="0" y2="1">
@@ -27,7 +30,8 @@ const isActive = (href: string) => path === href || (href !== '/' && path.starts
         <rect x="16" y="50" width="32" height="3" rx="1.5" fill="#6b3f6e"/>
         <rect x="24" y="58" width="16" height="2.5" rx="1.25" fill="#c9b3e6"/>
       </svg>
-      <span class="name">Lauren Becherer <em>Pottery</em></span>
+      )}
+      {!logoImage && <span class="name">Lauren Becherer <em>Pottery</em></span>}
     </a>
     <nav aria-label="Primary">
       <button class="menu-btn" aria-expanded="false" aria-controls="nav-list">Menu</button>
@@ -49,6 +53,7 @@ const isActive = (href: string) => path === href || (href !== '/' && path.starts
   .bar { display: flex; align-items: center; justify-content: space-between; gap: 1rem; min-height: 72px; position: relative; }
   .brand { display: inline-flex; align-items: center; gap: 0.7rem; }
   .mark { width: 30px; height: 30px; flex: 0 0 auto; }
+  .logo-img { height: 44px; width: auto; max-width: 260px; object-fit: contain; }
   .name { font-family: var(--font-display); font-size: 1.3rem; font-weight: 400; letter-spacing: -0.02em; line-height: 1; }
   .name em { font-style: normal; color: var(--rose); }
   ul { list-style: none; display: flex; gap: clamp(0.8rem, 2vw, 1.6rem); margin: 0; padding: 0; }
@@ -57,6 +62,8 @@ const isActive = (href: string) => path === href || (href !== '/' && path.starts
   .menu-btn { display: none; background: none; border: 1.5px solid var(--plum); border-radius: 999px; padding: 0.4rem 0.9rem; font-weight: 700; }
   @media (max-width: 760px) {
     .menu-btn { display: inline-block; }
+    .name { font-size: 1.1rem; }
+    .logo-img { height: 36px; max-width: 200px; }
     ul { display: none; position: absolute; left: calc(-1 * var(--gutter)); right: calc(-1 * var(--gutter)); top: 100%; flex-direction: column; gap: 0; background: var(--sand); border-bottom: 1px solid var(--line); padding: 0.5rem var(--gutter) 1rem; }
     ul.open { display: flex; }
     li a { display: block; padding: 0.7rem 0; font-size: 1.1rem; }

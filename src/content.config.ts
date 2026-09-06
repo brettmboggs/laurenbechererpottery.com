@@ -87,6 +87,10 @@ const settings = defineCollection({
     heroHeading: z.string(),
     heroSubheading: z.string(),
     heroImage: optionalPath,
+    // Hand-drawn branding hooks: a lettered logo, a lettered headline, and/or a custom font file.
+    logoImage: optionalPath,
+    heroHeadingImage: optionalPath,
+    customFontFile: optionalPath,
     announcement: z.string().optional(),
     email: z.string().optional(),
     instagram: z.string().optional(),

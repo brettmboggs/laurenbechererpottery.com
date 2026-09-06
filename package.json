@@ -11,9 +11,14 @@
     "make-model": "node scripts/make-placeholder-vase.mjs"
   },
   "dependencies": {
+    "@astrojs/rss": "^4.0.19",
     "@astrojs/sitemap": "^3.4.0",
     "@google/model-viewer": "^4.0.0",
     "astro": "^5.12.0",
     "sharp": "^0.34.0"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.10",
+    "typescript": "^5.9.3"
   }
 }

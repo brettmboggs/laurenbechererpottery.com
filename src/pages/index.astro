@@ -16,7 +16,11 @@ const posts = (await getCollection('posts', ({ data }) => !data.draft))
     <div class="wrap hero-grid">
       <div class="copy">
         <p class="eyebrow">Handmade ceramics</p>
-        <h1>{settings.heroHeading}</h1>
+        {settings.heroHeadingImage ? (
+          <h1 class="lettered"><img src={settings.heroHeadingImage} alt={settings.heroHeading} /></h1>
+        ) : (
+          <h1>{settings.heroHeading}</h1>
+        )}
         <p class="lead">{settings.heroSubheading}</p>
         <div class="cta">
           <a class="btn sunset" href="/shop/">Shop available work</a>
@@ -93,6 +97,8 @@ const posts = (await getCollection('posts', ({ data }) => !data.draft))
   .hero { padding-block: clamp(2.5rem, 7vw, 6rem); overflow: hidden; }
   .hero-grid { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: clamp(2rem, 5vw, 5rem); align-items: center; }
   .cta { display: flex; gap: 0.75rem; flex-wrap: wrap; margin-top: 1.5rem; }
+  .lettered { margin-bottom: 1.25rem; }
+  .lettered img { width: 100%; max-width: 560px; height: auto; }
   .art img { border-radius: var(--radius); aspect-ratio: 4 / 5; object-fit: cover; width: 100%; }
   .sun { position: relative; aspect-ratio: 4 / 5; border-radius: var(--radius); overflow: hidden;
     background: linear-gradient(180deg, var(--lavender) 0%, var(--gold) 38%, var(--apricot) 55%, var(--coral) 72%, var(--rose) 86%, var(--dusk) 100%); }

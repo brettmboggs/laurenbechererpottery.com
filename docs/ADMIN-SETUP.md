@@ -1,9 +1,31 @@
 # Admin login — one-time setup
 
-The studio at `/admin/` is Sveltia CMS. It talks directly to GitHub, so it needs
-a way to log a user in with GitHub. GitHub's OAuth flow requires a tiny server
-to exchange a code for a token; Sveltia provides one that runs free on
-Cloudflare Workers. This takes about 10 minutes and never needs repeating.
+The studio at `/admin/` is Sveltia CMS. It talks directly to GitHub, so Lauren
+needs a way to prove to GitHub that she's allowed to edit the repo. There are
+two ways. **Start with the quick path**; add the polished path later if you want
+a one-click "Sign in with GitHub" button.
+
+## Quick path (5 minutes): a personal access token
+
+No servers, no OAuth app. Lauren pastes a token once and her browser remembers it.
+
+1. Do step 1 below (Lauren's GitHub account, added as a collaborator).
+2. **Logged in as Lauren**, go to https://github.com/settings/personal-access-tokens/new
+   - Token name: `Pottery studio`
+   - Expiration: **No expiration** (or 1 year and set a reminder)
+   - Repository access: **Only select repositories** → `laurenbechererpottery.com`
+   - Permissions → Repository permissions → **Contents: Read and write**. Leave everything else at *No access*.
+   - Generate token and copy it (it's shown once).
+3. Open https://laurenbechererpottery.com/admin/ → **Sign In Using Access Token** → paste → done.
+
+The token only works for this one repo and only for editing files. If it ever
+leaks, delete it at https://github.com/settings/personal-access-tokens and make
+a new one. Don't paste it anywhere except the studio login.
+
+## Polished path (10 minutes): "Sign in with GitHub" button
+
+GitHub's OAuth flow requires a tiny server to exchange a code for a token;
+Sveltia provides one that runs free on Cloudflare Workers.
 
 ## 1. Give Lauren a GitHub account with access to the repo
 

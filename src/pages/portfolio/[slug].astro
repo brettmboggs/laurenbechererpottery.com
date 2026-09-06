@@ -22,8 +22,24 @@ const more = (await getCollection('pieces', (p) => p.id !== piece.id && p.data.s
 const canBuy = d.forSale && d.status === 'available';
 const inquire = `mailto:${settings.email ?? ''}?subject=${encodeURIComponent(`Inquiry: ${d.title}`)}`;
 const statusLabel: Record<string, string> = { available: 'Available', sold: 'Sold', reserved: 'Reserved', commission: 'Commission piece' };
+
+// Structured data so Google can show price/availability in search results.
+const availability: Record<string, string> = { available: 'InStock', reserved: 'PreOrder', sold: 'SoldOut', commission: 'PreOrder' };
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Product',
+  name: d.title,
+  description: d.materials ? `${d.title}. ${d.materials}.` : d.title,
+  image: [d.cover, ...d.gallery.map((g) => g.image)].map((p) => new URL(p, Astro.site).href),
+  brand: { '@type': 'Brand', name: settings.title },
+  material: d.materials,
+  ...(d.forSale && d.price != null
+    ? { offers: { '@type': 'Offer', price: d.price, priceCurrency: 'USD', availability: `https://schema.org/${availability[d.status]}`, url: new URL(Astro.url.pathname, Astro.site).href } }
+    : {}),
+};
 ---
 <Base title={d.title} description={`${d.title} — ${d.materials ?? 'handmade ceramics'} by Lauren Becherer.`} image={d.cover}>
+  <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
   <article class="section">
     <div class="wrap piece">
       <div class="viewer-col">

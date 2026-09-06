@@ -4,9 +4,14 @@ Your website has a "studio" where you edit everything. Bookmark it:
 
 **https://laurenbechererpottery.com/admin/**
 
-Log in with the **Sign in with GitHub** button. After you save anything, the site
-rebuilds itself and your change is live in about a minute. Refresh the page to
-see it.
+Log in with the button Brett set up for you (either **Sign in with GitHub** or
+**Sign In Using Access Token**, where you paste a code once and your browser
+remembers it). After you save anything, the site rebuilds itself and your change
+is live in about a minute. Refresh the page to see it.
+
+Want your own handwriting on the site? See `docs/HAND-DRAWN-FONT.md`: you can
+upload a lettered logo, a lettered headline, and a font made from your letters,
+all from **Site settings**.
 
 ---
 
