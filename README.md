@@ -19,7 +19,7 @@ glaze has to read true. A steppy honest turn beats a smooth fake one.
 | Site framework | [Astro 5](https://astro.build) + TypeScript, static output | Free |
 | Admin portal | [Sveltia CMS](https://github.com/sveltia/sveltia-cms) at `/admin/` — edits commit straight to this repo | Free |
 | Admin login | GitHub personal access token, or GitHub OAuth via a tiny Cloudflare Worker (see `docs/ADMIN-SETUP.md`) | Free |
-| Typography | Spectral (display) and Karla (text), self-hosted — no third-party font request | Free |
+| Typography | Jost (light geometric sans) throughout, self-hosted — no third-party font request | Free |
 | 360° viewer | Turntable runtime (`src/scripts/spin.ts`) driving the wall and the piece pages | Free |
 | 3D viewer | Google `<model-viewer>` for `.glb`/`.gltf` — wired up but dormant, no scan exists yet | Free |
 | Payments | Stripe Payment Links pasted into each piece | Per-sale fee only |

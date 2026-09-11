@@ -91,3 +91,22 @@ real scan exists yet and no piece points at one. A piece with a `.glb` gets a
 - **Phone photogrammetry:** Polycam, KIRI Engine, or Scaniverse → export GLB → (optional) open in Blender → *File → Export → glTF 2.0*, tick *Compression* (Draco) → upload.
 - **Blender from scratch:** model → UV → bake → export glTF 2.0 with Draco compression. Draco-compressed GLBs are supported by the viewer.
 - **Quick compression:** `npx @gltf-transform/cli optimize in.glb out.glb --texture-compress webp` shrinks most scans 3–10×.
+
+## Typography
+
+One typeface across the site: **Jost**, a light geometric sans in the Futura
+line, self-hosted from `@fontsource/jost` so no third party sits in the
+critical path. Light (300) carries display sizes; body text is 400, because a
+300 weight at paragraph size goes thin enough to hurt on a phone or in
+daylight.
+
+Jost stands in for **Airspace Light**, which was the font originally chosen.
+Airspace is a commercial font by Ivanna Ivashka, sold on Creative Market: about
+$15 for a desktop licence and about $13 for a webfont licence. The copies
+circulating on free-font sites are labelled demo/trial by those sites, so they
+are not licensed for a site that sells work. Jost matches its airy geometry,
+small x-height and long extenders, and is openly licensed.
+
+Swapping Airspace in later is two changes: add the licensed woff2 to
+`public/fonts/`, and point `--font-display` in `src/styles/global.css` at it.
+Nothing else references a family name.

@@ -1,9 +1,9 @@
 # Lauren Hand — a font made from Lauren's handwriting
 
-> **Retired from the site, September 2026.** The site now sets Spectral for
-> display and Karla for text, on an off-white ground with charcoal type. Lauren
-> Hand is no longer loaded anywhere — `src/styles/fonts.css` is gone and nothing
-> references the family.
+> **Retired from the site, September 2026.** The site now sets Jost, a light
+> geometric sans, for everything, on an off-white ground with charcoal type.
+> Lauren Hand is no longer loaded anywhere — `src/styles/fonts.css` is gone and
+> nothing references the family.
 >
 > The work is kept, not deleted: the font files are still in `public/fonts/`, the
 > source sheets in `design/handwriting/`, and the build pipeline in
