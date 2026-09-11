@@ -44,13 +44,13 @@ const { src, poster, alt, autoRotate = true, height = '520px' } = Astro.props;
   model-viewer {
     width: 100%; height: var(--h);
     border-radius: var(--radius);
-    background: radial-gradient(120% 100% at 50% 100%, var(--peach) 0%, var(--cream) 45%, var(--sand) 100%);
+    background: var(--bg-soft);
     --poster-color: transparent;
-    --progress-bar-color: var(--coral);
+    --progress-bar-color: var(--ink);
   }
   .ar-btn { position: absolute; right: 1rem; bottom: 1rem; background: rgba(255,247,238,.9); }
   .progress { position: absolute; left: 0; right: 0; top: 0; height: 3px; }
-  .progress .bar { height: 100%; width: 0; background: var(--sunset); transition: width .2s ease; }
+  .progress .bar { height: 100%; width: 0; background: var(--ink); transition: width .2s ease; }
   .hint { text-align: center; font-size: 0.85rem; color: var(--fg-soft); margin: 0.6rem 0 0; }
 </style>
 

@@ -1,16 +1,15 @@
 {
   "title": "Lauren Becherer Pottery",
-  "tagline": "Handmade ceramics in summer-sunset hues",
-  "heroHeading": "Clay, fire, and the last light of the day.",
-  "heroSubheading": "Wheel-thrown and hand-built pottery made in small batches. Every piece is one of a kind, glazed in the colors of a summer sunset.",
+  "tagline": "Wheel-thrown stoneware, one piece at a time",
+  "heroHeading": "No two are alike.",
+  "heroSubheading": "Wheel-thrown and hand-built pottery, made and glazed in small batches. Every piece is photographed all the way around, so you can see the glaze the way it actually fired.",
   "heroImage": "",
   "logoImage": "",
-  "heroHeadingImage": "",
-  "customFontFile": "",
-  "announcement": "Site under construction — new work and photos coming soon.",
+  "announcement": "New work is being photographed — names, sizes and prices are on their way.",
   "email": "hello@laurenbechererpottery.com",
   "instagram": "",
   "location": "",
   "commissionsOpen": true,
-  "formEndpoint": ""
+  "formEndpoint": "",
+  "careNote": ""
 }

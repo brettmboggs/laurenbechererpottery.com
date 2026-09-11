@@ -67,11 +67,22 @@ collections:
       preview: false
     fields:
       - { label: Title, name: title, widget: string }
+      - label: This is a working title
+        name: workingTitle
+        widget: boolean
+        default: false
+        hint: "Turn on while the piece has no real name yet. The page says “working title” instead of pretending it is named."
       - { label: Date made, name: date, widget: datetime, time_format: false, format: "YYYY-MM-DD", date_format: "MMM D, YYYY" }
+      - label: 360° spin folder
+        name: spin
+        widget: string
+        required: false
+        hint: "The folder name from the photography project, e.g. stoneware-planter. Run `npm run spins` after adding one. Leave blank for a piece with only photos."
       - label: Cover photo
         name: cover
         widget: image
-        hint: The main photo shown on cards. Square-ish or portrait works best.
+        required: false
+        hint: "Optional. A piece with a 360° spin uses its first frame if you leave this empty."
       - { label: Featured on home page, name: featured, widget: boolean, default: false }
       - { label: Show in portfolio, name: showInPortfolio, widget: boolean, default: true }
       - { label: For sale (show in shop), name: forSale, widget: boolean, default: false }
@@ -109,16 +120,29 @@ collections:
         accept: ".glb,.gltf"
         hint: "Upload a .glb file to get the interactive 3D spinner. Animated models play automatically."
       - { label: Auto-rotate the 3D model, name: modelAutoRotate, widget: boolean, default: true }
-      - label: 360° photo frames
-        name: spinFrames
+      - label: Scene photos (in use, filled, styled)
+        name: scenes
         widget: list
         required: false
         collapsed: true
-        field: { label: Frame, name: frame, widget: image }
-        hint: "Optional. Upload 12–36 photos taken in order around the piece to create a drag-to-spin view without a 3D scan."
+        summary: "{{fields.kind}} — {{fields.caption}}"
+        fields:
+          - { label: Photo, name: image, widget: image }
+          - { label: Description (for accessibility), name: alt, widget: string, required: false }
+          - { label: Caption, name: caption, widget: string, required: false }
+          - label: Kind
+            name: kind
+            widget: select
+            default: styled
+            options:
+              - { label: Styled, value: styled }
+              - { label: In use, value: in-use }
+              - { label: Detail, value: detail }
+              - { label: For scale, value: scale }
       - { label: Dimensions, name: dimensions, widget: string, required: false, hint: "e.g. 9\" tall × 4.5\" wide" }
       - { label: Materials / glaze, name: materials, widget: string, required: false }
       - { label: Firing, name: firing, widget: string, required: false, hint: "e.g. Cone 6 oxidation" }
+      - { label: Care (this piece only), name: care, widget: text, required: false, hint: "Leave blank to use the shared care note from Site settings." }
       - { label: Description, name: body, widget: markdown, required: false }
 
   # ---------------------------------------------------------------- Journal
@@ -160,7 +184,7 @@ collections:
         widget: string
         pattern: ["^[a-z0-9-]{6,}$", "Lowercase letters, numbers and dashes only, at least 6 characters"]
         hint: "Make it unguessable, e.g. smith-plates-7h3k. The page will be at /client/<code>/"
-      - { label: Project, name: project, widget: string, hint: "e.g. Set of six dinner plates, coral rim" }
+      - { label: Project, name: project, widget: string, hint: "e.g. Set of six dinner plates" }
       - label: Stage
         name: status
         widget: select
@@ -229,28 +253,16 @@ collections:
           - { label: Tagline, name: tagline, widget: string, hint: "Shows in the browser tab and search results." }
           - { label: Home page headline, name: heroHeading, widget: string }
           - { label: Home page intro, name: heroSubheading, widget: text }
-          - { label: Home page photo, name: heroImage, widget: image, required: false, hint: "Optional. Replaces the sunset illustration." }
-          - label: Hand-drawn logo
+          - { label: Home page photo, name: heroImage, widget: image, required: false, hint: "Optional. Used only if no piece has a 360° spin to show." }
+          - label: Logo image
             name: logoImage
             widget: image
             required: false
-            hint: "Optional. A lettered logo (SVG or PNG with transparent background) shown in the header instead of the typed name."
-          - label: Hand-lettered home headline
-            name: heroHeadingImage
-            widget: image
-            required: false
-            hint: "Optional. A lettered version of the home page headline (SVG/PNG, transparent). The typed headline is still used for search engines."
-          - label: Hand-drawn font file
-            name: customFontFile
-            widget: file
-            required: false
-            media_folder: /public/fonts
-            public_folder: /fonts
-            accept: ".woff2,.woff,.ttf,.otf"
-            hint: "Optional. Upload a font made from Lauren's handwriting (see docs/HAND-DRAWN-FONT.md) and every heading will use it."
+            hint: "Optional. A drawn or lettered logo (SVG or PNG with a transparent background) shown in the header instead of the typed name."
           - { label: Announcement banner, name: announcement, widget: string, required: false, hint: "Leave blank to hide. e.g. “Holiday orders close Dec 10!”" }
           - { label: Contact email, name: email, widget: string, required: false }
           - { label: Instagram handle, name: instagram, widget: string, required: false, hint: "Just the handle, e.g. laurenbechererpottery" }
           - { label: Location, name: location, widget: string, required: false, hint: "e.g. St. Louis, MO" }
           - { label: Commissions open, name: commissionsOpen, widget: boolean, default: true }
           - { label: Form service endpoint, name: formEndpoint, widget: string, required: false, hint: "Advanced. A Formspree/Web3Forms URL for the commission form. Blank = opens the visitor's email app." }
+          - { label: Care note (shown on every piece), name: careNote, widget: text, required: false, hint: "e.g. “Food safe and dishwasher safe. Hand wash to keep the glaze at its best.” A piece can override this with its own care note." }

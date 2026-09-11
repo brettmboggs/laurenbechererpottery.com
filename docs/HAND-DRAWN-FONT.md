@@ -1,8 +1,18 @@
-# Lauren Hand — the site's font, made from Lauren's handwriting
+# Lauren Hand — a font made from Lauren's handwriting
 
-The headings, logo, navigation, and buttons use **Lauren Hand**, a real OpenType
-font traced from the lettering sheet Lauren drew (marker = Bold, pen = Regular).
-Body paragraphs stay in Karla for long-form readability.
+> **Retired from the site, September 2026.** The site now sets Spectral for
+> display and Karla for text, on an off-white ground with charcoal type. Lauren
+> Hand is no longer loaded anywhere — `src/styles/fonts.css` is gone and nothing
+> references the family.
+>
+> The work is kept, not deleted: the font files are still in `public/fonts/`, the
+> source sheets in `design/handwriting/`, and the build pipeline in
+> `scripts/handfont/`. Bringing it back for a logo, a signature, or an accent is
+> a matter of adding an `@font-face` rule and pointing something at it. The rest
+> of this document describes how it was made.
+
+The font is a real OpenType face traced from the lettering sheet Lauren drew
+(marker = Bold, pen = Regular).
 
 | File | What |
 | --- | --- |

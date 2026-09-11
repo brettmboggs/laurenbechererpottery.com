@@ -17,7 +17,7 @@ const endpoint = settings.formEndpoint || '';
             <label for="code">Project code</label>
             <input id="code" name="code" placeholder="e.g. demo-sunset-8841" autocomplete="off" required />
           </div>
-          <button class="btn sunset" type="submit">Open my project</button>
+          <button class="btn" type="submit">Open my project</button>
         </form>
         <p class="tiny">Your code was in the email confirming your deposit. Lost it? {settings.email && <a href={`mailto:${settings.email}`}>Email me</a>}.</p>
       </div>

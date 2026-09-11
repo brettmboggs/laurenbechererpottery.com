@@ -1,5 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 1000"><defs><linearGradient id="g" gradientTransform="rotate(90)"><stop offset="0" stop-color="#c9b3e6"/><stop offset=".3" stop-color="#f7c059"/><stop offset=".55" stop-color="#ffb577"/><stop offset=".75" stop-color="#ff6b57"/><stop offset=".9" stop-color="#e0476b"/><stop offset="1" stop-color="#6b3f6e"/></linearGradient></defs>
-<rect width="800" height="1000" fill="url(#g)"/>
-<ellipse cx="400" cy="860" rx="240" ry="34" fill="#3e1f3c" opacity=".25"/>
-<path d="M120 480h560c0 200-120 340-280 340S120 680 120 480z" fill="#3e1f3c" opacity=".92"/>
-<text x="400" y="960" text-anchor="middle" font-family="Georgia, serif" font-size="34" fill="#fff7ee" opacity=".85">placeholder · bowl</text></svg>

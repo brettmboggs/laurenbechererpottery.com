@@ -1,28 +1,51 @@
 /**
- * Renders public/images/og.png (1200×630) — the image shown when the site is shared
- * on Instagram DMs, iMessage, Facebook, etc. Social platforms don't accept SVG.
+ * Renders public/images/og.png (1200×630) — the image shown when the site is
+ * shared on iMessage, Instagram DMs, Facebook, and so on. Social platforms do
+ * not accept SVG, so this bakes a PNG.
+ *
  *   node scripts/make-og.mjs
+ *
+ * The pot in it is a real photograph, pulled from the imported spin frames,
+ * so the card shows actual work rather than an illustration of it. Run
+ * `npm run spins` first; falls back to a plain typographic card if no frames
+ * have been imported yet.
  */
 import sharp from 'sharp';
-import { writeFileSync } from 'node:fs';
+import { writeFileSync, existsSync, readFileSync } from 'node:fs';
 
-const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
-  <defs>
-    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#c9b3e6"/><stop offset=".35" stop-color="#f7c059"/><stop offset=".58" stop-color="#ffb577"/>
-      <stop offset=".76" stop-color="#ff6b57"/><stop offset=".9" stop-color="#e0476b"/><stop offset="1" stop-color="#6b3f6e"/>
-    </linearGradient>
-    <radialGradient id="sun" cx=".5" cy=".45" r=".5"><stop offset="0" stop-color="#fff6d8"/><stop offset=".6" stop-color="#f7c059"/><stop offset="1" stop-color="#f7c059" stop-opacity="0"/></radialGradient>
-    <clipPath id="above"><rect x="0" y="0" width="1200" height="430"/></clipPath>
-  </defs>
-  <rect width="1200" height="630" fill="url(#sky)"/>
-  <circle cx="600" cy="400" r="190" fill="url(#sun)" clip-path="url(#above)"/>
-  <rect x="0" y="430" width="1200" height="200" fill="#3e1f3c" opacity=".92"/>
-  <rect x="0" y="430" width="1200" height="6" fill="#6b3f6e"/>
-  <text x="600" y="520" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-weight="bold" font-size="64" fill="#fff7ee">Lauren Becherer Pottery</text>
-  <text x="600" y="572" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="26" fill="#ffd2ad" letter-spacing="2">HANDMADE CERAMICS IN SUMMER-SUNSET HUES</text>
+const PAPER = '#f6f4ef';
+const INK = '#232120';
+const SOFT = '#55514a';
+
+// Prefer a piece whose glaze reads clearly at small sizes.
+const preferred = ['stoneware-planter', 'bud-vase', 'celadon-cup', 'periwinkle-planter'];
+let chosen = null;
+if (existsSync('src/data/spins.json')) {
+  const { spins } = JSON.parse(readFileSync('src/data/spins.json', 'utf8'));
+  const order = spins.slice().sort((a, b) => preferred.indexOf(a.id) - preferred.indexOf(b.id));
+  for (const spin of order) {
+    const path = `public${spin.base}/d/00.webp`;
+    if (existsSync(path)) { chosen = path; break; }
+  }
+}
+
+const text = `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <rect width="1200" height="630" fill="${PAPER}"/>
+  <text x="80" y="300" font-family="Georgia, 'Times New Roman', serif" font-size="66" fill="${INK}">Lauren Becherer</text>
+  <text x="80" y="374" font-family="Georgia, 'Times New Roman', serif" font-size="66" font-style="italic" fill="${SOFT}">Pottery</text>
+  <text x="82" y="440" font-family="Arial, Helvetica, sans-serif" font-size="20" letter-spacing="4" fill="${SOFT}">WHEEL-THROWN STONEWARE, ONE PIECE AT A TIME</text>
+  <rect x="80" y="200" width="64" height="2" fill="${INK}"/>
 </svg>`;
 
-const png = await sharp(Buffer.from(svg)).png({ compressionLevel: 9 }).toBuffer();
+const layers = [];
+if (chosen) {
+  const pot = await sharp(chosen).resize(470, 470, { fit: 'cover' }).toBuffer();
+  layers.push({ input: pot, left: 650, top: 80 });
+}
+
+const png = await sharp(Buffer.from(text)).composite(layers).png({ compressionLevel: 9 }).toBuffer();
 writeFileSync('public/images/og.png', png);
-console.log(`wrote public/images/og.png (${(png.length / 1024).toFixed(0)} KB)`);
+console.log(
+  `wrote public/images/og.png (${(png.length / 1024).toFixed(0)} KB)` +
+    (chosen ? ` using ${chosen}` : ' — no spin frames found, typographic card only')
+);

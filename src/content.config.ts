@@ -15,6 +15,8 @@ const pieces = defineCollection({
   loader: glob({ pattern: '**/*.md', base: './src/content/pieces' }),
   schema: z.object({
     title: z.string(),
+    /** True while the title is the studio's working name, not a product name. */
+    workingTitle: z.boolean().default(false),
     date: z.coerce.date(),
     featured: z.boolean().default(false),
     showInPortfolio: z.boolean().default(true),
@@ -23,16 +25,40 @@ const pieces = defineCollection({
     price: z.number().nonnegative().optional(),
     stripeLink: optionalUrl,
     collection: z.string().optional(),
-    cover: z.string(),
+    /**
+     * Cover photo. Optional: a piece with a 360° spin uses its first frame,
+     * so a piece can go up with nothing but its spin folder.
+     */
+    cover: optionalPath,
     gallery: z.array(z.object({ image: z.string(), alt: z.string().optional() })).default([]),
-    // 3D: a .glb/.gltf file (optionally animated → "4D")
+    /**
+     * 360° spin id, matching a folder in the photography project and an entry
+     * in src/data/spins.json. Run `npm run spins` after adding one.
+     */
+    spin: z.string().optional(),
+    /**
+     * Scene photography — the piece in use, filled, styled. Not shot yet.
+     * The detail page renders this section only when it has something to show,
+     * so the shoot is a data drop rather than a layout change.
+     */
+    scenes: z
+      .array(
+        z.object({
+          image: z.string(),
+          alt: z.string().optional(),
+          caption: z.string().optional(),
+          kind: z.enum(['styled', 'in-use', 'detail', 'scale']).default('styled'),
+        })
+      )
+      .default([]),
+    // 3D: a .glb/.gltf file (optionally animated → "4D"). Dormant until a real scan exists.
     model: optionalPath,
     modelAutoRotate: z.boolean().default(true),
-    // 360° turntable: an ordered list of photos taken around the piece
-    spinFrames: z.array(z.string()).default([]),
     dimensions: z.string().optional(),
     materials: z.string().optional(),
     firing: z.string().optional(),
+    /** Overrides the shared care note at the bottom of a piece page. */
+    care: z.string().optional(),
   }),
 });
 
@@ -87,16 +113,16 @@ const settings = defineCollection({
     heroHeading: z.string(),
     heroSubheading: z.string(),
     heroImage: optionalPath,
-    // Hand-drawn branding hooks: a lettered logo, a lettered headline, and/or a custom font file.
+    /** Optional lettered logo used in the header instead of the typed name. */
     logoImage: optionalPath,
-    heroHeadingImage: optionalPath,
-    customFontFile: optionalPath,
     announcement: z.string().optional(),
     email: z.string().optional(),
     instagram: z.string().optional(),
     location: z.string().optional(),
     commissionsOpen: z.boolean().default(true),
     formEndpoint: z.string().optional(),
+    /** Shared care note shown on every piece page unless the piece overrides it. */
+    careNote: z.string().optional(),
   }),
 });
 

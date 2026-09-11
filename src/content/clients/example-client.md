@@ -1,7 +1,7 @@
 ---
 name: Example Client
-code: demo-sunset-8841
-project: Set of six dinner plates, coral rim
+code: demo-plates-8841
+project: Set of six dinner plates
 status: in-progress
 estimatedCompletion: October 2026
 depositLink: ""
@@ -12,7 +12,7 @@ updates:
     image: ""
   - date: 2026-09-04
     note: All six plates thrown and trimmed. They'll dry slowly under plastic for about a week before the bisque fire.
-    image: /images/placeholders/piece-3.svg
+    image: /images/placeholders/post-1.svg
 active: true
 ---
 

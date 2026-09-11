@@ -1,57 +1,104 @@
 ---
 /**
- * Picks the richest viewer available for a piece and lets visitors switch:
- * 3D model → 360° photo turntable → photo gallery.
+ * The viewer on a piece's page. Shows the richest thing the piece has:
+ * a 360° turntable, a 3D model, or plain photographs — and lets the visitor
+ * switch when there is more than one.
+ *
+ * A piece with nothing but a spin folder works. A piece with nothing but a
+ * cover photo works. Neither case needs a change here.
  */
 import ModelViewer from './ModelViewer.astro';
 import SpinViewer from './SpinViewer.astro';
+import type { SpinRecord } from '../lib/spins';
+import { framePath } from '../lib/spins';
 
 interface Props {
   title: string;
-  cover: string;
+  cover?: string;
   gallery: { image: string; alt?: string }[];
+  spin?: SpinRecord;
   model?: string;
   modelAutoRotate?: boolean;
-  spinFrames?: string[];
 }
-const { title, cover, gallery, model, modelAutoRotate = true, spinFrames = [] } = Astro.props;
+const { title, cover, gallery, spin, model, modelAutoRotate = true } = Astro.props;
+
+// Photographs: the cover first, then the gallery, with duplicates dropped.
+// Where a piece has no cover of its own, its first spin frame stands in.
+const fallback = spin ? framePath(spin, 'd', 0) : undefined;
+const photos = [
+  ...(cover ? [{ image: cover, alt: title }] : []),
+  ...gallery.filter((g) => g.image !== cover),
+];
+if (photos.length === 0 && fallback) photos.push({ image: fallback, alt: title });
+
 const has3d = !!model;
-const hasSpin = spinFrames.length > 1;
-const photos = [{ image: cover, alt: title }, ...gallery.filter((g) => g.image !== cover)];
-const tabs = [has3d && '3d', hasSpin && 'spin', 'photos'].filter(Boolean) as string[];
+const hasSpin = !!spin;
+const hasPhotos = photos.length > 0;
+const tabs = [hasSpin && 'spin', has3d && '3d', hasPhotos && 'photos'].filter(Boolean) as string[];
+const first = tabs[0];
 ---
 <div class="viewer" data-viewer>
   {tabs.length > 1 && (
-    <div class="tabs" role="tablist">
-      {has3d && <button role="tab" data-tab="3d" aria-selected="true">3D</button>}
-      {hasSpin && <button role="tab" data-tab="spin" aria-selected={!has3d ? 'true' : 'false'}>360°</button>}
-      <button role="tab" data-tab="photos" aria-selected={tabs[0] === 'photos' ? 'true' : 'false'}>Photos</button>
+    <div class="tabs" role="tablist" aria-label="How to view this piece">
+      {hasSpin && <button role="tab" data-tab="spin" aria-selected={first === 'spin' ? 'true' : 'false'}>360°</button>}
+      {has3d && <button role="tab" data-tab="3d" aria-selected={first === '3d' ? 'true' : 'false'}>3D</button>}
+      {hasPhotos && <button role="tab" data-tab="photos" aria-selected={first === 'photos' ? 'true' : 'false'}>Photos</button>}
     </div>
   )}
 
-  {has3d && <div class="pane" data-pane="3d"><ModelViewer src={model!} poster={cover} alt={`${title}, 3D model`} autoRotate={modelAutoRotate} /></div>}
-  {hasSpin && <div class="pane" data-pane="spin" hidden={has3d}><SpinViewer frames={spinFrames} alt={title} /></div>}
-  <div class="pane" data-pane="photos" hidden={tabs[0] !== 'photos'}>
-    <figure class="main"><img src={photos[0].image} alt={photos[0].alt ?? title} id="main-photo" /></figure>
-    {photos.length > 1 && (
-      <div class="thumbs">
-        {photos.map((p, i) => (
-          <button class="thumb" data-src={p.image} data-alt={p.alt ?? title} aria-pressed={i === 0 ? 'true' : 'false'}><img src={p.image} alt="" loading="lazy" /></button>
-        ))}
-      </div>
-    )}
-  </div>
+  {hasSpin && (
+    <div class="pane" data-pane="spin" hidden={first !== 'spin'}>
+      <SpinViewer record={spin!} title={title} />
+    </div>
+  )}
+
+  {has3d && (
+    <div class="pane" data-pane="3d" hidden={first !== '3d'}>
+      <ModelViewer src={model!} poster={cover ?? fallback ?? ''} alt={`${title}, 3D model`} autoRotate={modelAutoRotate} />
+    </div>
+  )}
+
+  {hasPhotos && (
+    <div class="pane" data-pane="photos" hidden={first !== 'photos'}>
+      <figure class="main">
+        <img src={photos[0].image} alt={photos[0].alt ?? title} data-main-photo />
+      </figure>
+      {photos.length > 1 && (
+        <div class="thumbs">
+          {photos.map((p, i) => (
+            <button class="thumb" data-src={p.image} data-alt={p.alt ?? title} aria-pressed={i === 0 ? 'true' : 'false'}>
+              <img src={p.image} alt="" loading="lazy" />
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  )}
 </div>
 
 <style>
-  .tabs { display: inline-flex; gap: 0.25rem; padding: 0.25rem; border-radius: 999px; background: var(--bg-soft); margin-bottom: 1rem; }
-  .tabs button { border: 0; background: transparent; border-radius: 999px; padding: 0.45rem 1rem; font-weight: 700; color: var(--fg-soft); }
-  .tabs button[aria-selected="true"] { background: var(--plum); color: var(--sand); }
-  .main { margin: 0; border-radius: var(--radius); overflow: hidden; background: var(--bg-soft); aspect-ratio: 4 / 5; max-height: 640px; }
+  .tabs { display: inline-flex; gap: 0.35rem; margin-bottom: 1rem; }
+  .tabs button {
+    border: 1px solid var(--line-strong); background: transparent; color: var(--fg-soft);
+    border-radius: var(--radius); padding: 0.45rem 0.95rem;
+    font-size: 0.7rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase;
+  }
+  .tabs button:hover { color: var(--ink); border-color: var(--ink); }
+  .tabs button[aria-selected="true"] { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+
+  .main {
+    margin: 0; border-radius: var(--radius); overflow: hidden;
+    background: var(--bg-soft); border: 1px solid var(--line);
+    aspect-ratio: 1;
+  }
   .main img { width: 100%; height: 100%; object-fit: cover; }
-  .thumbs { display: flex; gap: 0.6rem; margin-top: 0.75rem; overflow-x: auto; padding-bottom: 0.25rem; }
-  .thumb { flex: 0 0 72px; width: 72px; height: 72px; border-radius: var(--radius-sm); overflow: hidden; border: 2px solid transparent; padding: 0; background: var(--bg-soft); }
-  .thumb[aria-pressed="true"] { border-color: var(--coral); }
+  .thumbs { display: flex; gap: 0.5rem; margin-top: 0.6rem; overflow-x: auto; padding-bottom: 0.25rem; }
+  .thumb {
+    flex: 0 0 64px; width: 64px; height: 64px; padding: 0;
+    border-radius: var(--radius); overflow: hidden;
+    border: 1px solid var(--line); background: var(--bg-soft);
+  }
+  .thumb[aria-pressed="true"] { border-color: var(--ink); }
   .thumb img { width: 100%; height: 100%; object-fit: cover; }
 </style>
 
@@ -59,15 +106,21 @@ const tabs = [has3d && '3d', hasSpin && 'spin', 'photos'].filter(Boolean) as str
   document.querySelectorAll<HTMLElement>('[data-viewer]').forEach((root) => {
     root.querySelectorAll<HTMLButtonElement>('[role="tab"]').forEach((tab) => {
       tab.addEventListener('click', () => {
-        root.querySelectorAll<HTMLButtonElement>('[role="tab"]').forEach((t) => t.setAttribute('aria-selected', String(t === tab)));
-        root.querySelectorAll<HTMLElement>('.pane').forEach((p) => { p.hidden = p.dataset.pane !== tab.dataset.tab; });
+        root.querySelectorAll<HTMLButtonElement>('[role="tab"]').forEach((t) =>
+          t.setAttribute('aria-selected', String(t === tab))
+        );
+        root.querySelectorAll<HTMLElement>('.pane').forEach((p) => {
+          p.hidden = p.dataset.pane !== tab.dataset.tab;
+        });
       });
     });
-    const main = root.querySelector<HTMLImageElement>('#main-photo');
+
+    const main = root.querySelector<HTMLImageElement>('[data-main-photo]');
     root.querySelectorAll<HTMLButtonElement>('.thumb').forEach((b) => {
       b.addEventListener('click', () => {
         if (!main) return;
-        main.src = b.dataset.src!; main.alt = b.dataset.alt || '';
+        main.src = b.dataset.src!;
+        main.alt = b.dataset.alt || '';
         root.querySelectorAll('.thumb').forEach((t) => t.setAttribute('aria-pressed', String(t === b)));
       });
     });

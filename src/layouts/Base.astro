@@ -16,15 +16,6 @@ const { title, description = settings.tagline, image, noindex = false } = Astro.
 const fullTitle = title ? `${title} · ${settings.title}` : `${settings.title} — ${settings.tagline}`;
 const canonical = new URL(Astro.url.pathname, Astro.site);
 const ogImage = new URL(image ?? '/images/og.png', Astro.site);
-
-// Hand-drawn font: when a font file is uploaded in Site settings, load it and put it
-// first in the display stack. Nothing is requested when the field is empty.
-const fontFile = settings.customFontFile || '';
-const fontFormat = fontFile.endsWith('.woff2') ? 'woff2' : fontFile.endsWith('.woff') ? 'woff' : fontFile.endsWith('.otf') ? 'opentype' : 'truetype';
-const customFontCss = fontFile
-  ? `@font-face{font-family:'Lauren Hand';src:url('${fontFile}') format('${fontFormat}');font-weight:400;font-style:normal;font-display:swap}
-:root{--font-display:'Lauren Hand','Segoe Print',cursive}`
-  : '';
 ---
 <!doctype html>
 <html lang="en">
@@ -35,7 +26,7 @@ const customFontCss = fontFile
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-    <meta name="theme-color" content="#fff7ee" />
+    <meta name="theme-color" content="#f6f4ef" />
     {noindex && <meta name="robots" content="noindex, nofollow" />}
     <meta property="og:site_name" content={settings.title} />
     <meta property="og:title" content={fullTitle} />
@@ -44,14 +35,7 @@ const customFontCss = fontFile
     <meta property="og:url" content={canonical} />
     <meta property="og:image" content={ogImage} />
     <meta name="twitter:card" content="summary_large_image" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Karla:ital,wght@0,400..800;1,400..800&display=swap"
-      rel="stylesheet"
-    />
-    {fontFile && <link rel="preload" href={fontFile} as="font" type={`font/${fontFormat === 'opentype' ? 'otf' : fontFormat === 'truetype' ? 'ttf' : fontFormat}`} crossorigin />}
-    {customFontCss && <style set:html={customFontCss} />}
+    <!-- Typefaces are self-hosted (see src/styles/global.css); no third party sits in the critical path. -->
     <link rel="sitemap" href="/sitemap-index.xml" />
     <link rel="alternate" type="application/rss+xml" title={`${settings.title} — Journal`} href="/rss.xml" />
   </head>
@@ -66,6 +50,6 @@ const customFontCss = fontFile
 </html>
 
 <style>
-  .skip { position: absolute; left: 1rem; top: -100px; z-index: 100; padding: 0.6rem 1rem; background: var(--plum); color: var(--sand); border-radius: 999px; }
+  .skip { position: absolute; left: 1rem; top: -100px; z-index: 100; padding: 0.6rem 1rem; background: var(--ink); color: var(--paper); border-radius: var(--radius); }
   .skip:focus { top: 1rem; }
 </style>

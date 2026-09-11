@@ -8,11 +8,14 @@
     "build": "astro build",
     "preview": "astro preview",
     "check": "astro check",
-    "make-model": "node scripts/make-placeholder-vase.mjs"
+    "make-model": "node scripts/make-placeholder-vase.mjs",
+    "spins": "node scripts/build-spins.mjs"
   },
   "dependencies": {
     "@astrojs/rss": "^4.0.19",
     "@astrojs/sitemap": "^3.4.0",
+    "@fontsource/karla": "^5.3.0",
+    "@fontsource/spectral": "^5.3.0",
     "@google/model-viewer": "^4.0.0",
     "astro": "^5.12.0",
     "sharp": "^0.34.0"

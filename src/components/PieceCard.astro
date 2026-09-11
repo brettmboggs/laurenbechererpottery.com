@@ -1,24 +1,145 @@
 ---
+/**
+ * One piece on the wall.
+ *
+ * Every tile is a photograph on its own linen ground — the same ground the
+ * piece was shot on. That is deliberate: one piece cannot be cut out at all
+ * and can only ever appear on its linen, so the wall is built to the rule
+ * rather than to the exception. A future piece whose glaze will not separate
+ * needs no special handling here.
+ *
+ * The tile ships exactly one frame. Everything else loads only if the visitor
+ * shows intent — see src/scripts/spin.ts.
+ */
 import type { CollectionEntry } from 'astro:content';
-interface Props { piece: CollectionEntry<'pieces'>; showPrice?: boolean }
-const { piece, showPrice = false } = Astro.props;
+import { getSpinRecord, spinSpec, framePath, paletteVars } from '../lib/spins';
+
+interface Props {
+  piece: CollectionEntry<'pieces'>;
+  showPrice?: boolean;
+  /** Loading priority for the first row of the wall. */
+  eager?: boolean;
+}
+const { piece, showPrice = false, eager = false } = Astro.props;
 const d = piece.data;
 const href = `/portfolio/${piece.id}/`;
 const money = (n: number) => n.toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 });
+
+const spin = getSpinRecord(d.spin);
+const spec = spin ? spinSpec(spin, 'w') : null;
+const still = spin ? framePath(spin, 'w', 0) : d.cover || '';
+const size = spin?.sizes.w ?? 800;
+
+// The line under the title. Nothing here is invented: a piece with no
+// collection and no materials recorded simply shows nothing.
+const meta = d.collection ?? d.materials ?? '';
+const statusLabel: Record<string, string> = { sold: 'Sold', reserved: 'Reserved', commission: 'Commission' };
 ---
-<a class="card" href={href}>
-  <div class="media">
-    <img src={d.cover} alt={d.title} loading="lazy" width="800" height="1000" />
-    {d.status === 'sold' && <span class="badge sold">Sold</span>}
-    {d.status === 'reserved' && <span class="badge reserved">Reserved</span>}
-    {d.status === 'commission' && <span class="badge">Commission</span>}
-    {d.model && <span class="badge threed">3D</span>}
+<a
+  class="tile"
+  href={href}
+  style={paletteVars(spin)}
+  data-spin={spec ? JSON.stringify(spec) : undefined}
+  data-spin-mode={spec ? 'hover' : undefined}
+  aria-label={spec ? `${d.title} — hover or focus to turn the piece` : d.title}
+>
+  <div class="plate">
+    {still ? (
+      <img
+        src={still}
+        alt={d.title}
+        width={size}
+        height={size}
+        loading={eager ? 'eager' : 'lazy'}
+        decoding="async"
+        draggable="false"
+      />
+    ) : (
+      <div class="plate-empty" aria-hidden="true"></div>
+    )}
+    {statusLabel[d.status] && <span class="badge">{statusLabel[d.status]}</span>}
+    {spec && (
+      <span class="turn" aria-hidden="true">
+        <span class="turn-mark">360°</span>
+      </span>
+    )}
   </div>
   <div class="body">
     <h3>{d.title}</h3>
-    <div class="meta">
-      <span>{d.collection ?? d.materials ?? ''}</span>
-      {showPrice && d.price != null && <strong>{money(d.price)}</strong>}
-    </div>
+    <p class="meta">
+      <span>{meta}</span>
+      {showPrice && d.price != null && <span class="price">{money(d.price)}</span>}
+    </p>
   </div>
 </a>
+
+<style>
+  .tile {
+    display: block;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .plate {
+    position: relative;
+    aspect-ratio: 1;
+    overflow: hidden;
+    background: var(--piece-linen, var(--paper-2));
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    /* The frames are square photographs of a piece on linen. Nothing is
+       cropped: the plate is the photograph. */
+    touch-action: pan-y;
+  }
+  .plate img { width: 100%; height: 100%; object-fit: cover; user-select: none; }
+  .plate-empty { width: 100%; height: 100%; background: var(--paper-3); }
+
+  .tile:hover .plate, .tile:focus-visible .plate { border-color: var(--line-strong); }
+
+  .badge {
+    position: absolute; top: 0.75rem; left: 0.75rem;
+    padding: 0.25rem 0.6rem;
+    background: var(--paper);
+    color: var(--ink);
+    border-radius: var(--radius-sm);
+    font-size: 0.62rem; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase;
+  }
+
+  /* A quiet mark, so it is obvious which pieces turn. It fades out while the
+     piece is actually turning — the motion says it better than the label. */
+  .turn {
+    position: absolute; right: 0.75rem; bottom: 0.75rem;
+    font-size: 0.62rem; font-weight: 600; letter-spacing: 0.12em;
+    color: var(--ink);
+    background: rgba(246, 244, 239, 0.78);
+    padding: 0.25rem 0.55rem;
+    border-radius: var(--radius-sm);
+    transition: opacity 0.25s ease;
+  }
+  .tile[data-spin-state="spinning"] .turn,
+  .tile[data-spin-state="loading"] .turn { opacity: 0; }
+
+  .body { padding: 0.9rem 0.1rem 0; }
+  .body h3 { margin: 0 0 0.15rem; font-size: 1.1rem; }
+  .meta {
+    margin: 0;
+    display: flex; justify-content: space-between; gap: 0.75rem;
+    font-size: 0.85rem; color: var(--fg-faint);
+  }
+  .price { color: var(--fg-soft); }
+
+  /* While a set is arriving, a hairline under the plate says so without a
+     spinner covering the piece. */
+  .tile[data-spin-state="loading"] .plate::after {
+    content: '';
+    position: absolute; left: 0; right: 0; bottom: 0; height: 2px;
+    background: var(--piece-accent, var(--accent));
+    opacity: 0.55;
+    animation: sweep 1s ease-in-out infinite;
+  }
+  @keyframes sweep { 0% { transform: scaleX(0); transform-origin: left; } 50% { transform: scaleX(1); transform-origin: left; } 51% { transform-origin: right; } 100% { transform: scaleX(0); transform-origin: right; } }
+</style>
+
+<script>
+  import { initSpins } from '../scripts/spin';
+  initSpins();
+</script>

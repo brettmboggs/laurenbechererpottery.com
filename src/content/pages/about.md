@@ -1,13 +1,13 @@
 ---
 title: About Lauren
-subtitle: Potter, glaze-chaser, sunset enthusiast.
+subtitle: Wheel-thrown and hand-built, from a home studio.
 portrait: /images/placeholders/portrait.svg
 studioImages: []
 ---
 
 *This is placeholder text. Replace it from the studio login → Pages → About.*
 
-Hi, I'm Lauren. I make functional and sculptural ceramics from my home studio. My work leans into warm, layered glazes — apricot, coral, and dusky plum — the palette of a July evening just after the sun drops.
+Hi, I'm Lauren. I make functional and sculptural ceramics from my home studio.
 
 Every piece starts as a lump of stoneware and ends up somewhere it can be used: a mug that fits your hand, a bowl for the good salad, a vase for the flowers you cut on the way home.
 

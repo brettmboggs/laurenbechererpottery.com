@@ -1,8 +1,17 @@
 ---
+/**
+ * A single piece.
+ *
+ * Layout holds everything a piece will eventually have — dimensions,
+ * materials, firing, care, price, more photographs, and scene photography of
+ * the piece in use. None of it is invented. A fact that has not been recorded
+ * says so; a section with nothing in it does not render.
+ */
 import Base from '../../layouts/Base.astro';
 import PieceViewer from '../../components/PieceViewer.astro';
 import PieceCard from '../../components/PieceCard.astro';
 import { getCollection, getEntry, render } from 'astro:content';
+import { getSpinRecord, framePath, paletteVars } from '../../lib/spins';
 
 export async function getStaticPaths() {
   const pieces = await getCollection('pieces');
@@ -15,80 +24,225 @@ const { Content } = await render(piece);
 const settings = (await getEntry('settings', 'site'))!.data;
 const money = (n: number) => n.toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 });
 
+const spin = getSpinRecord(d.spin);
+const hero = d.cover || (spin ? framePath(spin, 'd', 0) : undefined);
+
 const more = (await getCollection('pieces', (p) => p.id !== piece.id && p.data.showInPortfolio))
   .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
   .slice(0, 3);
 
 const canBuy = d.forSale && d.status === 'available';
 const inquire = `mailto:${settings.email ?? ''}?subject=${encodeURIComponent(`Inquiry: ${d.title}`)}`;
-const statusLabel: Record<string, string> = { available: 'Available', sold: 'Sold', reserved: 'Reserved', commission: 'Commission piece' };
+const statusLabel: Record<string, string> = {
+  available: 'Available',
+  sold: 'Sold',
+  reserved: 'Reserved',
+  commission: 'Commission piece',
+};
 
-// Structured data so Google can show price/availability in search results.
+const care =
+  d.care ||
+  settings.careNote ||
+  'Hand wash. Details on food safety and care are being written up for each glaze.';
+
+const sceneLabel: Record<string, string> = {
+  styled: 'Styled',
+  'in-use': 'In use',
+  detail: 'Detail',
+  scale: 'For scale',
+};
+
+// Structured data. Only what is actually known goes in: no price is better
+// than a made-up one, and Google is happier with an omitted field than a wrong one.
 const availability: Record<string, string> = { available: 'InStock', reserved: 'PreOrder', sold: 'SoldOut', commission: 'PreOrder' };
+const images = [hero, ...d.gallery.map((g) => g.image), ...d.scenes.map((s) => s.image)].filter(Boolean) as string[];
 const jsonLd = {
   '@context': 'https://schema.org',
   '@type': 'Product',
   name: d.title,
   description: d.materials ? `${d.title}. ${d.materials}.` : d.title,
-  image: [d.cover, ...d.gallery.map((g) => g.image)].map((p) => new URL(p, Astro.site).href),
+  image: images.map((p) => new URL(p, Astro.site).href),
   brand: { '@type': 'Brand', name: settings.title },
-  material: d.materials,
+  ...(d.materials ? { material: d.materials } : {}),
   ...(d.forSale && d.price != null
-    ? { offers: { '@type': 'Offer', price: d.price, priceCurrency: 'USD', availability: `https://schema.org/${availability[d.status]}`, url: new URL(Astro.url.pathname, Astro.site).href } }
+    ? {
+        offers: {
+          '@type': 'Offer',
+          price: d.price,
+          priceCurrency: 'USD',
+          availability: `https://schema.org/${availability[d.status]}`,
+          url: new URL(Astro.url.pathname, Astro.site).href,
+        },
+      }
     : {}),
 };
 ---
-<Base title={d.title} description={`${d.title} — ${d.materials ?? 'handmade ceramics'} by Lauren Becherer.`} image={d.cover}>
+<Base
+  title={d.title}
+  description={`${d.title} — ${d.materials ?? 'handmade ceramics'} by Lauren Becherer.`}
+  image={hero}
+>
   <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
-  <article class="section">
-    <div class="wrap piece">
-      <div class="viewer-col">
-        <PieceViewer title={d.title} cover={d.cover} gallery={d.gallery} model={d.model || undefined} modelAutoRotate={d.modelAutoRotate} spinFrames={d.spinFrames} />
-      </div>
-      <div class="info">
-        <p class="eyebrow">{d.collection ?? 'Portfolio'}</p>
-        <h1>{d.title}</h1>
-        <p class="status" data-status={d.status}>{statusLabel[d.status]}{d.forSale && d.price != null ? ` · ${money(d.price)}` : ''}</p>
 
-        <div class="buy">
-          {canBuy && d.stripeLink && <a class="btn sunset" href={d.stripeLink} target="_blank" rel="noopener">Buy now — {money(d.price ?? 0)}</a>}
-          {canBuy && !d.stripeLink && <a class="btn sunset" href={inquire}>Inquire to purchase</a>}
-          {!canBuy && d.status !== 'sold' && <a class="btn ghost" href={inquire}>Ask about this piece</a>}
-          {d.status === 'sold' && <a class="btn ghost" href="/client/">Commission something similar</a>}
+  <article class="section" style={paletteVars(spin)}>
+    <div class="wrap">
+      <a class="back" href="/portfolio/">← All work</a>
+
+      <div class="piece">
+        <div class="viewer-col">
+          <PieceViewer
+            title={d.title}
+            cover={d.cover || undefined}
+            gallery={d.gallery}
+            spin={spin}
+            model={d.model || undefined}
+            modelAutoRotate={d.modelAutoRotate}
+          />
         </div>
 
-        <dl class="specs">
-          {d.dimensions && <><dt>Dimensions</dt><dd>{d.dimensions}</dd></>}
-          {d.materials && <><dt>Materials</dt><dd>{d.materials}</dd></>}
-          {d.firing && <><dt>Firing</dt><dd>{d.firing}</dd></>}
-          <dt>Made</dt><dd>{d.date.toLocaleDateString('en-US', { timeZone: 'UTC', month: 'long', year: 'numeric' })}</dd>
-        </dl>
+        <div class="info">
+          {d.collection && <p class="eyebrow">{d.collection}</p>}
+          <h1>{d.title}</h1>
+          {d.workingTitle && (
+            /* Honest about the gap rather than shipping an invented product name. */
+            <p class="working">Working title — not yet named</p>
+          )}
 
-        <div class="prose"><Content /></div>
-        <p class="care">Food-safe glazes unless noted. Hand wash recommended. Ships carefully packed within the US; local pickup available.</p>
+          <p class="status" data-status={d.status}>
+            {statusLabel[d.status]}
+            {d.forSale && d.price != null && <span> · {money(d.price)}</span>}
+            {d.forSale && d.price == null && <span class="pending"> · price to come</span>}
+          </p>
+
+          <div class="buy">
+            {canBuy && d.stripeLink && (
+              <a class="btn" href={d.stripeLink} target="_blank" rel="noopener">Buy — {money(d.price ?? 0)}</a>
+            )}
+            {canBuy && !d.stripeLink && <a class="btn" href={inquire}>Inquire to purchase</a>}
+            {!canBuy && d.status !== 'sold' && <a class="btn ghost" href={inquire}>Ask about this piece</a>}
+            {d.status === 'sold' && <a class="btn ghost" href="/client/">Commission something similar</a>}
+          </div>
+
+          <dl class="specs">
+            <dt>Dimensions</dt>
+            <dd>{d.dimensions ?? <span class="pending">Not yet measured</span>}</dd>
+
+            <dt>Materials</dt>
+            <dd>{d.materials ?? <span class="pending">To be recorded</span>}</dd>
+
+            {d.firing && <><dt>Firing</dt><dd>{d.firing}</dd></>}
+
+            <dt>Made</dt>
+            <dd>{d.date.toLocaleDateString('en-US', { timeZone: 'UTC', month: 'long', year: 'numeric' })}</dd>
+          </dl>
+
+          {piece.body?.trim() && <div class="prose"><Content /></div>}
+
+          <p class="care">{care}</p>
+        </div>
       </div>
+
+      {d.scenes.length > 0 && (
+        /* Scene photography: the piece filled, used, lived with. Renders only
+           once there is something to show. */
+        <section class="scenes">
+          <div class="section-head"><h2>In use</h2></div>
+          <div class="scene-grid">
+            {d.scenes.map((s) => (
+              <figure class="scene" data-kind={s.kind}>
+                <img src={s.image} alt={s.alt ?? `${d.title}, ${sceneLabel[s.kind].toLowerCase()}`} loading="lazy" />
+                {(s.caption || s.kind !== 'styled') && (
+                  <figcaption>
+                    <span class="kind">{sceneLabel[s.kind]}</span>
+                    {s.caption && <span>{s.caption}</span>}
+                  </figcaption>
+                )}
+              </figure>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {more.length > 0 && (
+        <section class="more">
+          <div class="section-head">
+            <h2>More work</h2>
+            <a class="btn quiet small" href="/portfolio/">All work →</a>
+          </div>
+          <div class="grid cols-3">
+            {more.map((p) => <PieceCard piece={p} showPrice={p.data.forSale} />)}
+          </div>
+        </section>
+      )}
     </div>
-
-    {more.length > 0 && (
-      <div class="wrap more">
-        <div class="section-head"><h2>More work</h2><a class="btn ghost small" href="/portfolio/">Full portfolio →</a></div>
-        <div class="grid cols-3">{more.map((p) => <PieceCard piece={p} showPrice={p.data.forSale} />)}</div>
-      </div>
-    )}
   </article>
 </Base>
 
 <style>
-  .piece { display: grid; grid-template-columns: 1.15fr 0.85fr; gap: clamp(2rem, 4vw, 4rem); align-items: start; }
-  .viewer-col { position: sticky; top: 96px; }
-  .status { font-weight: 700; color: var(--fg-soft); margin-top: -0.5rem; }
-  .status[data-status="available"] { color: #1f7a4d; }
-  .status[data-status="sold"] { color: var(--rose); }
-  .buy { display: flex; gap: 0.75rem; flex-wrap: wrap; margin: 1.25rem 0 2rem; }
-  .specs { display: grid; grid-template-columns: auto 1fr; gap: 0.4rem 1.5rem; margin: 0 0 2rem; padding: 1.25rem; background: var(--bg-soft); border-radius: var(--radius-sm); }
-  .specs dt { font-weight: 700; font-size: 0.85rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--fg-soft); }
-  .specs dd { margin: 0; }
-  .care { font-size: 0.9rem; color: var(--fg-soft); margin-top: 2rem; }
-  .more { margin-top: 5rem; }
-  @media (max-width: 900px) { .piece { grid-template-columns: 1fr; } .viewer-col { position: static; } }
+  .back {
+    display: inline-block; margin-bottom: 2rem;
+    font-size: 0.72rem; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--fg-faint);
+  }
+  .back:hover { color: var(--ink); }
+
+  .piece {
+    display: grid;
+    grid-template-columns: 1.05fr 0.95fr;
+    gap: clamp(2rem, 5vw, 5rem);
+    align-items: start;
+  }
+  .viewer-col { position: sticky; top: 100px; }
+
+  .info h1 { margin-bottom: 0.25rem; }
+  .working {
+    margin: 0 0 1rem;
+    font-size: 0.75rem; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--fg-faint);
+  }
+  .status { font-size: 0.85rem; color: var(--fg-soft); margin-bottom: 1.75rem; }
+  .status[data-status="sold"] { color: var(--fg-faint); }
+
+  .buy { display: flex; gap: 0.75rem; flex-wrap: wrap; margin-bottom: 2.5rem; }
+
+  .specs {
+    display: grid; grid-template-columns: 9rem 1fr;
+    gap: 0 1.5rem; margin: 0 0 2.5rem;
+    border-top: 1px solid var(--line);
+  }
+  .specs dt {
+    padding: 0.85rem 0 0;
+    font-size: 0.68rem; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--fg-faint);
+  }
+  .specs dd {
+    margin: 0; padding: 0.8rem 0;
+    border-bottom: 1px solid var(--line);
+    color: var(--fg-soft);
+  }
+  .specs dt + dd { grid-column: 2; }
+
+  .care { font-size: 0.85rem; color: var(--fg-faint); border-top: 1px solid var(--line); padding-top: 1.25rem; }
+
+  .scenes, .more { margin-top: clamp(4rem, 9vw, 7rem); }
+  .scene-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
+    gap: clamp(1.25rem, 3vw, 2.25rem);
+  }
+  .scene { margin: 0; }
+  .scene img { width: 100%; border-radius: var(--radius); border: 1px solid var(--line); }
+  /* A styled shot of the whole setting earns more room than a detail crop. */
+  .scene[data-kind="styled"] { grid-column: span 2; }
+  .scene figcaption {
+    margin-top: 0.6rem; display: flex; gap: 0.6rem; flex-wrap: wrap;
+    font-size: 0.78rem; color: var(--fg-faint);
+  }
+  .scene .kind { letter-spacing: 0.12em; text-transform: uppercase; font-size: 0.66rem; font-weight: 600; }
+
+  @media (max-width: 900px) {
+    .piece { grid-template-columns: 1fr; }
+    .viewer-col { position: static; }
+    .scene[data-kind="styled"] { grid-column: auto; }
+  }
 </style>

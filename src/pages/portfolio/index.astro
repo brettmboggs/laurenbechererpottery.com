@@ -1,18 +1,34 @@
 ---
+/**
+ * The wall. Everything Lauren has made, laid out flat.
+ *
+ * Hovering a piece turns it. Nothing but the first frame of each piece is
+ * fetched until someone shows intent — the loading strategy lives in
+ * src/scripts/spin.ts, not here, so this page stays a layout.
+ */
 import Base from '../../layouts/Base.astro';
 import PieceCard from '../../components/PieceCard.astro';
 import { getCollection } from 'astro:content';
+import { getSpinRecord } from '../../lib/spins';
 
 const pieces = (await getCollection('pieces', ({ data }) => data.showInPortfolio))
   .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+
 const collections = [...new Set(pieces.map((p) => p.data.collection).filter(Boolean))] as string[];
+const spinnable = pieces.filter((p) => getSpinRecord(p.data.spin)).length;
 ---
-<Base title="Portfolio" description="A gallery of wheel-thrown and hand-built ceramics by Lauren Becherer.">
-  <section class="section">
+<Base title="Work" description="Every piece Lauren Becherer has made, photographed all the way around.">
+  <section class="section wall-section">
     <div class="wrap">
-      <p class="eyebrow">Portfolio</p>
-      <h1>The work</h1>
-      <p class="lead">Functional pieces and one-off experiments. Spin the ones marked <strong>3D</strong>.</p>
+      <header class="wall-head">
+        <p class="eyebrow">The work</p>
+        <h1>Every piece, all the way around</h1>
+        <p class="lead">
+          {spinnable > 0
+            ? 'Each piece was photographed a frame at a time on a turntable. Hover one to turn it, or open it to take a closer look.'
+            : 'Wheel-thrown and hand-built, one piece at a time.'}
+        </p>
+      </header>
 
       {collections.length > 1 && (
         <div class="filters" role="group" aria-label="Filter by collection">
@@ -21,18 +37,40 @@ const collections = [...new Set(pieces.map((p) => p.data.collection).filter(Bool
         </div>
       )}
 
-      <div class="grid cols-3" id="pieces">
-        {pieces.map((p) => <div data-collection={p.data.collection ?? ''}><PieceCard piece={p} /></div>)}
+      <div class="wall" id="pieces">
+        {pieces.map((p, i) => (
+          <div data-collection={p.data.collection ?? ''}>
+            <PieceCard piece={p} showPrice={p.data.forSale} eager={i < 3} />
+          </div>
+        ))}
       </div>
-      {pieces.length === 0 && <p class="notice">No pieces yet — add some from the studio login.</p>}
+
+      {pieces.length === 0 && <p class="notice">No pieces yet — add one from the studio login.</p>}
     </div>
   </section>
 </Base>
 
 <style>
-  .filters { display: flex; gap: 0.5rem; flex-wrap: wrap; margin: 1.5rem 0 2rem; }
-  .chip { border: 1.5px solid var(--line); background: var(--card); border-radius: 999px; padding: 0.45rem 1rem; font-weight: 700; color: var(--fg-soft); }
-  .chip[aria-pressed="true"] { background: var(--plum); color: var(--sand); border-color: var(--plum); }
+  .wall-head { max-width: 46rem; margin-bottom: clamp(2.5rem, 6vw, 4rem); }
+  .wall-head h1 { margin-bottom: 0.6rem; }
+
+  .filters { display: flex; gap: 0.4rem; flex-wrap: wrap; margin-bottom: 2.5rem; }
+  .chip {
+    border: 1px solid var(--line-strong); background: transparent; border-radius: var(--radius);
+    padding: 0.4rem 0.95rem;
+    font-size: 0.7rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--fg-soft);
+  }
+  .chip:hover { color: var(--ink); border-color: var(--ink); }
+  .chip[aria-pressed="true"] { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+
+  /* Square plates on a loose grid. Tiles never crop a piece: the frame is the
+     photograph, linen and all. */
+  .wall {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 250px), 1fr));
+    gap: clamp(1.5rem, 3.5vw, 3rem) clamp(1.25rem, 2.5vw, 2.25rem);
+  }
 </style>
 
 <script>
