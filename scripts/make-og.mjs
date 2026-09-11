@@ -11,19 +11,50 @@
  * have been imported yet.
  */
 import sharp from 'sharp';
-import { writeFileSync, existsSync, readFileSync } from 'node:fs';
+import { writeFileSync, existsSync, readFileSync, readdirSync } from 'node:fs';
 
 const PAPER = '#f6f4ef';
 const INK = '#232120';
 const SOFT = '#55514a';
 
-// Prefer a piece whose glaze reads clearly at small sizes.
-const preferred = ['stoneware-planter', 'bud-vase', 'celadon-cup', 'periwinkle-planter'];
+/**
+ * Show whichever piece leads the site, so the social card and the home page
+ * hero never drift apart. Read straight from the piece files rather than
+ * hardcoding an id here: two lists of the same thing is one too many.
+ */
+function heroSpinId() {
+  const dir = 'src/content/pieces';
+  if (!existsSync(dir)) return null;
+  const field = (text, name) => text.match(new RegExp(`^${name}:\\s*(.+)$`, 'm'))?.[1].trim();
+  const pieces = readdirSync(dir)
+    .filter((f) => f.endsWith('.md'))
+    .map((f) => {
+      const text = readFileSync(`${dir}/${f}`, 'utf8');
+      return {
+        spin: field(text, 'spin'),
+        featured: field(text, 'featured') === 'true',
+        order: Number(field(text, 'order') ?? Number.MAX_SAFE_INTEGER),
+        date: field(text, 'date') ?? '',
+      };
+    })
+    .filter((p) => p.spin);
+
+  // Same rule as src/lib/pieces.ts: featured first, then newest, then order.
+  pieces.sort(
+    (a, b) =>
+      Number(b.featured) - Number(a.featured) ||
+      b.date.localeCompare(a.date) ||
+      a.order - b.order
+  );
+  return pieces[0]?.spin ?? null;
+}
+
 let chosen = null;
 if (existsSync('src/data/spins.json')) {
   const { spins } = JSON.parse(readFileSync('src/data/spins.json', 'utf8'));
-  const order = spins.slice().sort((a, b) => preferred.indexOf(a.id) - preferred.indexOf(b.id));
-  for (const spin of order) {
+  const heroId = heroSpinId();
+  const ordered = [spins.find((s) => s.id === heroId), ...spins].filter(Boolean);
+  for (const spin of ordered) {
     const path = `public${spin.base}/d/00.webp`;
     if (existsSync(path)) { chosen = path; break; }
   }
