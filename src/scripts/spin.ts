@@ -13,7 +13,9 @@
  * a gigabyte. Decoded memory, not bandwidth, is what breaks a wall of these.
  *
  * So:
- *   - Wall tiles are served at 420px, where a set costs about 11 MB.
+ *   - Wall tiles are served at 420px, where a set costs about 11 MB. Full-size
+ *     frames are used only where a single piece is on screen: a piece's own
+ *     page, and the home page hero.
  *   - A tile ships exactly one frame in its markup. Nothing else is fetched
  *     until the visitor shows intent.
  *   - Intent means a hover that survives a short dwell, or keyboard focus,
@@ -43,8 +45,8 @@ export interface SpinSpec {
   id: string;
   /** Public base path, e.g. "/spins/stoneware-planter". */
   base: string;
-  /** Which size/treatment to load: w = wall, d = detail linen, c = cutout. */
-  variant: 'w' | 'd' | 'c';
+  /** Which size to load: w = wall tile, d = full size. */
+  variant: 'w' | 'd';
   /** Number of frames. */
   count: number;
   /** True rotation angle of each frame, in degrees. */
@@ -323,19 +325,6 @@ export class Spin {
     this.set.listeners.delete(this.onFrames);
     this.set.lastUsed = performance.now();
     this.set = null;
-  }
-
-  /** Swap which treatment is shown (linen ↔ cutout) without losing position. */
-  setVariant(variant: SpinSpec['variant']) {
-    if (variant === this.spec.variant) return;
-    const wasSpinning = spinning.has(this);
-    this.release();
-    this.spec = { ...this.spec, variant };
-    this.shownIndex = -1;
-    this.load().then(() => {
-      this.render();
-      if (wasSpinning) this.spinFreely();
-    });
   }
 
   /* -- rendering -------------------------------------------------- */

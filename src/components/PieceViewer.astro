@@ -23,13 +23,13 @@ interface Props {
 const { title, cover, gallery, spin, model, modelAutoRotate = true } = Astro.props;
 
 // Photographs: the cover first, then the gallery, with duplicates dropped.
-// Where a piece has no cover of its own, its first spin frame stands in.
+// A piece with only a spin gets no Photos tab. Offering one that shows the
+// first frame of the turntable is a control that does nothing.
 const fallback = spin ? framePath(spin, 'd', 0) : undefined;
 const photos = [
   ...(cover ? [{ image: cover, alt: title }] : []),
   ...gallery.filter((g) => g.image !== cover),
 ];
-if (photos.length === 0 && fallback) photos.push({ image: fallback, alt: title });
 
 const has3d = !!model;
 const hasSpin = !!spin;

@@ -12,6 +12,7 @@ import PieceViewer from '../../components/PieceViewer.astro';
 import PieceCard from '../../components/PieceCard.astro';
 import { getCollection, getEntry, render } from 'astro:content';
 import { getSpinRecord, framePath, paletteVars } from '../../lib/spins';
+import { sortPieces } from '../../lib/pieces';
 
 export async function getStaticPaths() {
   const pieces = await getCollection('pieces');
@@ -27,9 +28,9 @@ const money = (n: number) => n.toLocaleString('en-US', { style: 'currency', curr
 const spin = getSpinRecord(d.spin);
 const hero = d.cover || (spin ? framePath(spin, 'd', 0) : undefined);
 
-const more = (await getCollection('pieces', (p) => p.id !== piece.id && p.data.showInPortfolio))
-  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
-  .slice(0, 3);
+const more = sortPieces(
+  await getCollection('pieces', (p) => p.id !== piece.id && p.data.showInPortfolio)
+).slice(0, 3);
 
 const canBuy = d.forSale && d.status === 'available';
 const inquire = `mailto:${settings.email ?? ''}?subject=${encodeURIComponent(`Inquiry: ${d.title}`)}`;

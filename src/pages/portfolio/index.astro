@@ -10,9 +10,9 @@ import Base from '../../layouts/Base.astro';
 import PieceCard from '../../components/PieceCard.astro';
 import { getCollection } from 'astro:content';
 import { getSpinRecord } from '../../lib/spins';
+import { sortPieces } from '../../lib/pieces';
 
-const pieces = (await getCollection('pieces', ({ data }) => data.showInPortfolio))
-  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+const pieces = sortPieces(await getCollection('pieces', ({ data }) => data.showInPortfolio));
 
 const collections = [...new Set(pieces.map((p) => p.data.collection).filter(Boolean))] as string[];
 const spinnable = pieces.filter((p) => getSpinRecord(p.data.spin)).length;

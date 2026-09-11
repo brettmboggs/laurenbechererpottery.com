@@ -2,13 +2,14 @@
 import Base from '../../layouts/Base.astro';
 import PieceCard from '../../components/PieceCard.astro';
 import { getCollection, getEntry } from 'astro:content';
+import { sortPieces } from '../../lib/pieces';
 
 const settings = (await getEntry('settings', 'site'))!.data;
-const forSale = (await getCollection('pieces', ({ data }) => data.forSale))
-  .sort((a, b) => {
-    const rank = (s: string) => (s === 'available' ? 0 : s === 'reserved' ? 1 : 2);
-    return rank(a.data.status) - rank(b.data.status) || b.data.date.valueOf() - a.data.date.valueOf();
-  });
+const forSale = sortPieces(await getCollection('pieces', ({ data }) => data.forSale)).sort((a, b) => {
+  // Available work first; within a status, the site's shared order applies.
+  const rank = (s: string) => (s === 'available' ? 0 : s === 'reserved' ? 1 : 2);
+  return rank(a.data.status) - rank(b.data.status);
+});
 const available = forSale.filter((p) => p.data.status === 'available');
 ---
 <Base title="Shop" description="Buy one-of-a-kind handmade pottery by Lauren Becherer.">

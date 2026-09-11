@@ -42,21 +42,24 @@ import stops rather than copy them, whatever the manifest says.
 | Variant | Size | Used for |
 | --- | --- | --- |
 | `w` | 420px | Wall tiles and the home page |
-| `d` | 860px | The viewer on a piece's own page |
-| `c` | 860px | The same frames with the background cut away |
+| `d` | 1000px | The viewer on a piece's own page, and the home page hero |
 
-The wall size is small on purpose. A 16-frame set costs roughly 11 MB of
-decoded bitmap at 420px and about 64 MB at 1000px, and decoded memory — not
-download size — is what a wall of spinning pieces runs out of.
+`d` is the native size of the delivered frames, so nothing is resampled and
+the glaze reads exactly as shot. The wall size is small on purpose: a 16-frame
+set costs roughly 11 MB of decoded bitmap at 420px and about 64 MB at 1000px,
+and decoded memory — not download size — is what a wall of spinning pieces runs
+out of. One piece at full size on its own page is fine; a grid of them is not.
 
-### Cutouts are optional, permanently
+### Cutouts are not used
 
-One piece has no cutout and cannot have one until it is re-shot: its pale
-saucer sits in the same tonal range as the shadowed linen. The wall is built
-around that, not in spite of it — every tile is a photograph on its own linen
-ground, so a piece that will not separate is ordinary rather than an exception.
-Cutouts are used only on a piece's own page, where the ground toggle simply
-does not appear for a piece that has none.
+Every piece is shown as photographed, on its linen. Cutouts were tried and
+dropped: they looked worse, and a background switch was one more control that
+earned nothing. The site imports only the linen frames, and the viewer offers
+no choice between treatments.
+
+This also means a piece whose glaze will not separate from the backdrop — one
+already cannot be cut out at all — is ordinary rather than an exception. The
+cutout frames still exist in the photography project if it is ever revisited.
 
 ### Shooting notes for the next one
 

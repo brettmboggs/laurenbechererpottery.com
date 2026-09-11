@@ -25,10 +25,9 @@
       ],
       "anglesMeasured": false,
       "anglesNote": "Not reliably measurable. Assume even spacing at 30 degrees.",
-      "hasCutout": true,
       "sizes": {
         "w": 420,
-        "d": 860
+        "d": 1000
       },
       "base": "/spins/bud-vase",
       "palette": {
@@ -42,8 +41,7 @@
         "Only one of each shot pair was usable; the focus bracket failed on this piece."
       ],
       "source": {
-        "frames": "spin-demo/frames",
-        "cutout": "spin-demo/cutout"
+        "frames": "spin-demo/frames"
       }
     },
     {
@@ -66,10 +64,9 @@
       ],
       "anglesMeasured": true,
       "anglesNote": "Measured, reliable. Uneven steps; use the angles for constant-rate playback.",
-      "hasCutout": true,
       "sizes": {
         "w": 420,
-        "d": 860
+        "d": 1000
       },
       "base": "/spins/celadon-cup",
       "palette": {
@@ -83,8 +80,7 @@
         "spin-cup/frames and spin-cup/cutout hold 45 frames, 34 of which are optical-flow interpolated. Brett rejected those as looking \"weird and morphy\". DO NOT USE THEM. Use spin-cup/photographs, which is the 11 real photographs."
       ],
       "source": {
-        "frames": "spin-cup/photographs",
-        "cutout": "spin-cup/photographs-cutout"
+        "frames": "spin-cup/photographs"
       }
     },
     {
@@ -110,10 +106,9 @@
       ],
       "anglesMeasured": false,
       "anglesNote": "Not measurable. Glossy glaze and horizontal throwing rings give no landmarks. Assume even.",
-      "hasCutout": false,
       "sizes": {
         "w": 420,
-        "d": 860
+        "d": 1000
       },
       "base": "/spins/periwinkle-planter",
       "palette": {
@@ -127,8 +122,7 @@
         "NO CUTOUT EXISTS. The pale saucer sits in the same tonal range as the shadowed linen and cannot be separated. This piece can only be shown on its linen background until it is re-shot with an empty-backdrop frame."
       ],
       "source": {
-        "frames": "spin-planter/frames",
-        "cutout": null
+        "frames": "spin-planter/frames"
       }
     },
     {
@@ -156,10 +150,9 @@
       ],
       "anglesMeasured": true,
       "anglesNote": "Measured, reliable (median correlation 0.64). Uneven steps; use the angles.",
-      "hasCutout": true,
       "sizes": {
         "w": 420,
-        "d": 860
+        "d": 1000
       },
       "base": "/spins/stoneware-planter",
       "palette": {
@@ -173,8 +166,7 @@
         "Best set of the four. A once-per-revolution wobble of ~3.7% in the saucer width is real: the pot sits slightly off-centre on its saucer. Keep it."
       ],
       "source": {
-        "frames": "spin-04/frames",
-        "cutout": "spin-04/cutout"
+        "frames": "spin-04/frames"
       }
     }
   ]

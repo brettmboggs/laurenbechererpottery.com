@@ -8,6 +8,10 @@
  * directories that manifest approves, resizes them into the two sizes the
  * site actually serves, and writes src/data/spins.json.
  *
+ * Only the linen frames are imported. Cutouts are deliberately not used: every
+ * piece is shown as photographed, and the viewer offers no choice between the
+ * two.
+ *
  * WHAT THIS SCRIPT EXISTS TO ABSORB
  * ---------------------------------
  * The source frames are not uniform, and none of that irregularity should
@@ -61,8 +65,10 @@ const VARIANTS = {
   // sane decoded-bitmap budget: the binding constraint is memory, not bytes
   // on the wire. 16 frames at 420px is ~11 MB decoded; at 1000px it is ~64 MB.
   w: { size: 420, quality: 80 },
-  // Detail page. One piece active at a time, so it can afford to be sharp.
-  d: { size: 860, quality: 86 },
+  // Detail page and the home page hero. One piece is active at a time, so it
+  // can afford to be sharp: this is the native size of the delivered frames,
+  // so there is no resampling at all and the glaze reads exactly as shot.
+  d: { size: 1000, quality: 88 },
 };
 
 const log = (...a) => console.log(...a);
@@ -185,27 +191,11 @@ async function main() {
       log(`  ${key} (${opts.size}px): ${n ? `wrote ${n}` : 'up to date'}, ${frames.length} frames`);
     }
 
-    // Cutouts are optional and stay optional. One piece has no cutout and
-    // cannot have one until it is re-shot, so nothing may depend on having
-    // a transparent version of a piece.
-    let hasCutout = false;
-    if (piece.cutout_dir) {
-      try {
-        const cut = await readFrames(piece.cutout_dir, piece.frame_count, `${piece.id} cutout`);
-        const n = await emit(cut, path.join(dir, 'c'), VARIANTS.d);
-        log(`  c (${VARIANTS.d.size}px): ${n ? `wrote ${n}` : 'up to date'}, ${cut.length} frames`);
-        hasCutout = true;
-      } catch (err) {
-        if (!(err instanceof ImportError)) throw err;
-        problems.push(err.message);
-        warn(err.message);
-      }
-    } else {
-      // Expected for the periwinkle planter: the pale saucer sits in the same
-      // tonal range as the shadowed linen and cannot be separated.
-      log('  c: none — this piece shows on its linen ground only');
-      await rm(path.join(dir, 'c'), { recursive: true, force: true });
-    }
+    // Cutouts are not imported. Every piece is shown the way it was
+    // photographed, on its linen, and the site offers no switch between the
+    // two: it looked worse and it was one more control to explain. The cutout
+    // frames still exist in the photography project if that is ever revisited.
+    await rm(path.join(dir, 'c'), { recursive: true, force: true });
 
     spins.push({
       id: piece.id,
@@ -215,12 +205,11 @@ async function main() {
       angles: angles.map((a) => Math.round(a * 100) / 100),
       anglesMeasured: measured,
       anglesNote: piece.angles_note ?? null,
-      hasCutout,
       sizes: Object.fromEntries(Object.entries(VARIANTS).map(([k, v]) => [k, v.size])),
       base: `/spins/${piece.id}`,
       palette: piece.palette,
       caveats: piece.caveats ?? [],
-      source: { frames: piece.frames_dir, cutout: hasCutout ? piece.cutout_dir : null },
+      source: { frames: piece.frames_dir },
     });
   }
 

@@ -18,6 +18,13 @@ const pieces = defineCollection({
     /** True while the title is the studio's working name, not a product name. */
     workingTitle: z.boolean().default(false),
     date: z.coerce.date(),
+    /**
+     * Tie-breaker for pieces made on the same day, lowest first. Several
+     * pieces are often photographed in one session, and without this the
+     * wall order falls back to whatever order the files are read in, which
+     * is not stable.
+     */
+    order: z.number().optional(),
     featured: z.boolean().default(false),
     showInPortfolio: z.boolean().default(true),
     forSale: z.boolean().default(false),

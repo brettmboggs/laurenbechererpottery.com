@@ -19,13 +19,11 @@ export interface SpinRecord {
   /** False where the shoot could not be measured and even spacing was assumed. */
   anglesMeasured: boolean;
   anglesNote: string | null;
-  /** Some pieces cannot be cut out and can only ever appear on their linen ground. */
-  hasCutout: boolean;
   sizes: Record<string, number>;
   base: string;
   palette: { deep: string; mid: string; light: string; accent: string; linen: string };
   caveats: string[];
-  source: { frames: string; cutout: string | null };
+  source: { frames: string };
 }
 
 export const spinLibrary = data.spins as SpinRecord[];
@@ -39,7 +37,7 @@ export function getSpinRecord(id?: string | null): SpinRecord | undefined {
 export interface SpinSpec {
   id: string;
   base: string;
-  variant: 'w' | 'd' | 'c';
+  variant: 'w' | 'd';
   count: number;
   angles: number[];
 }

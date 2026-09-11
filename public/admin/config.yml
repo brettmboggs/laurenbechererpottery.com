@@ -83,7 +83,8 @@ collections:
         widget: image
         required: false
         hint: "Optional. A piece with a 360° spin uses its first frame if you leave this empty."
-      - { label: Featured on home page, name: featured, widget: boolean, default: false }
+      - { label: Order among pieces made the same day, name: order, widget: number, value_type: int, required: false, hint: "Lowest first. Only matters when several pieces share a date; leave blank otherwise." }
+      - { label: Featured on home page, name: featured, widget: boolean, default: false, hint: "Pins the piece to the front of the wall and makes it the large turning piece at the top of the home page." }
       - { label: Show in portfolio, name: showInPortfolio, widget: boolean, default: true }
       - { label: For sale (show in shop), name: forSale, widget: boolean, default: false }
       - label: Status
