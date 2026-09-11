@@ -53,17 +53,17 @@ const isActive = (href: string) => path === href || (href !== '/' && path.starts
   .logo-img { height: 40px; width: auto; max-width: 240px; object-fit: contain; }
   .name {
     font-family: var(--font-display);
-    font-size: 1.22rem;
+    font-size: 0.95rem;
     font-weight: 400;
-    /* A geometric sans wordmark wants tracking, not tightness. */
-    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    letter-spacing: 0.22em;
     line-height: 1;
   }
   .thin { font-style: italic; color: var(--fg-soft); }
 
   ul { list-style: none; display: flex; gap: clamp(1rem, 2.4vw, 2rem); margin: 0; padding: 0; }
   li a {
-    font-size: 0.74rem; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase;
+    font-size: 0.8rem; font-weight: 400; letter-spacing: 0.08em; text-transform: lowercase;
     color: var(--fg-soft);
     padding: 0.35rem 0;
     border-bottom: 1px solid transparent;
@@ -76,7 +76,7 @@ const isActive = (href: string) => path === href || (href !== '/' && path.starts
     display: none;
     background: none; border: 1px solid var(--line-strong); border-radius: var(--radius);
     padding: 0.4rem 0.85rem;
-    font-size: 0.7rem; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase;
+    font-size: 0.78rem; font-weight: 400; letter-spacing: 0.08em; text-transform: lowercase;
     color: var(--fg-soft);
   }
   @media (max-width: 780px) {

@@ -1,7 +1,7 @@
 # Lauren Hand — a font made from Lauren's handwriting
 
-> **Retired from the site, September 2026.** The site now sets Jost, a light
-> geometric sans, for everything, on an off-white ground with charcoal type.
+> **Retired from the site, September 2026.** The site now sets Montserrat for
+> everything, on an off-white ground with charcoal type.
 > Lauren Hand is no longer loaded anywhere — `src/styles/fonts.css` is gone and
 > nothing references the family.
 >
