@@ -28,10 +28,19 @@
 @import '@fontsource/montserrat/latin-600.css';
 
 :root {
-  /* ground and ink */
-  --paper: #f6f4ef;
-  --paper-2: #eeebe3;
-  --paper-3: #e4e0d6;
+  /* Ground and ink.
+
+     The ground is the linen the pieces were shot on, lightened until it is
+     paper. Averaging the border pixels of every spin's first frame gives
+     #d3d4c2 — a grey-green, not the pink-cream this page used to be. The three
+     paper steps keep their old lightness and saturation and take that hue, so
+     a tile's photograph now sits on a page tinted the same way as its own
+     backdrop instead of against it. */
+  --paper: #f6f6ef;
+  --paper-2: #eeeee3;
+  --paper-3: #e3e4d6;
+  /* the measured average of the photographic backdrops, for reference */
+  --linen: #d3d4c2;
   --ink: #232120;
   --ink-2: #55514a;
   --ink-3: #8b867c;
@@ -51,7 +60,7 @@
   --accent: #6b5740;
   --line: rgba(35, 33, 32, 0.14);
   --line-strong: rgba(35, 33, 32, 0.28);
-  --card: #fbfaf6;
+  --card: #fbfbf6;
   --shadow: 0 18px 40px -30px rgba(35, 33, 32, 0.5);
 
   /* a piece's own glaze, set per page; falls back to ink */
@@ -79,6 +88,25 @@ body {
   line-height: 1.7;
   -webkit-font-smoothing: antialiased;
 }
+/* Grain, and only on the page itself.
+
+   A single fixed layer behind everything: a tiled turbulence tile at low
+   opacity, painted over the ground and under every element that has a
+   background of its own. The photographs are opaque and sit above it, so no
+   grain ever lands on a piece — they stay exactly the pixels that came out of
+   the camera. It is fixed rather than scrolled so the texture reads as the
+   paper the site is printed on rather than as something moving past. */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.5;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)' opacity='0.4'/%3E%3C/svg%3E");
+  background-size: 180px 180px;
+}
+
 img, video, svg { max-width: 100%; display: block; }
 a { color: inherit; text-decoration: none; }
 button { font: inherit; cursor: pointer; }
