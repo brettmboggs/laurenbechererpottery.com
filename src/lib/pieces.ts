@@ -32,3 +32,14 @@ export function comparePieces(a: Piece, b: Piece): number {
 export function sortPieces(pieces: Piece[]): Piece[] {
   return pieces.slice().sort(comparePieces);
 }
+
+/**
+ * The pieces a visitor should be able to see and buy.
+ *
+ * One rule, used by the home page, the wall and the shop, so a piece cannot be
+ * live in one place and missing from another. A sold piece drops off the site;
+ * `showInPortfolio` is the manual switch for anything not ready to be shown.
+ */
+export function listablePieces(pieces: Piece[]): Piece[] {
+  return sortPieces(pieces.filter((p) => p.data.showInPortfolio && p.data.status !== 'sold'));
+}

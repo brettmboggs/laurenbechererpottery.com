@@ -54,7 +54,7 @@ export interface SpinSpec {
 }
 
 /** One full turn, in milliseconds, when spinning on its own. */
-const REVOLUTION_MS = 5200;
+const REVOLUTION_MS = 3400;
 /** Hover must survive this long before anything is fetched. */
 const INTENT_DWELL_MS = 90;
 /** Frames decoded before the turn is allowed to start. */
