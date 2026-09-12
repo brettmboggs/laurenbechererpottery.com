@@ -1,32 +1,114 @@
 /* ---------------------------------------------------------------
-   Studio login.
+   Studio.
 
-   Sveltia CMS renders its own sign-in screen, in its own theme, which
-   follows the viewer's light/dark setting. An earlier attempt repainted
-   that screen in the site's colours and it fought back: the CMS sets its
-   background deeper in the tree than this stylesheet can reach cleanly,
-   so the page stayed dark while the text turned dark with it.
+   Sveltia CMS draws everything from a set of --sui-* colour tokens,
+   one set for its light theme and one for its dark theme. An earlier
+   attempt here painted backgrounds onto elements directly and lost:
+   the CMS sets them deeper in the tree, so the page stayed dark while
+   the text turned dark with it. Overriding the tokens instead changes
+   the colours at their source, so every screen, panel, button and
+   field follows, and light and dark each stay legible.
 
-   So this does the small, safe thing instead. It restyles the heading
-   and its new subtitle only, inherits the CMS's own text colour so it
-   stays legible in either theme, and touches nothing else. The wording
-   is what makes it Lauren's; the chrome stays Sveltia's.
+   Light is the site: linen paper, charcoal ink, the clay-brown accent.
+   Dark is the same studio after the lights go off: warm charcoal, with
+   the accent lifted until it reads.
 
-   Scoped to html[data-studio-login], a flag the script in admin.astro
-   sets only while the sign-in screen is up. If a CMS upgrade moves the
-   markup and the flag is never set, none of this applies and the stock
-   screen shows — plain, not broken.
+   The selectors are doubled (:root:root) so they outrank the CMS's own
+   :root[data-theme] rules regardless of which stylesheet loads last.
+   If an upgrade renames the tokens, these simply stop matching and the
+   stock theme shows — plain, not broken.
    --------------------------------------------------------------- */
 
 @import '@fontsource/montserrat/latin-300.css';
 @import '@fontsource/montserrat/latin-400.css';
+@import '@fontsource/montserrat/latin-500.css';
+@import '@fontsource/montserrat/latin-600.css';
 
-html[data-studio-login] {
+:root:root {
   --studio-font: 'Montserrat', 'Avenir Next', 'Segoe UI', Helvetica, sans-serif;
+  --sui-font-family-default: var(--studio-font);
+  --sui-heading-font-family: var(--studio-font);
+  --sui-control-font-family: var(--studio-font);
+  --sui-textbox-font-family: var(--studio-font);
 }
 
-/* The site's wordmark treatment: light, widely letterspaced capitals.
-   No colour is set, so it keeps whatever the CMS theme is using. */
+/* -- light: the site's own palette ----------------------------- */
+
+:root:root[data-theme='light'] {
+  /* ink: --ink, --ink-2, --ink-3 */
+  --sui-foreground-color-1-hsl: 20 4% 13%;
+  --sui-foreground-color-2-hsl: 38 7% 31%;
+  --sui-foreground-color-3-hsl: 40 6% 38%;
+  --sui-foreground-color-4-hsl: 40 6% 45%;
+  --sui-foreground-color-5-hsl: 40 6% 62%;
+  /* paper: --ground, --paper, --paper-2, --paper-3, --linen */
+  --sui-background-color-1-hsl: 60 60% 99%;
+  --sui-background-color-2-hsl: 60 28% 96%;
+  --sui-background-color-3-hsl: 60 24% 92%;
+  --sui-background-color-4-hsl: 62 21% 88%;
+  --sui-background-color-5-hsl: 63 17% 80%;
+  --sui-border-color-1-hsl: 45 8% 62%;
+  --sui-border-color-2-hsl: 60 14% 84%;
+  --sui-border-color-3-hsl: 60 16% 89%;
+  --sui-shadow-color: 20 10% 10%;
+  /* --accent, #6b5740 */
+  --sui-primary-accent-color-text: hsl(32 25% 34%);
+  --sui-primary-accent-color-light: hsl(32 25% 42%);
+  --sui-primary-accent-color: hsl(32 25% 34%);
+  --sui-primary-accent-color-dark: hsl(32 25% 27%);
+  --sui-primary-accent-color-inverted: hsl(60 60% 99%);
+  --sui-primary-accent-color-translucent: hsl(32 30% 45% / 50%);
+  --sui-primary-accent-color-translucent-light: hsl(32 30% 45% / 30%);
+  /* alerts take their hues from the glazes: celadon for success,
+     periwinkle for information, stoneware for warnings */
+  --sui-success-color-hue: 84;
+  --sui-info-color-hue: 230;
+  --sui-warning-color-hue: 38;
+  --sui-error-color-hue: 6;
+  --sui-alert-foreground-color-saturation: 40%;
+  --sui-alert-background-color-saturation: 30%;
+  --sui-alert-border-color-saturation: 25%;
+}
+
+/* -- dark: the studio at night --------------------------------- */
+
+:root:root[data-theme='dark'] {
+  --sui-foreground-color-1-hsl: 60 20% 94%;
+  --sui-foreground-color-2-hsl: 50 10% 78%;
+  --sui-foreground-color-3-hsl: 45 8% 68%;
+  --sui-foreground-color-4-hsl: 42 6% 58%;
+  --sui-foreground-color-5-hsl: 40 5% 38%;
+  --sui-background-color-1-hsl: 25 6% 9%;
+  --sui-background-color-2-hsl: 25 6% 11%;
+  --sui-background-color-3-hsl: 25 6% 14%;
+  --sui-background-color-4-hsl: 25 6% 17%;
+  --sui-background-color-5-hsl: 25 6% 26%;
+  --sui-border-color-1-hsl: 35 6% 42%;
+  --sui-border-color-2-hsl: 30 6% 24%;
+  --sui-border-color-3-hsl: 30 6% 19%;
+  --sui-shadow-color: 25 10% 0%;
+  --sui-primary-accent-color-text: hsl(34 38% 70%);
+  --sui-primary-accent-color-light: hsl(32 26% 50%);
+  --sui-primary-accent-color: hsl(32 26% 42%);
+  --sui-primary-accent-color-dark: hsl(32 26% 36%);
+  --sui-primary-accent-color-inverted: hsl(60 30% 97%);
+  --sui-primary-accent-color-translucent: hsl(34 35% 55% / 50%);
+  --sui-primary-accent-color-translucent-light: hsl(34 35% 55% / 30%);
+  --sui-success-color-hue: 84;
+  --sui-info-color-hue: 230;
+  --sui-warning-color-hue: 38;
+  --sui-error-color-hue: 6;
+  --sui-alert-foreground-color-saturation: 40%;
+  --sui-alert-background-color-saturation: 20%;
+  --sui-alert-border-color-saturation: 25%;
+}
+
+/* -- sign-in screen ---------------------------------------------
+
+   Scoped to html[data-studio-login], a flag the script in admin.astro
+   sets only while the sign-in screen is up. */
+
+/* The site's wordmark treatment: light, widely letterspaced capitals. */
 html[data-studio-login] h1[data-studio-branded] {
   font-family: var(--studio-font);
   font-weight: 300;

@@ -53,6 +53,28 @@ Your name, tagline, home-page headline and intro text, contact email, Instagram 
 
 ---
 
+## Your email: contact@laurenbechererpottery.com
+
+The site shows **contact@laurenbechererpottery.com**. Anything sent there lands in your Gmail (bechererlauren06@gmail.com). It is switched on once, in Namecheap, where the domain is registered. About 3 minutes:
+
+1. Go to https://namecheap.com and **Sign In** (top right) with the Namecheap login for the domain.
+2. Click **Domain List** in the left-hand menu.
+3. Next to **laurenbechererpottery.com**, click **Manage**.
+4. Scroll down to the section called **REDIRECT EMAIL**.
+5. If there is already a row for `hello`, click the trash-can icon on it to remove it.
+6. Click **Add Forwarder**.
+7. In the first box (**Alias**) type: `contact`
+8. In the second box (**Forward To**) type: `bechererlauren06@gmail.com`
+9. Click the green **✓** checkmark at the end of the row to save.
+
+**Test it:** wait 30 minutes, then send an email to contact@laurenbechererpottery.com from a *different* email address (a friend's, or a work account — Gmail sometimes hides mail you send to yourself). It should arrive in your Gmail. If it doesn't, check the **Spam** folder and click **Not spam**.
+
+If the **REDIRECT EMAIL** section isn't there: open the **Advanced DNS** tab at the top, find **MAIL SETTINGS**, choose **Email Forwarding** from its dropdown, then go back to step 4.
+
+Replying: when you hit Reply in Gmail, the reply comes from your Gmail address. That's normal and fine.
+
+---
+
 ## Taking payments (Stripe)
 
 1. Create a free account at https://stripe.com and finish the identity/bank setup.

@@ -38,9 +38,15 @@ nslookup laurenbechererpottery.com
 
 should list the four `185.199.x.153` addresses. https://dnschecker.org shows it worldwide.
 
-## Optional: email on the domain
+## Email: contact@laurenbechererpottery.com
 
-If you want `hello@laurenbechererpottery.com`, the cheapest routes are
-Cloudflare Email Routing (free forwarding to a Gmail address; requires moving
-DNS to Cloudflare) or Namecheap's own email forwarding under **Domain → Redirect
-Email**. Update the contact email in *Site settings* in the admin afterwards.
+Mail to `contact@laurenbechererpottery.com` is forwarded to Lauren's Gmail by
+Namecheap's free email forwarding. The domain's MX and SPF records already
+point at it (`eforward*.registrar-servers.com`), so don't delete those.
+
+The forwarding rule itself lives in Namecheap: **Domain List → Manage →
+Redirect Email** — alias `contact`, forwards to `bechererlauren06@gmail.com`.
+Step-by-step instructions for Lauren are in `LAUREN-GUIDE.md`.
+
+The address shown on the site comes from *Site settings → Contact email* in the
+studio.

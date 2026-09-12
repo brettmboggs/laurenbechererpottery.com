@@ -2,9 +2,9 @@
 // Studio admin (Sveltia CMS). Rendered by Astro so /admin/ works in dev and in production.
 // Configuration lives in public/admin/config.yml.
 //
-// The sign-in screen is dressed to match the site. See src/styles/admin.css —
-// it only applies while the flag below is set, so if a CMS upgrade moves the
-// markup, the stock screen shows instead of a broken one.
+// The whole studio is recoloured to match the site, and the sign-in screen gets
+// the wordmark treatment. See src/styles/admin.css. The tab title comes from
+// app_title in config.yml; the CMS overwrites the <title> below once it loads.
 import '../styles/admin.css';
 ---
 <!doctype html>
@@ -93,7 +93,9 @@ import '../styles/admin.css';
 
         const apply = () => {
           const heading = [...document.querySelectorAll('h1')].find(
-            (h) => /^\s*sveltia cms\s*$/i.test(h.textContent || '') || h.dataset.studioBranded
+            (h) =>
+              /^\s*(sveltia cms|lauren['’]s studio)\s*$/i.test(h.textContent || '') ||
+              h.dataset.studioBranded
           );
 
           if (!heading) {

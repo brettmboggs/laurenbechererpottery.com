@@ -21,9 +21,13 @@ backend:
     uploadMedia: "Studio: upload {{path}}"
     deleteMedia: "Studio: delete {{path}}"
 
+# Shown in the browser tab and on the sign-in screen instead of "Sveltia CMS".
+app_title: Lauren's Studio
 site_url: https://laurenbechererpottery.com
 display_url: https://laurenbechererpottery.com
-logo_url: /favicon.svg
+logo:
+  src: /favicon.svg
+  show_in_header: true
 
 media_folder: public/images/uploads
 public_folder: /images/uploads
@@ -49,13 +53,21 @@ collections:
   - name: pieces
     label: Pieces
     label_singular: Piece
+    icon: potted_plant
     description: Every pot you make. Toggle “Show in portfolio” and “For sale” to control where it appears.
     folder: src/content/pieces
     create: true
     delete: true
     slug: "{{slug}}"
     summary: "{{title}} — {{status}}"
+    # A small photo beside each piece in the list, once it has a cover photo.
+    thumbnail: cover
     sortable_fields: [date, title, status]
+    view_groups:
+      - label: Status
+        field: status
+      - label: Collection / series
+        field: collection
     view_filters:
       - label: For sale
         field: forSale
@@ -76,7 +88,7 @@ collections:
       - { label: Dimensions, name: dimensions, widget: string, required: false, hint: "e.g. 9\" tall × 4.5\" wide" }
       - { label: Materials / glaze, name: materials, widget: string, required: false }
       - { label: Firing, name: firing, widget: string, required: false, hint: "e.g. Cone 6 oxidation" }
-      - { label: Price (USD), name: price, widget: number, value_type: float, min: 0, required: false, hint: "Whole dollars are fine, e.g. 120" }
+      - { label: Price (USD), name: price, widget: number, value_type: float, min: 0, required: false, before_input: "$", hint: "Whole dollars are fine, e.g. 120" }
       - { label: For sale (show in shop), name: forSale, widget: boolean, default: false }
       - label: Status
         name: status
@@ -94,6 +106,7 @@ collections:
         required: false
         collapsed: true
         summary: "{{fields.alt}}"
+        thumbnail: image
         fields:
           - { label: Photo, name: image, widget: image }
           - { label: Description (for accessibility), name: alt, widget: string, required: false }
@@ -103,6 +116,7 @@ collections:
         required: false
         collapsed: true
         summary: "{{fields.kind}} — {{fields.caption}}"
+        thumbnail: image
         fields:
           - { label: Photo, name: image, widget: image }
           - { label: Description (for accessibility), name: alt, widget: string, required: false }
@@ -149,12 +163,14 @@ collections:
   - name: posts
     label: Journal
     label_singular: Post
+    icon: edit_note
     description: Studio notes, kiln openings, market announcements.
     folder: src/content/posts
     create: true
     delete: true
     slug: "{{year}}-{{month}}-{{slug}}"
     summary: "{{title}} ({{date}})"
+    thumbnail: cover
     editor:
       preview: false
     fields:
@@ -166,14 +182,18 @@ collections:
       - { label: Post, name: body, widget: markdown }
 
   # ---------------------------------------------------------------- Pages
+  - divider: true
+
   - name: pages
     label: Pages
+    icon: article
     description: The About page and other standalone pages.
     editor:
       preview: false
     files:
       - name: about
         label: About page
+        icon: person
         file: src/content/pages/about.md
         fields:
           - { label: Heading, name: title, widget: string }
@@ -183,6 +203,8 @@ collections:
             name: studioImages
             widget: list
             required: false
+            summary: "{{fields.alt}}"
+            thumbnail: image
             fields:
               - { label: Photo, name: image, widget: image }
               - { label: Description, name: alt, widget: string, required: false }
@@ -191,12 +213,14 @@ collections:
   # ---------------------------------------------------------------- Settings
   - name: settings
     label: Site settings
+    icon: tune
     description: Name, tagline, home page text, contact info, and the announcement banner.
     editor:
       preview: false
     files:
       - name: site
         label: Site settings
+        icon: tune
         file: src/content/settings/site.json
         fields:
           - { label: Site name, name: title, widget: string }
