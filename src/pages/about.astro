@@ -27,9 +27,17 @@ const { Content } = await render(about);
 </Base>
 
 <style>
-  .about { display: grid; grid-template-columns: 0.8fr 1.2fr; gap: clamp(2rem, 5vw, 5rem); align-items: start; }
-  .portrait img { border-radius: var(--radius); aspect-ratio: 4 / 5; object-fit: cover; width: 100%; position: sticky; top: 100px; }
+  .about { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(2rem, 5vw, 4.5rem); align-items: start; }
+  .portrait img {
+    width: 100%; height: auto;
+    border-radius: var(--radius);
+    border: 1px solid var(--line);
+    position: sticky; top: 100px;
+  }
   .studio { margin-top: 4rem; }
   .studio img { border-radius: var(--radius); aspect-ratio: 1; object-fit: cover; }
-  @media (max-width: 800px) { .about { grid-template-columns: 1fr; } .portrait { max-width: 380px; } }
+  @media (max-width: 800px) {
+    .about { grid-template-columns: 1fr; }
+    .portrait img { position: static; }
+  }
 </style>
