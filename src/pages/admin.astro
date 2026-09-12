@@ -1,6 +1,11 @@
 ---
 // Studio admin (Sveltia CMS). Rendered by Astro so /admin/ works in dev and in production.
 // Configuration lives in public/admin/config.yml.
+//
+// The sign-in screen is dressed to match the site. See src/styles/admin.css —
+// it only applies while the flag below is set, so if a CMS upgrade moves the
+// markup, the stock screen shows instead of a broken one.
+import '../styles/admin.css';
 ---
 <!doctype html>
 <html lang="en">
@@ -16,5 +21,49 @@
          release shipped. Bump deliberately, then check /admin/ still loads. -->
     <script is:inline src="https://unpkg.com/@sveltia/cms@0.210.3/dist/sveltia-cms.js"></script>
   </head>
-  <body></body>
+  <body>
+    <script is:inline>
+      // Sveltia renders its own sign-in screen. Rather than fork the CMS, this
+      // relabels that one heading and flags the page so the stylesheet can dress
+      // it. Everything is guarded: if the heading is not the stock one, nothing
+      // is touched, and the flag is cleared the moment the screen goes away.
+      (() => {
+        const LINES = [
+          'wash the clay off first',
+          'mind the wet pots',
+          'the kiln is still warm',
+          'no clay on the keyboard',
+          'throw first, type later',
+        ];
+        const line = LINES[Math.floor(Math.random() * LINES.length)];
+        const root = document.documentElement;
+
+        const apply = () => {
+          const heading = [...document.querySelectorAll('h1')].find(
+            (h) => /^\s*sveltia cms\s*$/i.test(h.textContent || '') || h.dataset.studioBranded
+          );
+
+          if (!heading) {
+            // Signed in, or the screen has not rendered yet. Either way, hands off.
+            delete root.dataset.studioLogin;
+            return;
+          }
+
+          root.dataset.studioLogin = '';
+          if (heading.dataset.studioBranded) return;
+
+          heading.textContent = "Lauren's Studio";
+          heading.dataset.studioBranded = 'true';
+
+          const sub = document.createElement('p');
+          sub.className = 'studio-sub';
+          sub.textContent = line;
+          heading.after(sub);
+        };
+
+        apply();
+        new MutationObserver(apply).observe(document.body, { childList: true, subtree: true });
+      })();
+    </script>
+  </body>
 </html>

@@ -1,0 +1,48 @@
+/* ---------------------------------------------------------------
+   Studio login.
+
+   Sveltia CMS renders its own sign-in screen, in its own theme, which
+   follows the viewer's light/dark setting. An earlier attempt repainted
+   that screen in the site's colours and it fought back: the CMS sets its
+   background deeper in the tree than this stylesheet can reach cleanly,
+   so the page stayed dark while the text turned dark with it.
+
+   So this does the small, safe thing instead. It restyles the heading
+   and its new subtitle only, inherits the CMS's own text colour so it
+   stays legible in either theme, and touches nothing else. The wording
+   is what makes it Lauren's; the chrome stays Sveltia's.
+
+   Scoped to html[data-studio-login], a flag the script in admin.astro
+   sets only while the sign-in screen is up. If a CMS upgrade moves the
+   markup and the flag is never set, none of this applies and the stock
+   screen shows — plain, not broken.
+   --------------------------------------------------------------- */
+
+@import '@fontsource/montserrat/latin-300.css';
+@import '@fontsource/montserrat/latin-400.css';
+
+html[data-studio-login] {
+  --studio-font: 'Montserrat', 'Avenir Next', 'Segoe UI', Helvetica, sans-serif;
+}
+
+/* The site's wordmark treatment: light, widely letterspaced capitals.
+   No colour is set, so it keeps whatever the CMS theme is using. */
+html[data-studio-login] h1[data-studio-branded] {
+  font-family: var(--studio-font);
+  font-weight: 300;
+  font-size: clamp(1rem, 2.2vw, 1.3rem);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  line-height: 1.4;
+}
+
+html[data-studio-login] .studio-sub {
+  margin: 0.5rem 0 0;
+  font-family: var(--studio-font);
+  font-size: 0.75rem;
+  font-weight: 400;
+  font-style: italic;
+  letter-spacing: 0.06em;
+  text-align: center;
+  opacity: 0.6;
+}
