@@ -18,7 +18,10 @@ interface Props {
   record: SpinRecord;
   title: string;
 }
+import { getEntry } from 'astro:content';
+
 const { record, title } = Astro.props;
+const t = (await getEntry('piece', 'piece'))!.data;
 // One piece, one viewer: it can afford the largest size the screen justifies.
 const spec = spinSpec(record, 1200);
 const size = widthUpTo(record, 1200);
@@ -42,13 +45,13 @@ const size = widthUpTo(record, 1200);
       decoding="async"
       draggable="false"
     />
-    <span class="hint" aria-hidden="true">Drag to turn</span>
+    {t.dragHint && <span class="hint" aria-hidden="true">{t.dragHint}</span>}
   </div>
 
   <div class="controls">
     <button type="button" class="ctl" data-action="toggle-spin" aria-pressed="false">
-      <span class="when-off">Turn it</span>
-      <span class="when-on">Stop</span>
+      <span class="when-off">{t.turnButton}</span>
+      <span class="when-on">{t.stopButton}</span>
     </button>
   </div>
 </figure>

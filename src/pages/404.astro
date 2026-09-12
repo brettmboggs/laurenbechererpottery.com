@@ -1,13 +1,16 @@
 ---
 import Base from '../layouts/Base.astro';
+import { getEntry } from 'astro:content';
+
+const t = (await getEntry('notfound', 'notfound'))!.data;
 ---
-<Base title="Not found" noindex>
+<Base title={t.title} noindex>
   <section class="section">
     <div class="wrap" style="text-align:center; max-width: 620px;">
-      <p class="eyebrow">404</p>
-      <h1>That one didn't survive the kiln.</h1>
-      <p class="lead" style="margin-inline:auto">The page you're looking for isn't here.</p>
-      <p><a class="btn" href="/">Back home</a> <a class="btn ghost" href="/portfolio/">See the work</a></p>
+      {t.eyebrow && <p class="eyebrow">{t.eyebrow}</p>}
+      <h1>{t.heading}</h1>
+      {t.intro && <p class="lead" style="margin-inline:auto">{t.intro}</p>}
+      <p><a class="btn" href="/">{t.homeButton}</a> <a class="btn ghost" href="/portfolio/">{t.workButton}</a></p>
     </div>
   </section>
 </Base>

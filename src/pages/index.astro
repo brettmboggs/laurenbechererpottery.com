@@ -6,7 +6,7 @@ import { getCollection, getEntry } from 'astro:content';
 import { getSpinRecord, spinSpec, framePath, frameSrcSet, widthUpTo, paletteVars } from '../lib/spins';
 import { listablePieces, spreadByHue } from '../lib/pieces';
 
-const settings = (await getEntry('settings', 'site'))!.data;
+const t = (await getEntry('home', 'home'))!.data;
 const pieces = listablePieces(await getCollection('pieces'));
 
 // The hero is a real piece, turning, at full resolution — it is the largest
@@ -29,11 +29,11 @@ const posts = (await getCollection('posts', ({ data }) => !data.draft))
   <section class="hero">
     <div class="wrap hero-grid">
       <div class="copy">
-        <p class="eyebrow">Handmade ceramics</p>
-        <h1>{settings.heroHeading}</h1>
-        <p class="lead">{settings.heroSubheading}</p>
+        {t.eyebrow && <p class="eyebrow">{t.eyebrow}</p>}
+        <h1>{t.heading}</h1>
+        {t.intro && <p class="lead">{t.intro}</p>}
         <div class="cta">
-          <a class="btn" href="/portfolio/">See the work</a>
+          <a class="btn" href="/portfolio/">{t.button}</a>
         </div>
       </div>
 
@@ -57,10 +57,10 @@ const posts = (await getCollection('posts', ({ data }) => !data.draft))
             fetchpriority="high"
             draggable="false"
           />
-          <span class="hero-mark">Turn it</span>
+          {t.turnHint && <span class="hero-mark">{t.turnHint}</span>}
         </a>
-      ) : settings.heroImage ? (
-        <div class="hero-piece static"><img src={settings.heroImage} alt="" /></div>
+      ) : t.photo ? (
+        <div class="hero-piece static"><img src={t.photo} alt="" /></div>
       ) : null}
     </div>
   </section>
@@ -68,8 +68,8 @@ const posts = (await getCollection('posts', ({ data }) => !data.draft))
   <section class="section">
     <div class="wrap">
       <div class="section-head">
-        <h2>Work</h2>
-        <a class="btn quiet small" href="/portfolio/">All work →</a>
+        <h2>{t.workHeading}</h2>
+        <a class="btn quiet small" href="/portfolio/">{t.workLink}</a>
       </div>
       <div class="grid cols-3">
         {latest.map((p) => <PieceCard piece={p} showPrice={p.data.forSale} />)}
@@ -81,8 +81,8 @@ const posts = (await getCollection('posts', ({ data }) => !data.draft))
     <section class="section">
       <div class="wrap">
         <div class="section-head">
-          <h2>From the journal</h2>
-          <a class="btn quiet small" href="/journal/">All posts →</a>
+          <h2>{t.journalHeading}</h2>
+          <a class="btn quiet small" href="/journal/">{t.journalLink}</a>
         </div>
         <div class="grid cols-2">
           {posts.map((post) => (
@@ -100,7 +100,7 @@ const posts = (await getCollection('posts', ({ data }) => !data.draft))
     </section>
   )}
 
-  <EditLink collection="settings" entry="site" label="edit site settings" />
+  <EditLink collection="text" entry="home" label="edit this page" />
 </Base>
 
 <style>

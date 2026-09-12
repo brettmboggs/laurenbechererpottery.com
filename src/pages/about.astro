@@ -28,7 +28,7 @@ const { Content } = await render(about);
 
     <div class="wrap about">
       <div class="body">
-        <p class="eyebrow">About</p>
+        {about.data.eyebrow && <p class="eyebrow">{about.data.eyebrow}</p>}
         <h1>{about.data.title}</h1>
         {about.data.subtitle && <p class="lead">{about.data.subtitle}</p>}
         <div class="prose"><Content /></div>

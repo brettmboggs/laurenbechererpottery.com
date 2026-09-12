@@ -20,7 +20,10 @@ interface Props {
   model?: string;
   modelAutoRotate?: boolean;
 }
+import { getEntry } from 'astro:content';
+
 const { title, cover, gallery, spin, model, modelAutoRotate = true } = Astro.props;
+const t = (await getEntry('piece', 'piece'))!.data;
 
 // Photographs: the cover first, then the gallery, with duplicates dropped.
 // A piece with only a spin gets no Photos tab. Offering one that shows the
@@ -40,9 +43,9 @@ const first = tabs[0];
 <div class="viewer" data-viewer>
   {tabs.length > 1 && (
     <div class="tabs" role="tablist" aria-label="How to view this piece">
-      {hasSpin && <button role="tab" data-tab="spin" aria-selected={first === 'spin' ? 'true' : 'false'}>360°</button>}
-      {has3d && <button role="tab" data-tab="3d" aria-selected={first === '3d' ? 'true' : 'false'}>3D</button>}
-      {hasPhotos && <button role="tab" data-tab="photos" aria-selected={first === 'photos' ? 'true' : 'false'}>Photos</button>}
+      {hasSpin && <button role="tab" data-tab="spin" aria-selected={first === 'spin' ? 'true' : 'false'}>{t.spinTab}</button>}
+      {has3d && <button role="tab" data-tab="3d" aria-selected={first === '3d' ? 'true' : 'false'}>{t.modelTab}</button>}
+      {hasPhotos && <button role="tab" data-tab="photos" aria-selected={first === 'photos' ? 'true' : 'false'}>{t.photosTab}</button>}
     </div>
   )}
 

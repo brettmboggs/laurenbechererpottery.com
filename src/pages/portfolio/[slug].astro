@@ -24,6 +24,7 @@ const { piece } = Astro.props;
 const d = piece.data;
 const { Content } = await render(piece);
 const settings = (await getEntry('settings', 'site'))!.data;
+const t = (await getEntry('piece', 'piece'))!.data;
 const money = (n: number) => n.toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 });
 
 const spin = getSpinRecord(d.spin);
@@ -34,23 +35,20 @@ const more = sortPieces(
 ).slice(0, 3);
 
 const canBuy = d.forSale && d.status === 'available';
-const inquire = `mailto:${settings.email ?? ''}?subject=${encodeURIComponent(`Inquiry: ${d.title}`)}`;
+const inquire = `mailto:${settings.email ?? ''}?subject=${encodeURIComponent(`${t.emailSubject} ${d.title}`.trim())}`;
 const statusLabel: Record<string, string> = {
-  available: 'Available',
-  sold: 'Sold',
-  reserved: 'Reserved',
+  available: t.available,
+  sold: t.sold,
+  reserved: t.reserved,
 };
 
-const care =
-  d.care ||
-  settings.careNote ||
-  'Hand wash. Details on food safety and care are being written up for each glaze.';
+const care = d.care || settings.careNote;
 
 const sceneLabel: Record<string, string> = {
-  styled: 'Styled',
-  'in-use': 'In use',
-  detail: 'Detail',
-  scale: 'For scale',
+  styled: t.sceneStyled,
+  'in-use': t.sceneInUse,
+  detail: t.sceneDetail,
+  scale: t.sceneScale,
 };
 
 // Structured data. Only what is actually known goes in: no price is better
@@ -80,14 +78,14 @@ const jsonLd = {
 ---
 <Base
   title={d.title}
-  description={`${d.title} — ${d.materials ?? 'handmade ceramics'} by Lauren Becherer.`}
+  description={[`${d.title}.`, d.materials && `${d.materials}.`, t.searchDescription].filter(Boolean).join(' ')}
   image={hero}
 >
   <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
 
   <article class="section" style={paletteVars(spin)}>
     <div class="wrap">
-      <a class="back" href="/portfolio/">← All work</a>
+      <a class="back" href="/portfolio/">{t.backLink}</a>
 
       <div class="piece">
         <div class="viewer-col">
@@ -104,41 +102,41 @@ const jsonLd = {
         <div class="info">
           {d.collection && <p class="eyebrow">{d.collection}</p>}
           <h1>{d.title}</h1>
-          {d.workingTitle && (
+          {d.workingTitle && t.workingTitle && (
             /* Honest about the gap rather than shipping an invented product name. */
-            <p class="working">Working title — not yet named</p>
+            <p class="working">{t.workingTitle}</p>
           )}
 
           <p class="status" data-status={d.status}>
             {statusLabel[d.status]}
             {d.forSale && d.price != null && <span> · {money(d.price)}</span>}
-            {d.forSale && d.price == null && <span class="pending"> · price to come</span>}
+            {d.forSale && d.price == null && <span class="pending"> · {t.priceToCome}</span>}
           </p>
 
           <div class="buy">
             {canBuy && d.stripeLink && (
-              <a class="btn" href={d.stripeLink} target="_blank" rel="noopener">Buy — {money(d.price ?? 0)}</a>
+              <a class="btn" href={d.stripeLink} target="_blank" rel="noopener">{t.buyButton} {money(d.price ?? 0)}</a>
             )}
-            {canBuy && !d.stripeLink && <a class="btn" href={inquire}>Inquire to purchase</a>}
-            {!canBuy && d.status !== 'sold' && <a class="btn ghost" href={inquire}>Ask about this piece</a>}
+            {canBuy && !d.stripeLink && <a class="btn" href={inquire}>{t.inquireButton}</a>}
+            {!canBuy && d.status !== 'sold' && <a class="btn ghost" href={inquire}>{t.askButton}</a>}
           </div>
 
           <dl class="specs">
-            <dt>Dimensions</dt>
-            <dd>{d.dimensions ?? <span class="pending">Not yet measured</span>}</dd>
+            <dt>{t.dimensionsLabel}</dt>
+            <dd>{d.dimensions ?? <span class="pending">{t.dimensionsMissing}</span>}</dd>
 
-            <dt>Materials</dt>
-            <dd>{d.materials ?? <span class="pending">To be recorded</span>}</dd>
+            <dt>{t.materialsLabel}</dt>
+            <dd>{d.materials ?? <span class="pending">{t.materialsMissing}</span>}</dd>
 
-            {d.firing && <><dt>Firing</dt><dd>{d.firing}</dd></>}
+            {d.firing && <><dt>{t.firingLabel}</dt><dd>{d.firing}</dd></>}
 
-            <dt>Made</dt>
+            <dt>{t.madeLabel}</dt>
             <dd>{d.date.toLocaleDateString('en-US', { timeZone: 'UTC', month: 'long', year: 'numeric' })}</dd>
           </dl>
 
           {piece.body?.trim() && <div class="prose"><Content /></div>}
 
-          <p class="care">{care}</p>
+          {care && <p class="care">{care}</p>}
         </div>
       </div>
 
@@ -146,7 +144,7 @@ const jsonLd = {
         /* Scene photography: the piece filled, used, lived with. Renders only
            once there is something to show. */
         <section class="scenes">
-          <div class="section-head"><h2>In use</h2></div>
+          <div class="section-head"><h2>{t.scenesHeading}</h2></div>
           <div class="scene-grid">
             {d.scenes.map((s) => (
               <figure class="scene" data-kind={s.kind}>
@@ -166,8 +164,8 @@ const jsonLd = {
       {more.length > 0 && (
         <section class="more">
           <div class="section-head">
-            <h2>More work</h2>
-            <a class="btn quiet small" href="/portfolio/">All work →</a>
+            <h2>{t.moreHeading}</h2>
+            <a class="btn quiet small" href="/portfolio/">{t.moreLink}</a>
           </div>
           <div class="grid cols-3">
             {more.map((p) => <PieceCard piece={p} showPrice={p.data.forSale} />)}

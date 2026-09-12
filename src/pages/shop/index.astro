@@ -3,8 +3,11 @@ import Base from '../../layouts/Base.astro';
 import PieceCard from '../../components/PieceCard.astro';
 import { getCollection, getEntry } from 'astro:content';
 import { sortPieces } from '../../lib/pieces';
+import EditLink from '../../components/EditLink.astro';
 
 const settings = (await getEntry('settings', 'site'))!.data;
+const t = (await getEntry('shop', 'shop'))!.data;
+const nav = (await getEntry('layout', 'layout'))!.data;
 const forSale = sortPieces(await getCollection('pieces', ({ data }) => data.forSale)).sort((a, b) => {
   // Available work first; within a status, the site's shared order applies.
   const rank = (s: string) => (s === 'available' ? 0 : s === 'reserved' ? 1 : 2);
@@ -12,16 +15,16 @@ const forSale = sortPieces(await getCollection('pieces', ({ data }) => data.forS
 });
 const available = forSale.filter((p) => p.data.status === 'available');
 ---
-<Base title="Shop" description="Buy one-of-a-kind handmade pottery by Lauren Becherer.">
+<Base title={nav.navShop} description={t.description || undefined}>
   <section class="section">
     <div class="wrap">
-      <p class="eyebrow">Shop</p>
-      <h1>Available work</h1>
-      <p class="lead">Each piece is one of a kind. When it's gone, it's gone — but I'm always making more.</p>
+      {t.eyebrow && <p class="eyebrow">{t.eyebrow}</p>}
+      <h1>{t.heading}</h1>
+      {t.intro && <p class="lead">{t.intro}</p>}
 
       {available.length === 0 && (
         <div class="notice">
-          The shelves are empty right now. <a href="/portfolio/">See the rest of the work</a> or check back after the next firing.
+          {t.emptyText}{t.emptyLink && <> <a href="/portfolio/">{t.emptyLink}</a></>}
         </div>
       )}
 
@@ -29,14 +32,26 @@ const available = forSale.filter((p) => p.data.status === 'available');
         {forSale.map((p) => <PieceCard piece={p} showPrice />)}
       </div>
 
-      <div class="divider"></div>
-      <div class="faq grid cols-3">
-        <div><h3>Shipping</h3><p>Pieces ship within the US, packed with care. Local pickup is free.</p></div>
-        <div><h3>Payment</h3><p>Secure checkout by Stripe — cards, Apple Pay, and Google Pay.</p></div>
-        <div><h3>Questions</h3><p>{settings.email ? <a href={`mailto:${settings.email}`}>Email me</a> : 'Reach out'} about sizing or gifting.</p></div>
-      </div>
+      {t.faq.length > 0 && (
+        <>
+          <div class="divider"></div>
+          <div class="faq grid cols-3">
+            {t.faq.map((f) => (
+              <div>
+                {f.heading && <h3>{f.heading}</h3>}
+                <p>
+                  {f.text}
+                  {f.emailLink && settings.email && <> <a href={`mailto:${settings.email}`}>{f.emailLink}</a></>}
+                </p>
+              </div>
+            ))}
+          </div>
+        </>
+      )}
     </div>
   </section>
+
+  <EditLink collection="text" entry="shop" label="edit this page" />
 </Base>
 
 <style>

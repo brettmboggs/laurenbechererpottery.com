@@ -9,31 +9,27 @@
 import Base from '../../layouts/Base.astro';
 import PieceCard from '../../components/PieceCard.astro';
 import EditLink from '../../components/EditLink.astro';
-import { getCollection } from 'astro:content';
-import { getSpinRecord } from '../../lib/spins';
+import { getCollection, getEntry } from 'astro:content';
 import { listablePieces, spreadByHue } from '../../lib/pieces';
 
 const pieces = spreadByHue(listablePieces(await getCollection('pieces')));
 
 const collections = [...new Set(pieces.map((p) => p.data.collection).filter(Boolean))] as string[];
-const spinnable = pieces.filter((p) => getSpinRecord(p.data.spin)).length;
+const t = (await getEntry('work', 'work'))!.data;
+const nav = (await getEntry('layout', 'layout'))!.data;
 ---
-<Base title="Work" description="Every piece Lauren Becherer has made, photographed all the way around.">
+<Base title={nav.navWork} description={t.description || undefined}>
   <section class="section wall-section">
     <div class="wrap">
       <header class="wall-head">
-        <p class="eyebrow">The work</p>
-        <h1>Every piece, all the way around</h1>
-        <p class="lead">
-          {spinnable > 0
-            ? 'Each piece was photographed a frame at a time on a turntable. Hover one to turn it, or open it to take a closer look.'
-            : 'Wheel-thrown and hand-built, one piece at a time.'}
-        </p>
+        {t.eyebrow && <p class="eyebrow">{t.eyebrow}</p>}
+        <h1>{t.heading}</h1>
+        {t.intro && <p class="lead">{t.intro}</p>}
       </header>
 
       {collections.length > 1 && (
         <div class="filters" role="group" aria-label="Filter by collection">
-          <button class="chip" data-filter="all" aria-pressed="true">All</button>
+          <button class="chip" data-filter="all" aria-pressed="true">{t.allFilter}</button>
           {collections.map((c) => <button class="chip" data-filter={c} aria-pressed="false">{c}</button>)}
         </div>
       )}
@@ -46,7 +42,7 @@ const spinnable = pieces.filter((p) => getSpinRecord(p.data.spin)).length;
         ))}
       </div>
 
-      {pieces.length === 0 && <p class="notice">No pieces yet — add one from the studio login.</p>}
+      {pieces.length === 0 && t.empty && <p class="notice">{t.empty}</p>}
     </div>
   </section>
 

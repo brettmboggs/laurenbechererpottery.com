@@ -1,19 +1,22 @@
 ---
+import { getEntry } from 'astro:content';
+
 interface Props { settings: { title: string; email?: string; instagram?: string; location?: string } }
 const { settings } = Astro.props;
 const year = new Date().getFullYear();
 const ig = settings.instagram?.replace('@', '');
+const t = (await getEntry('layout', 'layout'))!.data;
 ---
 <footer class="site-footer">
   <div class="wrap grid">
     <div>
-      <p class="tag">Wheel-thrown and hand-built.<br /><span class="italic">Every piece one of a kind.</span></p>
+      <p class="tag">{t.footerLine}{t.footerLineSoft && <><br /><span class="italic">{t.footerLineSoft}</span></>}</p>
     </div>
     <div class="links">
-      <a href="/portfolio/">Work</a>
-      <a href="/shop/">Shop</a>
-      <a href="/journal/">Journal</a>
-      <a href="/about/">About</a>
+      <a href="/portfolio/">{t.navWork}</a>
+      <a href="/shop/">{t.navShop}</a>
+      <a href="/journal/">{t.navJournal}</a>
+      <a href="/about/">{t.navAbout}</a>
     </div>
     <div class="contact">
       {settings.email && <a href={`mailto:${settings.email}`}>{settings.email}</a>}
@@ -22,8 +25,8 @@ const ig = settings.instagram?.replace('@', '');
     </div>
   </div>
   <div class="wrap fine">
-    <span>© {year} {settings.title}. All pieces are one of a kind.</span>
-    <a href="/admin/" class="admin">Studio login</a>
+    <span>© {year} {settings.title}.{t.finePrint && ` ${t.finePrint}`}</span>
+    {t.loginLink && <a href="/admin/" class="admin">{t.loginLink}</a>}
   </div>
 </footer>
 

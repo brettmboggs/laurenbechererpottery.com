@@ -2,17 +2,21 @@
 import Base from '../../layouts/Base.astro';
 import { getCollection } from 'astro:content';
 import EditLink from '../../components/EditLink.astro';
+import { getEntry } from 'astro:content';
+
+const t = (await getEntry('journal', 'journal'))!.data;
+const nav = (await getEntry('layout', 'layout'))!.data;
 
 const posts = (await getCollection('posts', ({ data }) => !data.draft))
   .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
 const fmt = (d: Date) => d.toLocaleDateString('en-US', { timeZone: 'UTC', month: 'long', day: 'numeric', year: 'numeric' });
 ---
-<Base title="Journal" description="Studio notes, kiln openings, and what's in progress.">
+<Base title={nav.navJournal} description={t.description || undefined}>
   <section class="section">
     <div class="wrap narrow">
-      <p class="eyebrow">Journal</p>
-      <h1>Studio notes</h1>
-      <p class="lead">Kiln openings, glaze tests, market dates, and the occasional cracked pot.</p>
+      {t.eyebrow && <p class="eyebrow">{t.eyebrow}</p>}
+      <h1>{t.heading}</h1>
+      {t.intro && <p class="lead">{t.intro}</p>}
 
       <div class="list">
         {posts.map((post) => (
@@ -25,7 +29,7 @@ const fmt = (d: Date) => d.toLocaleDateString('en-US', { timeZone: 'UTC', month:
             </div>
           </a>
         ))}
-        {posts.length === 0 && <p class="notice">Nothing here yet.</p>}
+        {posts.length === 0 && t.empty && <p class="notice">{t.empty}</p>}
       </div>
     </div>
   </section>

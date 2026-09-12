@@ -83,6 +83,7 @@ const posts = defineCollection({
 const pages = defineCollection({
   loader: glob({ pattern: '**/*.md', base: './src/content/pages' }),
   schema: z.object({
+    eyebrow: z.string().optional(),
     title: z.string(),
     subtitle: z.string().optional(),
     portrait: optionalPath,
@@ -98,11 +99,10 @@ const settings = defineCollection({
   schema: z.object({
     title: z.string(),
     tagline: z.string(),
-    heroHeading: z.string(),
-    heroSubheading: z.string(),
-    heroImage: optionalPath,
     /** Optional lettered logo used in the header instead of the typed name. */
     logoImage: optionalPath,
+    /** The picture shown when a link to the site is shared. */
+    shareImage: optionalPath,
     announcement: z.string().optional(),
     email: z.string().optional(),
     instagram: z.string().optional(),
@@ -112,4 +112,127 @@ const settings = defineCollection({
   }),
 });
 
-export const collections = { pieces, posts, pages, settings };
+/**
+ * Page text. Every word on the site that is not a piece, a post or the About
+ * page lives in one of these files, one per page, so Lauren can change any of
+ * it from "Page text" in the studio. Each file is a single entry whose id is
+ * its own name: getEntry('home', 'home').
+ *
+ * Every field falls back to an empty string, and the pages hide anything
+ * blank that can sensibly go missing (an eyebrow, an intro). Button labels are
+ * marked required in the studio, so those can't be emptied.
+ */
+const text = z.string().default('');
+const single = <T extends z.ZodRawShape>(name: string, shape: T) =>
+  defineCollection({
+    loader: file(`./src/content/text/${name}.json`, {
+      parser: (raw) => [{ id: name, ...JSON.parse(raw) }],
+    }),
+    schema: z.object(shape),
+  });
+
+const home = single('home', {
+  eyebrow: text,
+  heading: text,
+  intro: text,
+  /** Shown only when no piece has a 360° spin. */
+  photo: optionalPath,
+  button: text,
+  turnHint: text,
+  workHeading: text,
+  workLink: text,
+  journalHeading: text,
+  journalLink: text,
+});
+
+const work = single('work', {
+  description: text,
+  eyebrow: text,
+  heading: text,
+  intro: text,
+  allFilter: text,
+  empty: text,
+});
+
+const piece = single('piece', {
+  backLink: text,
+  searchDescription: text,
+  workingTitle: text,
+  available: text,
+  reserved: text,
+  sold: text,
+  priceToCome: text,
+  buyButton: text,
+  inquireButton: text,
+  askButton: text,
+  emailSubject: text,
+  dimensionsLabel: text,
+  dimensionsMissing: text,
+  materialsLabel: text,
+  materialsMissing: text,
+  firingLabel: text,
+  madeLabel: text,
+  scenesHeading: text,
+  sceneStyled: text,
+  sceneInUse: text,
+  sceneDetail: text,
+  sceneScale: text,
+  moreHeading: text,
+  moreLink: text,
+  spinTab: text,
+  modelTab: text,
+  photosTab: text,
+  spinBadge: text,
+  dragHint: text,
+  turnButton: text,
+  stopButton: text,
+  modelHint: text,
+  arButton: text,
+});
+
+const shop = single('shop', {
+  description: text,
+  eyebrow: text,
+  heading: text,
+  intro: text,
+  emptyText: text,
+  emptyLink: text,
+  faq: z
+    .array(z.object({ heading: text, text, emailLink: text }))
+    .default([]),
+});
+
+const journal = single('journal', {
+  description: text,
+  eyebrow: text,
+  heading: text,
+  intro: text,
+  empty: text,
+  backLink: text,
+});
+
+const layout = single('layout', {
+  navWork: text,
+  navShop: text,
+  navJournal: text,
+  navAbout: text,
+  menuButton: text,
+  footerLine: text,
+  footerLineSoft: text,
+  finePrint: text,
+  loginLink: text,
+});
+
+const notfound = single('notfound', {
+  title: text,
+  eyebrow: text,
+  heading: text,
+  intro: text,
+  homeButton: text,
+  workButton: text,
+});
+
+export const collections = {
+  pieces, posts, pages, settings,
+  home, work, piece, shop, journal, layout, notfound,
+};

@@ -48,8 +48,11 @@ Blog posts: kiln openings, market dates, process notes. Tick **Draft** to keep a
 ### Pages → About
 Your bio, portrait, and studio photos.
 
+### Page text
+Every other word on the site, one page at a time: the home-page headline and intro, headings, buttons, the menu and footer, the shop's info boxes, the labels on each piece page, even the page-not-found message. Change anything and save. Fields marked **Leave blank to hide** disappear from the site when you empty them.
+
 ### Site settings
-Your name, tagline, home-page headline and intro text, contact email, Instagram handle, the **Announcement banner** (a quiet strip at the top of every page — good for "Holiday orders close Dec 10!"), and the **Care note** shown at the bottom of every piece's page. Leave the banner blank to hide it.
+Your name (the header shows the last word in lighter italics), tagline, logo, contact email, Instagram handle, the **Announcement banner** (a quiet strip at the top of every page — good for "Holiday orders close Dec 10!"), the **Care note** shown at the bottom of every piece's page, and the **Sharing picture** that shows when someone texts a link to the site. Leave the banner blank to hide it.
 
 ---
 

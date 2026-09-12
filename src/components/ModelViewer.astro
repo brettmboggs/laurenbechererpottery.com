@@ -12,7 +12,10 @@ interface Props {
   autoRotate?: boolean;
   height?: string;
 }
+import { getEntry } from 'astro:content';
+
 const { src, poster, alt, autoRotate = true, height = '520px' } = Astro.props;
+const t = (await getEntry('piece', 'piece'))!.data;
 ---
 <div class="mv-wrap" style={`--h:${height}`}>
   <model-viewer
@@ -33,10 +36,10 @@ const { src, poster, alt, autoRotate = true, height = '520px' } = Astro.props;
     interaction-prompt="auto"
     loading="eager"
   >
-    <button slot="ar-button" class="btn small ghost ar-btn">View in your space</button>
+    <button slot="ar-button" class="btn small ghost ar-btn">{t.arButton}</button>
     <div slot="progress-bar" class="progress"><div class="bar"></div></div>
   </model-viewer>
-  <p class="hint">Drag to spin · scroll or pinch to zoom</p>
+  {t.modelHint && <p class="hint">{t.modelHint}</p>}
 </div>
 
 <style>

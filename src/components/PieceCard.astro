@@ -11,7 +11,7 @@
  * The tile ships exactly one frame. Everything else loads only if the visitor
  * shows intent — see src/scripts/spin.ts.
  */
-import type { CollectionEntry } from 'astro:content';
+import { getEntry, type CollectionEntry } from 'astro:content';
 import { getSpinRecord, spinSpec, framePath, frameSrcSet, widthUpTo, paletteVars } from '../lib/spins';
 
 interface Props {
@@ -36,7 +36,8 @@ const size = spin ? widthUpTo(spin, 800) : 800;
 // The line under the title. Nothing here is invented: a piece with no
 // collection and no materials recorded simply shows nothing.
 const meta = d.collection ?? d.materials ?? '';
-const statusLabel: Record<string, string> = { sold: 'Sold', reserved: 'Reserved' };
+const t = (await getEntry('piece', 'piece'))!.data;
+const statusLabel: Record<string, string> = { sold: t.sold, reserved: t.reserved };
 ---
 <a
   class="tile"
@@ -63,9 +64,9 @@ const statusLabel: Record<string, string> = { sold: 'Sold', reserved: 'Reserved'
       <div class="plate-empty" aria-hidden="true"></div>
     )}
     {statusLabel[d.status] && <span class="badge">{statusLabel[d.status]}</span>}
-    {spec && (
+    {spec && t.spinBadge && (
       <span class="turn" aria-hidden="true">
-        <span class="turn-mark">360°</span>
+        <span class="turn-mark">{t.spinBadge}</span>
       </span>
     )}
   </div>

@@ -182,6 +182,144 @@ collections:
       - { label: Post, name: body, widget: markdown }
 
   # ---------------------------------------------------------------- Pages
+  # ---------------------------------------------------------------- Page text
+  # Every word on the site that isn't a piece, a post or the About page.
+  # One file per page, in src/content/text/.
+  - name: text
+    label: Page text
+    icon: text_fields
+    description: "The words on every page: headings, intros, buttons, menu and footer. Anything marked “Leave blank to hide” disappears from the site when emptied."
+    editor:
+      preview: false
+    files:
+      - name: home
+        label: Home page
+        icon: home
+        file: src/content/text/home.json
+        fields:
+          - { label: Small label above the headline, name: eyebrow, widget: string, required: false, hint: "Leave blank to hide." }
+          - { label: Headline, name: heading, widget: string }
+          - { label: Intro, name: intro, widget: text, required: false, hint: "Leave blank to hide." }
+          - { label: Button, name: button, widget: string, hint: "Takes people to the Work page." }
+          - { label: Label on the turning piece, name: turnHint, widget: string, required: false, hint: "The little tag in the corner of the big turning pot. Leave blank to hide." }
+          - { label: Photo instead of a turning piece, name: photo, widget: image, required: false, hint: "Only used if no piece has a 360° spin." }
+          - { label: Work section heading, name: workHeading, widget: string }
+          - { label: Work section link, name: workLink, widget: string }
+          - { label: Journal section heading, name: journalHeading, widget: string, hint: "This section only appears once you have a published post." }
+          - { label: Journal section link, name: journalLink, widget: string }
+
+      - name: work
+        label: Work page
+        icon: grid_view
+        file: src/content/text/work.json
+        fields:
+          - { label: Small label above the heading, name: eyebrow, widget: string, required: false, hint: "Leave blank to hide." }
+          - { label: Heading, name: heading, widget: string }
+          - { label: Intro, name: intro, widget: text, required: false, hint: "Leave blank to hide." }
+          - { label: “All” filter button, name: allFilter, widget: string, hint: "Filter buttons only appear once pieces are in more than one collection / series." }
+          - { label: Message when there are no pieces, name: empty, widget: string, required: false }
+          - { label: Search engine description, name: description, widget: text, required: false, hint: "The short summary Google shows under the page name." }
+
+      - name: piece
+        label: Piece pages & tiles
+        icon: potted_plant
+        file: src/content/text/piece.json
+        fields:
+          - { label: Back link, name: backLink, widget: string }
+          - { label: Note under a working title, name: workingTitle, widget: string, required: false, hint: "Shown on pieces with “This is a working title” turned on. Leave blank to hide." }
+          - { label: “Available” label, name: available, widget: string }
+          - { label: “Reserved” label, name: reserved, widget: string }
+          - { label: “Sold” label, name: sold, widget: string }
+          - { label: Shown when for sale without a price, name: priceToCome, widget: string }
+          - { label: Buy button, name: buyButton, widget: string, hint: "The price is added after it, e.g. “Buy — $120”." }
+          - { label: "Inquire button (for sale, no Stripe link)", name: inquireButton, widget: string }
+          - { label: Ask button (not for sale), name: askButton, widget: string }
+          - { label: Email subject for inquiries, name: emailSubject, widget: string, required: false, hint: "The piece's name is added after it." }
+          - { label: Dimensions label, name: dimensionsLabel, widget: string }
+          - { label: When dimensions are blank, name: dimensionsMissing, widget: string }
+          - { label: Materials label, name: materialsLabel, widget: string }
+          - { label: When materials are blank, name: materialsMissing, widget: string }
+          - { label: Firing label, name: firingLabel, widget: string }
+          - { label: Date made label, name: madeLabel, widget: string }
+          - { label: Scene photos heading, name: scenesHeading, widget: string }
+          - { label: Scene kind “Styled”, name: sceneStyled, widget: string }
+          - { label: Scene kind “In use”, name: sceneInUse, widget: string }
+          - { label: Scene kind “Detail”, name: sceneDetail, widget: string }
+          - { label: Scene kind “For scale”, name: sceneScale, widget: string }
+          - { label: More work heading, name: moreHeading, widget: string }
+          - { label: More work link, name: moreLink, widget: string }
+          - { label: 360° tab, name: spinTab, widget: string }
+          - { label: 3D tab, name: modelTab, widget: string }
+          - { label: Photos tab, name: photosTab, widget: string }
+          - { label: 360° tag on tiles, name: spinBadge, widget: string, required: false, hint: "The small tag in the corner of each piece on the Work and Home pages. Leave blank to hide." }
+          - { label: Hint on the 360° viewer, name: dragHint, widget: string, required: false, hint: "Leave blank to hide." }
+          - { label: Spin button, name: turnButton, widget: string }
+          - { label: Stop button, name: stopButton, widget: string }
+          - { label: Hint under the 3D model, name: modelHint, widget: string, required: false, hint: "Leave blank to hide." }
+          - { label: Augmented reality button, name: arButton, widget: string, hint: "Only appears on phones that support it." }
+          - { label: Search engine description, name: searchDescription, widget: text, required: false, hint: "Added after the piece's name and materials in Google results." }
+
+      - name: shop
+        label: Shop page
+        icon: storefront
+        file: src/content/text/shop.json
+        fields:
+          - { label: Small label above the heading, name: eyebrow, widget: string, required: false, hint: "Leave blank to hide." }
+          - { label: Heading, name: heading, widget: string }
+          - { label: Intro, name: intro, widget: text, required: false, hint: "Leave blank to hide." }
+          - { label: Message when nothing is for sale, name: emptyText, widget: text }
+          - { label: Link after that message, name: emptyLink, widget: string, required: false, hint: "Goes to the Work page. Leave blank to hide." }
+          - label: Info boxes
+            name: faq
+            widget: list
+            required: false
+            summary: "{{fields.heading}}"
+            hint: "The short boxes at the bottom of the page (Shipping, Payment, Questions). Add, remove or drag to reorder."
+            fields:
+              - { label: Heading, name: heading, widget: string }
+              - { label: Text, name: text, widget: text }
+              - { label: Email link, name: emailLink, widget: string, required: false, hint: "Optional. Adds a link after the text that emails you, e.g. “Email me”." }
+          - { label: Search engine description, name: description, widget: text, required: false }
+
+      - name: journal
+        label: Journal page
+        icon: edit_note
+        file: src/content/text/journal.json
+        fields:
+          - { label: Small label above the heading, name: eyebrow, widget: string, required: false, hint: "Leave blank to hide." }
+          - { label: Heading, name: heading, widget: string }
+          - { label: Intro, name: intro, widget: text, required: false, hint: "Leave blank to hide." }
+          - { label: Message when there are no posts, name: empty, widget: string, required: false }
+          - { label: Back link on posts, name: backLink, widget: string }
+          - { label: Search engine description, name: description, widget: text, required: false }
+
+      - name: layout
+        label: Menu & footer
+        icon: menu
+        file: src/content/text/layout.json
+        fields:
+          - { label: Menu — Work, name: navWork, widget: string, hint: "Also the name in the browser tab for that page." }
+          - { label: Menu — Shop, name: navShop, widget: string }
+          - { label: Menu — Journal, name: navJournal, widget: string }
+          - { label: Menu — About, name: navAbout, widget: string }
+          - { label: Menu button on phones, name: menuButton, widget: string }
+          - { label: Footer line, name: footerLine, widget: string }
+          - { label: Footer second line (lighter), name: footerLineSoft, widget: string, required: false, hint: "Leave blank to hide." }
+          - { label: Fine print after the copyright, name: finePrint, widget: string, required: false, hint: "Leave blank to hide." }
+          - { label: Studio login link, name: loginLink, widget: string, required: false, hint: "The small link at the very bottom that brings you here. Leave blank to hide it (you can still go to /admin/)." }
+
+      - name: notfound
+        label: Page-not-found page
+        icon: help
+        file: src/content/text/notfound.json
+        fields:
+          - { label: Browser tab name, name: title, widget: string }
+          - { label: Small label above the heading, name: eyebrow, widget: string, required: false }
+          - { label: Heading, name: heading, widget: string }
+          - { label: Text, name: intro, widget: text, required: false }
+          - { label: Home button, name: homeButton, widget: string }
+          - { label: Work button, name: workButton, widget: string }
+
   - divider: true
 
   - name: pages
@@ -196,6 +334,7 @@ collections:
         icon: person
         file: src/content/pages/about.md
         fields:
+          - { label: Small label above the heading, name: eyebrow, widget: string, required: false, hint: "Leave blank to hide." }
           - { label: Heading, name: title, widget: string }
           - { label: Subheading, name: subtitle, widget: string, required: false }
           - { label: Portrait photo, name: portrait, widget: image, required: false }
@@ -214,7 +353,7 @@ collections:
   - name: settings
     label: Site settings
     icon: tune
-    description: Name, tagline, home page text, contact info, and the announcement banner.
+    description: Name, tagline, logo, contact info, the announcement banner and the shared care note. The words on each page are under Page text.
     editor:
       preview: false
     files:
@@ -225,9 +364,6 @@ collections:
         fields:
           - { label: Site name, name: title, widget: string }
           - { label: Tagline, name: tagline, widget: string, hint: "Shows in the browser tab and search results." }
-          - { label: Home page headline, name: heroHeading, widget: string }
-          - { label: Home page intro, name: heroSubheading, widget: text }
-          - { label: Home page photo, name: heroImage, widget: image, required: false, hint: "Optional. Used only if no piece has a 360° spin to show." }
           - label: Logo image
             name: logoImage
             widget: image
@@ -237,4 +373,9 @@ collections:
           - { label: Contact email, name: email, widget: string, required: false }
           - { label: Instagram handle, name: instagram, widget: string, required: false, hint: "Just the handle, e.g. laurenbechererpottery" }
           - { label: Location, name: location, widget: string, required: false, hint: "e.g. St. Louis, MO" }
-          - { label: Care note (shown on every piece), name: careNote, widget: text, required: false, hint: "e.g. “Food safe and dishwasher safe. Hand wash to keep the glaze at its best.” A piece can override this with its own care note." }
+          - { label: Care note (shown on every piece), name: careNote, widget: text, required: false, hint: "e.g. “Food safe and dishwasher safe. Hand wash to keep the glaze at its best.” A piece can override this with its own care note. Leave blank to show none." }
+          - label: Sharing picture
+            name: shareImage
+            widget: image
+            required: false
+            hint: "The picture that appears when someone shares a link to the site in a text message or on social media. About 1200 × 630 works best."
