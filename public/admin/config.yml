@@ -73,19 +73,10 @@ collections:
         default: false
         hint: "Turn on while the piece has no real name yet. The page says “working title” instead of pretending it is named."
       - { label: Date made, name: date, widget: datetime, time_format: false, format: "YYYY-MM-DD", date_format: "MMM D, YYYY" }
-      - label: 360° spin folder
-        name: spin
-        widget: string
-        required: false
-        hint: "The folder name from the photography project, e.g. stoneware-planter. Run `npm run spins` after adding one. Leave blank for a piece with only photos."
-      - label: Cover photo
-        name: cover
-        widget: image
-        required: false
-        hint: "Optional. A piece with a 360° spin uses its first frame if you leave this empty."
-      - { label: Order among pieces made the same day, name: order, widget: number, value_type: int, required: false, hint: "Lowest first. Only matters when several pieces share a date; leave blank otherwise." }
-      - { label: Featured on home page, name: featured, widget: boolean, default: false, hint: "Pins the piece to the front of the wall and makes it the large turning piece at the top of the home page." }
-      - { label: Show in portfolio, name: showInPortfolio, widget: boolean, default: true }
+      - { label: Dimensions, name: dimensions, widget: string, required: false, hint: "e.g. 9\" tall × 4.5\" wide" }
+      - { label: Materials / glaze, name: materials, widget: string, required: false }
+      - { label: Firing, name: firing, widget: string, required: false, hint: "e.g. Cone 6 oxidation" }
+      - { label: Price (USD), name: price, widget: number, value_type: float, min: 0, required: false, hint: "Whole dollars are fine, e.g. 120" }
       - { label: For sale (show in shop), name: forSale, widget: boolean, default: false }
       - label: Status
         name: status
@@ -96,13 +87,8 @@ collections:
           - { label: Sold, value: sold }
           - { label: Commission (not for sale), value: commission }
         default: available
-      - { label: Price (USD), name: price, widget: number, value_type: float, min: 0, required: false, hint: "Whole dollars are fine, e.g. 120" }
-      - label: Stripe payment link
-        name: stripeLink
-        widget: string
-        required: false
-        hint: "In Stripe → Payment Links → New, create a link for this piece and paste it here. Leave blank to show an “Inquire” button instead."
-      - { label: Collection / series, name: collection, widget: string, required: false, hint: "e.g. Golden Hour. Used for portfolio filters." }
+      - { label: Description, name: body, widget: markdown, required: false }
+
       - label: More photos
         name: gallery
         widget: list
@@ -112,15 +98,6 @@ collections:
         fields:
           - { label: Photo, name: image, widget: image }
           - { label: Description (for accessibility), name: alt, widget: string, required: false }
-      - label: 3D model (.glb)
-        name: model
-        widget: file
-        required: false
-        media_folder: /public/models
-        public_folder: /models
-        accept: ".glb,.gltf"
-        hint: "Upload a .glb file to get the interactive 3D spinner. Animated models play automatically."
-      - { label: Auto-rotate the 3D model, name: modelAutoRotate, widget: boolean, default: true }
       - label: Scene photos (in use, filled, styled)
         name: scenes
         widget: list
@@ -140,12 +117,35 @@ collections:
               - { label: In use, value: in-use }
               - { label: Detail, value: detail }
               - { label: For scale, value: scale }
-      - { label: Dimensions, name: dimensions, widget: string, required: false, hint: "e.g. 9\" tall × 4.5\" wide" }
-      - { label: Materials / glaze, name: materials, widget: string, required: false }
-      - { label: Firing, name: firing, widget: string, required: false, hint: "e.g. Cone 6 oxidation" }
       - { label: Care (this piece only), name: care, widget: text, required: false, hint: "Leave blank to use the shared care note from Site settings." }
-      - { label: Description, name: body, widget: markdown, required: false }
-
+      - label: Cover photo
+        name: cover
+        widget: image
+        required: false
+        hint: "Optional. A piece with a 360° spin uses its first frame if you leave this empty."
+      - { label: Collection / series, name: collection, widget: string, required: false, hint: "e.g. Golden Hour. Used for portfolio filters." }
+      - { label: Featured on home page, name: featured, widget: boolean, default: false, hint: "Pins the piece to the front of the wall and makes it the large turning piece at the top of the home page." }
+      - { label: Show in portfolio, name: showInPortfolio, widget: boolean, default: true }
+      - { label: Order among pieces made the same day, name: order, widget: number, value_type: int, required: false, hint: "Lowest first. Only matters when several pieces share a date; leave blank otherwise." }
+      - label: 360° spin folder
+        name: spin
+        widget: string
+        required: false
+        hint: "The folder name from the photography project, e.g. stoneware-planter. Run `npm run spins` after adding one. Leave blank for a piece with only photos."
+      - label: Stripe payment link
+        name: stripeLink
+        widget: string
+        required: false
+        hint: "In Stripe → Payment Links → New, create a link for this piece and paste it here. Leave blank to show an “Inquire” button instead."
+      - label: 3D model (.glb)
+        name: model
+        widget: file
+        required: false
+        media_folder: /public/models
+        public_folder: /models
+        accept: ".glb,.gltf"
+        hint: "Upload a .glb file to get the interactive 3D spinner. Animated models play automatically."
+      - { label: Auto-rotate the 3D model, name: modelAutoRotate, widget: boolean, default: true }
   # ---------------------------------------------------------------- Journal
   - name: posts
     label: Journal

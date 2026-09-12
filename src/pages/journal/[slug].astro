@@ -1,6 +1,7 @@
 ---
 import Base from '../../layouts/Base.astro';
 import { getCollection, render } from 'astro:content';
+import EditLink from '../../components/EditLink.astro';
 
 export async function getStaticPaths() {
   const posts = await getCollection('posts', ({ data }) => !data.draft);
@@ -20,6 +21,8 @@ const fmt = (d: Date) => d.toLocaleDateString('en-US', { timeZone: 'UTC', month:
       <p><a class="btn ghost small" href="/journal/">← All posts</a></p>
     </div>
   </article>
+
+  <EditLink collection="posts" entry={post.id} label="edit this post" />
 </Base>
 
 <style>

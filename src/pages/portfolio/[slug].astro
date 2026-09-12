@@ -10,6 +10,7 @@
 import Base from '../../layouts/Base.astro';
 import PieceViewer from '../../components/PieceViewer.astro';
 import PieceCard from '../../components/PieceCard.astro';
+import EditLink from '../../components/EditLink.astro';
 import { getCollection, getEntry, render } from 'astro:content';
 import { getSpinRecord, framePath, paletteVars } from '../../lib/spins';
 import { sortPieces } from '../../lib/pieces';
@@ -177,6 +178,8 @@ const jsonLd = {
       )}
     </div>
   </article>
+
+  <EditLink collection="pieces" entry={piece.id} label="edit this piece" />
 </Base>
 
 <style>

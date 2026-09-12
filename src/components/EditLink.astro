@@ -1,0 +1,97 @@
+---
+/**
+ * "Edit this" — a shortcut from the real page into the studio form behind it.
+ *
+ * Lauren browses the site the way a visitor does, and when she is signed in a
+ * small mark appears in the corner that opens the exact entry she is looking
+ * at. It saves her hunting through lists for the thing already on her screen.
+ *
+ * It shows only when signed in. The studio lives on this same domain, so the
+ * page can see that a session exists in local storage. Only the presence of
+ * that key is ever read — never its contents, which hold her access token.
+ *
+ * Visitors never see it, and nothing here grants access: the studio still
+ * requires a real GitHub sign-in.
+ */
+interface Props {
+  /** Collection name in public/admin/config.yml, e.g. "pieces". */
+  collection: string;
+  /** Entry slug, or the file name for a file collection. Omit to open the list. */
+  entry?: string;
+  /** What the mark says. Keep it plain. */
+  label?: string;
+}
+const { collection, entry, label = 'edit this page' } = Astro.props;
+const href = entry
+  ? `/admin/#/collections/${collection}/entries/${entry}`
+  : `/admin/#/collections/${collection}`;
+---
+<a class="edit-pill" href={href} data-edit-link hidden>
+  <span class="dot" aria-hidden="true"></span>{label}
+</a>
+
+<style>
+  .edit-pill {
+    position: fixed;
+    right: clamp(0.75rem, 2vw, 1.5rem);
+    bottom: clamp(0.75rem, 2vw, 1.5rem);
+    z-index: 60;
+
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.55rem 0.9rem;
+
+    background: var(--paper, #f6f4ef);
+    color: var(--fg-soft, #55514a);
+    border: 1px solid var(--line-strong, rgba(35, 33, 32, 0.28));
+    border-radius: var(--radius, 3px);
+    box-shadow: 0 10px 30px -20px rgba(35, 33, 32, 0.6);
+
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: lowercase;
+    transition: color 0.18s ease, border-color 0.18s ease;
+  }
+  /* Beats the display above, so the mark stays hidden until sign-in is confirmed. */
+  .edit-pill[hidden] { display: none !important; }
+
+  .edit-pill:hover { color: var(--ink, #232120); border-color: var(--ink, #232120); }
+
+  .dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--piece-accent, var(--accent, #6b5740));
+  }
+
+  @media print { .edit-pill { display: none !important; } }
+</style>
+
+<script>
+  // Presence only. The value of this key is her access token and is never read.
+  const SESSION_KEY = 'sveltia-cms.user';
+
+  const reveal = () => {
+    let signedIn = false;
+    try {
+      signedIn = localStorage.getItem(SESSION_KEY) !== null;
+    } catch {
+      // Private window, or storage blocked. Stay hidden; the studio still works.
+      return;
+    }
+    if (!signedIn) return;
+    document.querySelectorAll<HTMLElement>('[data-edit-link]').forEach((el) => {
+      el.hidden = false;
+    });
+  };
+
+  reveal();
+  // She signs in at /admin/, often in another tab. Re-check whenever she could
+  // plausibly have come back, so the mark appears without a manual refresh.
+  window.addEventListener('storage', reveal);
+  window.addEventListener('pageshow', reveal);
+  window.addEventListener('focus', reveal);
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden) reveal();
+  });
+</script>

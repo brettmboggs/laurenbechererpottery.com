@@ -1,6 +1,7 @@
 ---
 import Base from '../../layouts/Base.astro';
 import { getCollection } from 'astro:content';
+import EditLink from '../../components/EditLink.astro';
 
 const posts = (await getCollection('posts', ({ data }) => !data.draft))
   .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
@@ -28,6 +29,8 @@ const fmt = (d: Date) => d.toLocaleDateString('en-US', { timeZone: 'UTC', month:
       </div>
     </div>
   </section>
+
+  <EditLink collection="posts" label="write a post" />
 </Base>
 
 <style>

@@ -5,9 +5,15 @@ Your website has a "studio" where you edit everything. Bookmark it:
 **https://laurenbechererpottery.com/admin/**
 
 Log in with the button Brett set up for you (either **Sign in with GitHub** or
-**Sign In Using Access Token**, where you paste a code once and your browser
-remembers it). After you save anything, the site rebuilds itself and your change
-is live in about a minute. Refresh the page to see it.
+**Sign in with GitHub**. You approve once and it remembers you after that.
+When you save, the site rebuilds itself and your change is live in about a
+minute. Refresh the page to see it.
+
+**The quickest way to change something:** look at the real page first. While
+you are signed in, a small **edit this page** mark sits in the bottom-right
+corner of every piece, every journal post, the About page, and the home page.
+Click it and the right form opens straight away — no hunting through lists.
+Visitors never see that mark.
 
 Want a drawn logo in the header instead of your typed name? Upload one under
 **Site settings → Logo image**.
