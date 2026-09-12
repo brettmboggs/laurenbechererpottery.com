@@ -24,7 +24,7 @@ const isActive = (href: string) => path === href || (href !== '/' && path.starts
       {logoImage ? (
         <img class="logo-img" src={logoImage} alt={siteTitle} />
       ) : (
-        <span class="name">{nameFirst}{nameLast && <> <span class="thin">{nameLast}</span></>}</span>
+        <span class="name">{nameFirst}{nameLast && <>{' '}<span class="thin">{nameLast}</span></>}</span>
       )}
     </a>
     <nav aria-label="Primary">

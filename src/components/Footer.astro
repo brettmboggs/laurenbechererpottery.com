@@ -8,6 +8,9 @@ const ig = settings.instagram?.replace('@', '');
 const t = (await getEntry('layout', 'layout'))!.data;
 ---
 <footer class="site-footer">
+  {t.footerImage && (
+    <img class="wash" src={t.footerImage} alt="" aria-hidden="true" loading="lazy" decoding="async" />
+  )}
   <div class="wrap grid">
     <div>
       <p class="tag">{t.footerLine}{t.footerLineSoft && <><br /><span class="italic">{t.footerLineSoft}</span></>}</p>
@@ -31,7 +34,43 @@ const t = (await getEntry('layout', 'layout'))!.data;
 </footer>
 
 <style>
-  .site-footer { margin-top: clamp(4rem, 10vw, 7rem); border-top: 1px solid var(--line); padding: clamp(2.5rem, 6vw, 4rem) 0 1.5rem; }
+  .site-footer {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    margin-top: clamp(4rem, 10vw, 7rem);
+    border-top: 1px solid var(--line);
+    padding: clamp(2.5rem, 6vw, 4rem) 0 1.5rem;
+  }
+
+  /* A glaze, barely there. It sits behind the footer at low opacity and
+     dissolves on every edge, so it reads as a tint in the paper rather than a
+     picture with a border. Two gradients, one per axis, intersected, as on the
+     About photo; a browser without mask-composite gets no wash at all rather
+     than one with hard sides. */
+  .wash {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center 45%;
+    opacity: 0.24;
+    pointer-events: none;
+    user-select: none;
+    -webkit-mask-image:
+      linear-gradient(to right, transparent 0, #000 22%, #000 78%, transparent 100%),
+      linear-gradient(to bottom, transparent 0, #000 35%, #000 70%, transparent 100%);
+    mask-image:
+      linear-gradient(to right, transparent 0, #000 22%, #000 78%, transparent 100%),
+      linear-gradient(to bottom, transparent 0, #000 35%, #000 70%, transparent 100%);
+    -webkit-mask-composite: source-in;
+    mask-composite: intersect;
+  }
+  @supports not ((mask-composite: intersect) or (-webkit-mask-composite: source-in)) {
+    .wash { display: none; }
+  }
   .grid { grid-template-columns: 1.5fr 1fr 1fr; gap: 2.5rem; }
   .tag { font-family: var(--font-display); font-size: clamp(1.05rem, 1.8vw, 1.3rem); font-weight: 300; line-height: 1.55; margin: 0; }
   .tag .italic { color: var(--fg-soft); }

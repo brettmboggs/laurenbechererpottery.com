@@ -221,6 +221,8 @@ const layout = single('layout', {
   footerLineSoft: text,
   finePrint: text,
   loginLink: text,
+  /** A faint wash behind the footer. Blank for none. */
+  footerImage: optionalPath,
 });
 
 const notfound = single('notfound', {

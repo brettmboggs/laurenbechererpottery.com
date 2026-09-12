@@ -24,7 +24,7 @@ const available = forSale.filter((p) => p.data.status === 'available');
 
       {available.length === 0 && (
         <div class="notice">
-          {t.emptyText}{t.emptyLink && <> <a href="/portfolio/">{t.emptyLink}</a></>}
+          {t.emptyText}{t.emptyLink && <>{' '}<a href="/portfolio/">{t.emptyLink}</a></>}
         </div>
       )}
 
@@ -41,7 +41,7 @@ const available = forSale.filter((p) => p.data.status === 'available');
                 {f.heading && <h3>{f.heading}</h3>}
                 <p>
                   {f.text}
-                  {f.emailLink && settings.email && <> <a href={`mailto:${settings.email}`}>{f.emailLink}</a></>}
+                  {f.emailLink && settings.email && <>{' '}<a href={`mailto:${settings.email}`}>{f.emailLink}</a></>}
                 </p>
               </div>
             ))}

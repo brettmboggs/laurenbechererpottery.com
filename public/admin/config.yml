@@ -306,6 +306,11 @@ collections:
           - { label: Footer line, name: footerLine, widget: string }
           - { label: Footer second line (lighter), name: footerLineSoft, widget: string, required: false, hint: "Leave blank to hide." }
           - { label: Fine print after the copyright, name: finePrint, widget: string, required: false, hint: "Leave blank to hide." }
+          - label: Footer background picture
+            name: footerImage
+            widget: image
+            required: false
+            hint: "Shown very faintly behind the footer, fading out at every edge. A wide, close-up photo of a glaze works best. Leave blank for a plain footer."
           - { label: Studio login link, name: loginLink, widget: string, required: false, hint: "The small link at the very bottom that brings you here. Leave blank to hide it (you can still go to /admin/)." }
 
       - name: notfound
