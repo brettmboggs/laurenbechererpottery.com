@@ -2,14 +2,19 @@
 
 The studio at `/admin/` is Sveltia CMS. It talks directly to GitHub, so Lauren
 needs a way to prove to GitHub that she's allowed to edit the repo. There are
-two ways. **Start with the quick path**; add the polished path later if you want
-a one-click "Sign in with GitHub" button.
+two ways.
 
-## Quick path (5 minutes): a personal access token
+**The one-click button is the one to set up.** It costs Brett ten minutes once,
+and after that Lauren clicks *Sign in with GitHub*, approves, and never sees
+GitHub again. The token path below works today and needs no servers, but it
+sends her into GitHub's developer settings to generate a token, which is the
+exact thing the studio exists to spare her.
+
+## Fallback: a personal access token
 
 No servers, no OAuth app. Lauren pastes a token once and her browser remembers it.
 
-1. Do step 1 below (Lauren's GitHub account, added as a collaborator).
+1. She already has repo access; see step 1 below.
 2. **Logged in as Lauren**, go to https://github.com/settings/personal-access-tokens/new
    - Token name: `Pottery studio`
    - Expiration: **No expiration** (or 1 year and set a reminder)
@@ -22,16 +27,14 @@ The token only works for this one repo and only for editing files. If it ever
 leaks, delete it at https://github.com/settings/personal-access-tokens and make
 a new one. Don't paste it anywhere except the studio login.
 
-## Polished path (10 minutes): "Sign in with GitHub" button
+## The one to set up: "Sign in with GitHub" button
 
 GitHub's OAuth flow requires a tiny server to exchange a code for a token;
 Sveltia provides one that runs free on Cloudflare Workers.
 
 ## 1. Give Lauren a GitHub account with access to the repo
 
-1. Lauren creates a free account at https://github.com/join (pick a simple username; she'll only ever use it to click "Sign in with GitHub").
-2. Brett: repo → **Settings → Collaborators → Add people** → her username → role **Write**.
-3. She accepts the invite from the email GitHub sends.
+**Done.** Lauren is `laurenbecherer` and already has **Write** access to the repo.
 
 ## 2. Create the GitHub OAuth App
 
@@ -49,19 +52,26 @@ Sveltia provides one that runs free on Cloudflare Workers.
 3. In the Cloudflare dashboard → **Workers & Pages → sveltia-cms-auth → Settings → Variables and Secrets**, add:
    - `GITHUB_CLIENT_ID` = the Client ID from step 2
    - `GITHUB_CLIENT_SECRET` = the Client secret (mark it as *Secret*)
-   - `ALLOWED_DOMAINS` = `laurenbechererpottery.com,*.github.io,localhost:4321`
+   - `ALLOWED_DOMAINS` = `laurenbechererpottery.com`
 4. Note the Worker URL, e.g. `https://sveltia-cms-auth.<your-subdomain>.workers.dev`.
 
 ## 4. Connect the pieces
 
 1. Back in the GitHub OAuth App, set **Authorization callback URL** to `<Worker URL>/callback`.
-2. In this repo edit `public/admin/config.yml` and replace
+2. In this repo edit `public/admin/config.yml` and add your Worker URL under
+   `backend:`:
 
    ```yaml
-   base_url: https://REPLACE-WITH-YOUR-WORKER.workers.dev
+   backend:
+     name: github
+     repo: brettmboggs/laurenbechererpottery.com
+     branch: main
+     base_url: https://sveltia-cms-auth.<your-subdomain>.workers.dev
    ```
 
-   with your Worker URL. Commit and push (or edit the file on github.com and commit).
+   There is deliberately no placeholder in the file: a wrong `base_url` breaks
+   the GitHub button, while a missing one simply leaves the working token
+   option. Commit and push (or edit the file on github.com and commit).
 3. Wait for the deploy workflow to finish, open https://laurenbechererpottery.com/admin/, click **Sign in with GitHub**, approve once. Done.
 
 ## Editing locally in the meantime

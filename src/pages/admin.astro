@@ -11,7 +11,10 @@
     <title>Studio — Lauren Becherer Pottery</title>
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="cms-config-url" type="application/yaml" href="/admin/config.yml" />
-    <script is:inline src="https://unpkg.com/@sveltia/cms/dist/sveltia-cms.js"></script>
+    <!-- Pinned on purpose. This is the only thing standing between Lauren and
+         her own site, so it must not change under her because an upstream
+         release shipped. Bump deliberately, then check /admin/ still loads. -->
+    <script is:inline src="https://unpkg.com/@sveltia/cms@0.210.3/dist/sveltia-cms.js"></script>
   </head>
   <body></body>
 </html>

@@ -5,15 +5,16 @@
 # ONE-TIME SETUP (see docs/ADMIN-SETUP.md):
 #   1. Create a GitHub OAuth App and deploy the free sveltia-cms-auth
 #      Cloudflare Worker.
-#   2. Replace base_url below with the Worker URL.
-# Until then, "Work with Local Repository" in Chrome/Edge lets you edit
-# content on this computer while running `npm run dev`.
+#   2. Add `base_url: <your Worker URL>` under `backend:` below. That turns on
+#      the one-click "Sign in with GitHub" button.
+# Until that exists, the login screen's "Sign In with Token" option works and
+# is the supported way in. A placeholder base_url is worse than none: it makes
+# the GitHub button fail rather than simply not appear.
 # ------------------------------------------------------------------
 backend:
   name: github
   repo: brettmboggs/laurenbechererpottery.com
   branch: main
-  base_url: https://REPLACE-WITH-YOUR-WORKER.workers.dev
   commit_messages:
     create: "Studio: add {{collection}} “{{slug}}”"
     update: "Studio: update {{collection}} “{{slug}}”"
