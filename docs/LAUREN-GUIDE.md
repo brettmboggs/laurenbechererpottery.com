@@ -7,7 +7,10 @@ Your website has a "studio" where you edit everything. Bookmark it:
 Log in with the button Brett set up for you (either **Sign in with GitHub** or
 **Sign in with GitHub**. You approve once and it remembers you after that.
 When you save, the site rebuilds itself and your change is live in about a
-minute. Refresh the page to see it.
+minute. If the page still looks the same after that, your browser is showing
+the copy it saved earlier: hold **Shift** and click the reload button (or press
+**⌘ Shift R**) to get the new one. Deleted pieces can take up to 10 minutes to
+disappear without that.
 
 **The quickest way to change something:** look at the real page first. While
 you are signed in, a small **edit this page** mark sits in the bottom-right

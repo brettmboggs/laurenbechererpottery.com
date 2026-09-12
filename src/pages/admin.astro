@@ -18,7 +18,8 @@ import '../styles/admin.css';
     <link rel="cms-config-url" type="application/yaml" href="/admin/config.yml" />
     <!-- Sveltia encodes every save with Uint8Array#toBase64, which Safari only
          gained in 18.2. On an older Mac every save failed with "toBase64 is not
-         a function", so fill it in (and its fromBase64 pair) when missing. -->
+         a function", so fill it in (and its fromBase64 pair) when missing.
+         When bumping the CMS version, grep the new bundle for newer APIs again. -->
     <script is:inline>
       (() => {
         const U8 = Uint8Array;
@@ -51,6 +52,20 @@ import '../styles/admin.css';
               return bytes;
             },
           });
+        }
+        // The only other features the pinned CMS uses unguarded that need
+        // Safari 17 or newer. Everything else it touches is Safari 16-era.
+        if (!Promise.withResolvers) {
+          Promise.withResolvers = function () {
+            let resolve, reject;
+            const promise = new this((res, rej) => { resolve = res; reject = rej; });
+            return { promise, resolve, reject };
+          };
+        }
+        if (!URL.canParse) {
+          URL.canParse = (url, base) => {
+            try { new URL(url, base); return true; } catch { return false; }
+          };
         }
       })();
     </script>
