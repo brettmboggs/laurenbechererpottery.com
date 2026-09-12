@@ -230,6 +230,7 @@ collections:
           - { label: Heading, name: title, widget: string }
           - { label: Subheading, name: subtitle, widget: string, required: false }
           - { label: Portrait photo, name: portrait, widget: image, required: false }
+          - { label: Show the portrait in a frame, name: portraitFramed, widget: boolean, default: false, hint: "Off shows the bare photo." }
           - label: Studio photos
             name: studioImages
             widget: list

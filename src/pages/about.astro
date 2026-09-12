@@ -1,28 +1,49 @@
 ---
+/**
+ * About.
+ *
+ * The photograph is hung, not parked: it leads the page at full column width
+ * with the writing beneath it. It used to sit in a side column far shorter
+ * than the text next to it, which left it floating against a void.
+ */
 import Base from '../layouts/Base.astro';
 import { getEntry, render } from 'astro:content';
 
 const about = (await getEntry('pages', 'about'))!;
 const { Content } = await render(about);
+const framed = about.data.portraitFramed;
 ---
 <Base title={about.data.title} description={about.data.subtitle}>
   <section class="section">
     <div class="wrap about">
       {about.data.portrait && (
-        /* No frame, no mat, no rule. The photograph meets the page directly —
-           anything drawn around it read as an object sitting on top of the
-           page rather than part of it. */
-        <div class="portrait">
-          <img src={about.data.portrait} alt={`Portrait of ${about.data.title.replace('About ', '')}`} />
-        </div>
+        <figure class="portrait" data-framed={framed ? 'true' : 'false'}>
+          <span class="opening">
+            <img
+              class="photo"
+              src={about.data.portrait}
+              alt={`Portrait of ${about.data.title.replace('About ', '')}`}
+            />
+          </span>
+          {framed && (
+            /* The frame is a PNG with a genuinely transparent opening, so the
+               photograph sits behind it rather than inside a cropped box. The
+               insets in the stylesheet are measured from that opening, minus a
+               hair so the photo tucks under the inner lip instead of leaving a
+               gap. Turn it off in Site content if it stops earning its keep. */
+            <img class="frame" src="/images/uploads/about-frame.webp" alt="" aria-hidden="true" />
+          )}
+        </figure>
       )}
-      <div>
+
+      <div class="body">
         <p class="eyebrow">About</p>
         <h1>{about.data.title}</h1>
         {about.data.subtitle && <p class="lead">{about.data.subtitle}</p>}
         <div class="prose"><Content /></div>
       </div>
     </div>
+
     {about.data.studioImages.length > 0 && (
       <div class="wrap studio grid cols-3">
         {about.data.studioImages.map((s) => <img src={s.image} alt={s.alt ?? 'In the studio'} loading="lazy" />)}
@@ -32,14 +53,51 @@ const { Content } = await render(about);
 </Base>
 
 <style>
-  .about { display: grid; grid-template-columns: 0.95fr 1.05fr; gap: clamp(2rem, 5vw, 4.5rem); align-items: start; }
+  .about { display: grid; justify-items: center; }
 
-  .portrait { position: sticky; top: 100px; }
-  .portrait img { width: 100%; height: auto; display: block; }
-  .studio { margin-top: 4rem; }
-  .studio img { border-radius: var(--radius); aspect-ratio: 1; object-fit: cover; }
-  @media (max-width: 800px) {
-    .about { grid-template-columns: 1fr; }
-    .portrait { position: static; }
+  .portrait {
+    margin: 0 0 clamp(2.5rem, 6vw, 4.5rem);
+    width: 100%;
+    max-width: 820px;
   }
+
+  /* Unframed: the photograph meets the page directly. */
+  .portrait[data-framed="false"] .opening { display: block; }
+  .portrait[data-framed="false"] .photo { width: 100%; height: auto; display: block; }
+
+  /* Framed: the frame sets the shape and the photograph fills its opening. */
+  .portrait[data-framed="true"] {
+    position: relative;
+    aspect-ratio: 1440 / 1080;
+  }
+  /* The opening carries the measurements; the photograph simply fills it.
+     An absolutely positioned <img> falls back to its intrinsic size rather
+     than stretching to its offsets, so it needs this wrapper to be clipped. */
+  .portrait[data-framed="true"] .opening {
+    position: absolute;
+    top: 15.7%;
+    bottom: 16.2%;
+    left: 11.7%;
+    right: 11.8%;
+    overflow: hidden;
+  }
+  .portrait[data-framed="true"] .photo {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+  }
+  .portrait[data-framed="true"] .frame {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+  }
+
+  .body { width: 100%; max-width: 68ch; }
+  .body .prose { max-width: none; }
+
+  .studio { margin-top: clamp(3rem, 7vw, 5rem); }
+  .studio img { border-radius: var(--radius); aspect-ratio: 1; object-fit: cover; }
 </style>
