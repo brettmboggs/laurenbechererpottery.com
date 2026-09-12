@@ -9,7 +9,7 @@
   "email": "hello@laurenbechererpottery.com",
   "instagram": "",
   "location": "",
-  "commissionsOpen": true,
+  "commissionsOpen": false,
   "formEndpoint": "",
   "careNote": ""
 }
