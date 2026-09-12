@@ -336,6 +336,213 @@
       "source": {
         "frames": "spin-08/frames"
       }
+    },
+    {
+      "id": "teal-bottle-vase",
+      "workingName": "Teal-glazed bottle vase",
+      "count": 14,
+      "shot": "2026-09-11",
+      "angles": [
+        0,
+        25.71,
+        51.43,
+        77.14,
+        102.86,
+        128.57,
+        154.29,
+        180,
+        205.71,
+        231.43,
+        257.14,
+        282.86,
+        308.57,
+        334.29
+      ],
+      "anglesMeasured": false,
+      "anglesNote": "Not measurable. Assume even spacing at 25.71 degrees.",
+      "sizes": {
+        "w": 420,
+        "d": 1000
+      },
+      "base": "/spins/teal-bottle-vase",
+      "palette": {
+        "deep": "#3d5046",
+        "mid": "#505e53",
+        "light": "#5b7265",
+        "accent": "#728275",
+        "linen": "#bec0ae"
+      },
+      "caveats": [
+        "Shot at f/11 rather than f/9; 2 of 14 frames are soft."
+      ],
+      "source": {
+        "frames": "spin-09/frames"
+      }
+    },
+    {
+      "id": "olive-mug",
+      "workingName": "Olive green mug",
+      "count": 20,
+      "shot": "2026-09-11",
+      "angles": [
+        0,
+        18,
+        36,
+        54,
+        72,
+        90,
+        108,
+        126,
+        144,
+        162,
+        180,
+        198,
+        216,
+        234,
+        252,
+        270,
+        288,
+        306,
+        324,
+        342
+      ],
+      "anglesMeasured": false,
+      "anglesNote": "Not measurable. Assume even spacing at 18.00 degrees.",
+      "sizes": {
+        "w": 420,
+        "d": 1000
+      },
+      "base": "/spins/olive-mug",
+      "palette": {
+        "deep": "#423c22",
+        "mid": "#61552c",
+        "light": "#6b6742",
+        "accent": "#887d53",
+        "linen": "#bfbfab"
+      },
+      "caveats": [
+        "The first piece with a handle. Centred on its rim rather than its outline, because the handle swings through the silhouette as it turns.",
+        "Drifted about 340 px sideways at full resolution, far more than the other pieces this session, most likely because it was turned by the handle. Removed by alignment."
+      ],
+      "source": {
+        "frames": "spin-10/frames"
+      }
+    },
+    {
+      "id": "rose-planter",
+      "workingName": "Dusty rose planter and saucer",
+      "count": 12,
+      "shot": "2026-09-11",
+      "angles": [
+        0,
+        30,
+        60,
+        90,
+        120,
+        150,
+        180,
+        210,
+        240,
+        270,
+        300,
+        330
+      ],
+      "anglesMeasured": false,
+      "anglesNote": "Not measurable. Assume even spacing at 30.00 degrees.",
+      "sizes": {
+        "w": 420,
+        "d": 1000
+      },
+      "base": "/spins/rose-planter",
+      "palette": {
+        "deep": "#64523e",
+        "mid": "#766251",
+        "light": "#91705b",
+        "accent": "#968068",
+        "linen": "#dddcca"
+      },
+      "caveats": [
+        "Steadiest of the session and the cleanest separation: 1 soft frame of 12."
+      ],
+      "source": {
+        "frames": "spin-11/frames"
+      }
+    },
+    {
+      "id": "white-planter",
+      "workingName": "White planter and saucer",
+      "count": 6,
+      "shot": "2026-09-11",
+      "angles": [
+        0,
+        60,
+        120,
+        180,
+        240,
+        300
+      ],
+      "anglesMeasured": false,
+      "anglesNote": "Not measurable. Assume even spacing at 60.00 degrees.",
+      "sizes": {
+        "w": 420,
+        "d": 1000
+      },
+      "base": "/spins/white-planter",
+      "palette": {
+        "deep": "#c2b499",
+        "mid": "#c5bda3",
+        "light": "#d9ceb0",
+        "accent": "#ddd8ba",
+        "linen": "#dcddca"
+      },
+      "caveats": [
+        "Unglazed. Six positions is deliberate: a uniform body shows nothing new between closer steps. Every frame is sharp.",
+        "Separated on warmth, not brightness. It is barely darker than the linen, so a brightness rule cuts into the piece."
+      ],
+      "source": {
+        "frames": "spin-12/frames"
+      }
+    },
+    {
+      "id": "oatmeal-bowl",
+      "workingName": "Oatmeal round bowl",
+      "count": 13,
+      "shot": "2026-09-11",
+      "angles": [
+        0,
+        27.69,
+        55.38,
+        83.08,
+        110.77,
+        138.46,
+        166.15,
+        193.85,
+        221.54,
+        249.23,
+        276.92,
+        304.62,
+        332.31
+      ],
+      "anglesMeasured": false,
+      "anglesNote": "Not measurable. Assume even spacing at 27.69 degrees.",
+      "sizes": {
+        "w": 420,
+        "d": 1000
+      },
+      "base": "/spins/oatmeal-bowl",
+      "palette": {
+        "deep": "#988e65",
+        "mid": "#b8a36f",
+        "light": "#c0b692",
+        "accent": "#cfc5a1",
+        "linen": "#dfdfcc"
+      },
+      "caveats": [
+        "3 of 13 frames are soft."
+      ],
+      "source": {
+        "frames": "spin-13/frames"
+      }
     }
   ]
 }
