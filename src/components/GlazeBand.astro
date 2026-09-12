@@ -1,0 +1,61 @@
+---
+/**
+ * A full-bleed strip of real glaze.
+ *
+ * Not a rendering, not a gradient standing in for one: a crop of the actual
+ * fired surface at the resolution the camera caught it. See
+ * scripts/make-glaze.mjs.
+ *
+ * It carries no text on purpose. Laying type over a surface this busy would
+ * cost legibility and make the glaze into decoration; on its own it reads as
+ * what it is, which is a material sample.
+ */
+import glaze from '../data/glaze.json';
+
+interface Props {
+  /** Band id from src/data/glaze.json. */
+  id?: string;
+  /** How tall the strip stands. */
+  height?: string;
+}
+const { id = 'celadon', height = 'clamp(96px, 13vw, 190px)' } = Astro.props;
+
+const band = glaze.bands.find((b) => b.id === id);
+const srcset = band
+  ? band.widths.map((w) => `/images/glaze/${band.id}-${w}.webp ${w}w`).join(', ')
+  : '';
+const widest = band ? band.widths[band.widths.length - 1] : 0;
+---
+{band && (
+  <div class="glaze" style={`--glaze-h:${height}`} role="img" aria-label={band.note}>
+    <img
+      src={`/images/glaze/${band.id}-${widest}.webp`}
+      srcset={srcset}
+      sizes="100vw"
+      alt=""
+      width={widest}
+      height={Math.round(widest / band.aspect)}
+      loading="lazy"
+      decoding="async"
+    />
+  </div>
+)}
+
+<style>
+  .glaze {
+    /* Break out of the page's column: a surface should run edge to edge. */
+    width: 100vw;
+    margin-inline: calc(50% - 50vw);
+    height: var(--glaze-h);
+    overflow: hidden;
+    background: var(--paper-2);
+    border-block: 1px solid var(--line);
+  }
+  .glaze img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    /* The crop is wider than it is tall; favour the drip over the edges. */
+    object-position: 50% 45%;
+  }
+</style>

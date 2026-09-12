@@ -2,6 +2,7 @@
 import Base from '../layouts/Base.astro';
 import PieceCard from '../components/PieceCard.astro';
 import EditLink from '../components/EditLink.astro';
+import GlazeBand from '../components/GlazeBand.astro';
 import { getCollection, getEntry } from 'astro:content';
 import { getSpinRecord, spinSpec, framePath, frameSrcSet, widthUpTo, paletteVars } from '../lib/spins';
 import { listablePieces } from '../lib/pieces';
@@ -77,6 +78,8 @@ const posts = (await getCollection('posts', ({ data }) => !data.draft))
       </div>
     </div>
   </section>
+
+  <GlazeBand />
 
   <section class="section band">
     <div class="wrap band-grid">

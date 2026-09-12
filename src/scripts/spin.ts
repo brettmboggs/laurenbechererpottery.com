@@ -163,10 +163,17 @@ function frameUrl(spec: SpinSpec, width: number, i: number) {
  * already knows which one it is on. Capped per context so a wall of pieces
  * cannot load detail-page-sized frames.
  */
-function pickWidth(spec: SpinSpec, el: HTMLElement): number {
+function pickWidth(spec: SpinSpec, el: HTMLElement, img?: HTMLImageElement | null): number {
   const css = el.getBoundingClientRect().width || el.clientWidth || 320;
   const dpr = Math.min(window.devicePixelRatio || 1, MAX_DPR);
-  const needed = Math.min(css * dpr, spec.cap);
+  let needed = Math.min(css * dpr, spec.cap);
+
+  // Never load frames coarser than the still already on screen. The browser
+  // chose that one from the srcset knowing this display, and dropping below it
+  // the instant the piece starts turning reads as the spin breaking.
+  const shown = img?.currentSrc?.match(/\/(\d+)\/\d+\.webp$/);
+  if (shown) needed = Math.max(needed, Number(shown[1]));
+
   const fit = spec.widths.filter((w) => w >= needed);
   return fit.length ? fit[0] : spec.widths[spec.widths.length - 1];
 }
@@ -351,7 +358,7 @@ export class Spin {
     if (this.set) return;
     this.opts.onStateChange?.('loading');
     // Measured at first use, when the element has its real size on this screen.
-    if (!this.width) this.width = pickWidth(this.spec, this.el);
+    if (!this.width) this.width = pickWidth(this.spec, this.el, this.img);
     const set = acquire(this.spec, this.width);
     set.users++;
     set.listeners.add(this.onFrames);
