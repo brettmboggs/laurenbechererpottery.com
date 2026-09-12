@@ -114,13 +114,20 @@ async function readFrames(dir, expected, label) {
 }
 
 /** Resize one frame set to one width. Returns the number written. */
-async function emit(files, outDir, size) {
+async function emit(files, outDir, size, stale = false) {
   await mkdir(outDir, { recursive: true });
   const quality = qualityFor(size);
   let written = 0;
+  // Drop frames left over from a longer previous set. Without this a re-shoot with
+  // fewer positions leaves the tail of the old one on disk, and because the rung is
+  // otherwise "up to date" nothing overwrites the frames that do get served.
+  for (const f of await readdir(outDir)) {
+    const m = f.match(/^(\d+)\.webp$/);
+    if (m && Number(m[1]) >= files.length) await rm(path.join(outDir, f), { force: true });
+  }
   for (const [i, file] of files.entries()) {
     const out = path.join(outDir, `${String(i).padStart(2, '0')}.webp`);
-    if (!force && existsSync(out)) continue;
+    if (!force && !stale && existsSync(out)) continue;
     // `fit: contain` with a transparent pad keeps every piece on a common
     // square canvas even where a master was exported at a different size.
     await sharp(file)
@@ -181,6 +188,21 @@ async function main() {
   const spins = [];
   const problems = [];
 
+  // What the previous import left behind. Frames are named by index, so a piece that has
+  // been re-shot writes 00.webp, 01.webp ... over a directory that already has those names
+  // and the skip-if-present rule quietly keeps the old shoot's photographs. Comparing the
+  // recorded source and frame count catches that, so only a piece that actually changed
+  // pays to be rebuilt.
+  const prevPath = path.join(root, 'src', 'data', 'spins.json');
+  const prev = new Map();
+  if (existsSync(prevPath)) {
+    try {
+      for (const s of JSON.parse(await readFile(prevPath, 'utf8')).spins ?? []) prev.set(s.id, s);
+    } catch {
+      warn('could not read the previous spins.json; every piece will be rebuilt');
+    }
+  }
+
   for (const piece of manifest.pieces) {
     log(`\n${piece.id} — ${piece.working_name}`);
 
@@ -214,8 +236,13 @@ async function main() {
     const masterPx = Math.min(master.width ?? 0, master.height ?? 0);
     const widths = ladderFor(masterPx);
 
+    const was = prev.get(piece.id);
+    const stale =
+      was != null && (was.source?.frames !== piece.frames_dir || was.count !== frames.length);
+    if (stale) log(`  re-shot since the last import (${was.count} frames from ${was.source?.frames}) — rebuilding`);
+
     for (const w of widths) {
-      const n = await emit(frames, path.join(dir, String(w)), w);
+      const n = await emit(frames, path.join(dir, String(w)), w, stale);
       log(`  ${w}px: ${n ? `wrote ${n}` : 'up to date'}, ${frames.length} frames`);
     }
 
