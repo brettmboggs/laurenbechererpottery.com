@@ -45,8 +45,10 @@ export interface SpinSpec {
   id: string;
   /** Public base path, e.g. "/spins/stoneware-planter". */
   base: string;
-  /** Which size to load: w = wall tile, d = full size. */
-  variant: 'w' | 'd';
+  /** Widths built for this piece, ascending. */
+  widths: number[];
+  /** Largest width this context may load, bounding decoded memory. */
+  cap: number;
   /** Number of frames. */
   count: number;
   /** True rotation angle of each frame, in degrees. */
@@ -61,8 +63,16 @@ const INTENT_DWELL_MS = 90;
 const PREVIEW_FRAMES = 4;
 /** Image requests in flight across the whole page. */
 const MAX_PARALLEL = 4;
-/** Frame sets held in memory. Beyond this, the least recently used is dropped. */
-const MAX_SETS = 5;
+/**
+ * Decoded-pixel budget across every set held in memory, in megapixels.
+ * A count of sets is the wrong unit now that sets come in different sizes: one
+ * 1600px set is sixteen times the memory of a 400px one. 160 MP is roughly
+ * 640 MB of RGBA, and sets are dropped oldest-first to stay under it.
+ */
+const MAX_MEGAPIXELS = 160;
+
+/** Beyond 2x there is nothing left to see, and the memory cost keeps doubling. */
+const MAX_DPR = 2;
 
 const reduceMotion =
   typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -75,6 +85,8 @@ const canHover = typeof matchMedia === 'function' && matchMedia('(hover: hover)'
 interface FrameSet {
   key: string;
   count: number;
+  /** Decoded megapixels this set costs when fully loaded. */
+  megapixels: number;
   images: (HTMLImageElement | null)[];
   /** Indices that have decoded and are safe to display. */
   ready: Set<number>;
@@ -141,8 +153,22 @@ function loadFrame(src: string): Promise<HTMLImageElement> {
   });
 }
 
-function frameUrl(spec: SpinSpec, i: number) {
-  return `${spec.base}/${spec.variant}/${String(i).padStart(2, '0')}.webp`;
+function frameUrl(spec: SpinSpec, width: number, i: number) {
+  return `${spec.base}/${width}/${String(i).padStart(2, '0')}.webp`;
+}
+
+/**
+ * Pick a width from how large the piece is actually drawn on this screen.
+ * A phone, a laptop and a 4K panel ask for different things, and the element
+ * already knows which one it is on. Capped per context so a wall of pieces
+ * cannot load detail-page-sized frames.
+ */
+function pickWidth(spec: SpinSpec, el: HTMLElement): number {
+  const css = el.getBoundingClientRect().width || el.clientWidth || 320;
+  const dpr = Math.min(window.devicePixelRatio || 1, MAX_DPR);
+  const needed = Math.min(css * dpr, spec.cap);
+  const fit = spec.widths.filter((w) => w >= needed);
+  return fit.length ? fit[0] : spec.widths[spec.widths.length - 1];
 }
 
 /** Frames to fetch first: evenly spaced around the piece, frame 0 included. */
@@ -153,12 +179,20 @@ function previewOrder(count: number): number[] {
   return picks;
 }
 
+function totalMegapixels() {
+  let mp = 0;
+  sets.forEach((s) => {
+    mp += s.megapixels;
+  });
+  return mp;
+}
+
 function evict() {
-  if (sets.size <= MAX_SETS) return;
+  if (totalMegapixels() <= MAX_MEGAPIXELS) return;
   const candidates = [...sets.values()]
     .filter((s) => s.users === 0)
     .sort((a, b) => a.lastUsed - b.lastUsed);
-  while (sets.size > MAX_SETS && candidates.length) {
+  while (totalMegapixels() > MAX_MEGAPIXELS && candidates.length) {
     const victim = candidates.shift()!;
     // Dropping every reference is what actually releases the decoded bitmaps.
     victim.images.fill(null);
@@ -168,8 +202,8 @@ function evict() {
   }
 }
 
-function acquire(spec: SpinSpec): FrameSet {
-  const key = `${spec.base}/${spec.variant}`;
+function acquire(spec: SpinSpec, width: number): FrameSet {
+  const key = `${spec.base}/${width}`;
   const existing = sets.get(key);
   if (existing) {
     existing.lastUsed = performance.now();
@@ -183,6 +217,7 @@ function acquire(spec: SpinSpec): FrameSet {
   const set: FrameSet = {
     key,
     count: spec.count,
+    megapixels: (width * width * spec.count) / 1e6,
     images,
     ready,
     users: 0,
@@ -205,11 +240,13 @@ function acquire(spec: SpinSpec): FrameSet {
   const rest = Array.from({ length: spec.count }, (_, i) => i).filter((i) => !preview.includes(i));
 
   set.previewed = Promise.all(
-    preview.map((i) => loadFrame(frameUrl(spec, i)).then((img) => note(i, img)))
+    preview.map((i) => loadFrame(frameUrl(spec, width, i)).then((img) => note(i, img)))
   ).then(() => undefined);
 
   set.complete = set.previewed
-    .then(() => Promise.all(rest.map((i) => loadFrame(frameUrl(spec, i)).then((img) => note(i, img)))))
+    .then(() =>
+      Promise.all(rest.map((i) => loadFrame(frameUrl(spec, width, i)).then((img) => note(i, img))))
+    )
     .then(() => undefined);
 
   sets.set(key, set);
@@ -307,11 +344,15 @@ export class Spin {
 
   /* -- loading ---------------------------------------------------- */
 
+  private width = 0;
+
   /** Fetch the frame set. Safe to call repeatedly; the cache dedupes. */
   async load(): Promise<void> {
     if (this.set) return;
     this.opts.onStateChange?.('loading');
-    const set = acquire(this.spec);
+    // Measured at first use, when the element has its real size on this screen.
+    if (!this.width) this.width = pickWidth(this.spec, this.el);
+    const set = acquire(this.spec, this.width);
     set.users++;
     set.listeners.add(this.onFrames);
     this.set = set;

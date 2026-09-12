@@ -10,7 +10,7 @@
 import ModelViewer from './ModelViewer.astro';
 import SpinViewer from './SpinViewer.astro';
 import type { SpinRecord } from '../lib/spins';
-import { framePath } from '../lib/spins';
+import { framePath, widthUpTo } from '../lib/spins';
 
 interface Props {
   title: string;
@@ -25,7 +25,7 @@ const { title, cover, gallery, spin, model, modelAutoRotate = true } = Astro.pro
 // Photographs: the cover first, then the gallery, with duplicates dropped.
 // A piece with only a spin gets no Photos tab. Offering one that shows the
 // first frame of the turntable is a control that does nothing.
-const fallback = spin ? framePath(spin, 'd', 0) : undefined;
+const fallback = spin ? framePath(spin, widthUpTo(spin, 1200), 0) : undefined;
 const photos = [
   ...(cover ? [{ image: cover, alt: title }] : []),
   ...gallery.filter((g) => g.image !== cover),

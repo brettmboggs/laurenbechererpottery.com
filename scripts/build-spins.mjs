@@ -59,17 +59,24 @@ const force = args.includes('--force');
  */
 const DENY = ['spin-cup/frames', 'spin-cup/cutout'];
 
-/** The two sizes the site serves, and what each is for. */
-const VARIANTS = {
-  // Wall tiles. Small enough that a grid of spinning pieces stays within a
-  // sane decoded-bitmap budget: the binding constraint is memory, not bytes
-  // on the wire. 16 frames at 420px is ~11 MB decoded; at 1000px it is ~64 MB.
-  w: { size: 420, quality: 80 },
-  // Detail page and the home page hero. One piece is active at a time, so it
-  // can afford to be sharp: this is the native size of the delivered frames,
-  // so there is no resampling at all and the glaze reads exactly as shot.
-  d: { size: 1000, quality: 88 },
-};
+/**
+ * The ladder of widths the site serves. The browser picks from these by
+ * srcset for the still frame, and the turntable runtime picks by measuring
+ * how big the piece is actually drawn — so a phone, a laptop and a 4K panel
+ * each get a size that suits them instead of one compromise for all three.
+ *
+ * A rung is only built if the master is at least that big. Nothing is ever
+ * upscaled: an invented pixel is worse than a missing one.
+ *
+ * It stops at 1200 on purpose. The page is at most 1240px wide and the viewer
+ * column about 570 CSS pixels, so 1200 already covers a 2x display; a 1600
+ * rung would almost never be chosen and would add about half again to what the
+ * repository carries.
+ */
+const WIDTHS = [400, 800, 1200];
+
+/** Quality per rung. Small rungs are seen small, so they can be leaner. */
+const qualityFor = (w) => (w <= 400 ? 80 : w <= 800 ? 84 : 88);
 
 const log = (...a) => console.log(...a);
 const warn = (...a) => console.warn('  !', ...a);
@@ -106,15 +113,16 @@ async function readFrames(dir, expected, label) {
   return numbered.map((x) => path.join(abs, x.file));
 }
 
-/** Resize one frame set into one variant. Returns the number written. */
-async function emit(files, outDir, { size, quality }) {
+/** Resize one frame set to one width. Returns the number written. */
+async function emit(files, outDir, size) {
   await mkdir(outDir, { recursive: true });
+  const quality = qualityFor(size);
   let written = 0;
   for (const [i, file] of files.entries()) {
     const out = path.join(outDir, `${String(i).padStart(2, '0')}.webp`);
     if (!force && existsSync(out)) continue;
     // `fit: contain` with a transparent pad keeps every piece on a common
-    // square canvas even though one cutout set was exported at 1100px.
+    // square canvas even where a master was exported at a different size.
     await sharp(file)
       .resize(size, size, { fit: 'contain', background: { r: 0, g: 0, b: 0, alpha: 0 } })
       .webp({ quality, effort: 5 })
@@ -122,6 +130,19 @@ async function emit(files, outDir, { size, quality }) {
     written++;
   }
   return written;
+}
+
+/** Widths worth building for a master of this size. Never upscales. */
+function ladderFor(masterPx) {
+  const rungs = WIDTHS.filter((w) => w <= masterPx);
+  // A master smaller than the first rung still deserves its own size.
+  if (rungs.length === 0) rungs.push(masterPx);
+  // Give the largest available detail a home even if it falls between rungs.
+  else if (masterPx < WIDTHS[WIDTHS.length - 1] && rungs[rungs.length - 1] < masterPx) {
+    // Only worth a rung of its own if it is meaningfully sharper than the last.
+    if (masterPx >= rungs[rungs.length - 1] * 1.25) rungs.push(masterPx);
+  }
+  return rungs;
 }
 
 /**
@@ -186,16 +207,23 @@ async function main() {
     const dir = path.join(outRoot, piece.id);
     await mkdir(dir, { recursive: true });
 
-    for (const [key, opts] of Object.entries(VARIANTS)) {
-      const n = await emit(frames, path.join(dir, key), opts);
-      log(`  ${key} (${opts.size}px): ${n ? `wrote ${n}` : 'up to date'}, ${frames.length} frames`);
+    // The master's own size sets the ceiling. The photography pipeline now
+    // exports at the native crop, so this is whatever the camera actually
+    // resolved around the piece rather than a number someone picked.
+    const master = await sharp(frames[0]).metadata();
+    const masterPx = Math.min(master.width ?? 0, master.height ?? 0);
+    const widths = ladderFor(masterPx);
+
+    for (const w of widths) {
+      const n = await emit(frames, path.join(dir, String(w)), w);
+      log(`  ${w}px: ${n ? `wrote ${n}` : 'up to date'}, ${frames.length} frames`);
     }
 
-    // Cutouts are not imported. Every piece is shown the way it was
-    // photographed, on its linen, and the site offers no switch between the
-    // two: it looked worse and it was one more control to explain. The cutout
-    // frames still exist in the photography project if that is ever revisited.
-    await rm(path.join(dir, 'c'), { recursive: true, force: true });
+    // Clear the old fixed-size folders and any rung this master can no longer
+    // justify, so a shrinking source never leaves stale, sharper-looking files.
+    for (const stale of ['w', 'd', 'c', ...WIDTHS.filter((w) => !widths.includes(w)).map(String)]) {
+      await rm(path.join(dir, stale), { recursive: true, force: true });
+    }
 
     spins.push({
       id: piece.id,
@@ -205,7 +233,8 @@ async function main() {
       angles: angles.map((a) => Math.round(a * 100) / 100),
       anglesMeasured: measured,
       anglesNote: piece.angles_note ?? null,
-      sizes: Object.fromEntries(Object.entries(VARIANTS).map(([k, v]) => [k, v.size])),
+      widths,
+      masterPx,
       base: `/spins/${piece.id}`,
       palette: piece.palette,
       caveats: piece.caveats ?? [],

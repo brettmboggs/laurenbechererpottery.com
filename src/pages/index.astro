@@ -3,7 +3,7 @@ import Base from '../layouts/Base.astro';
 import PieceCard from '../components/PieceCard.astro';
 import EditLink from '../components/EditLink.astro';
 import { getCollection, getEntry } from 'astro:content';
-import { getSpinRecord, spinSpec, framePath, paletteVars } from '../lib/spins';
+import { getSpinRecord, spinSpec, framePath, frameSrcSet, widthUpTo, paletteVars } from '../lib/spins';
 import { listablePieces } from '../lib/pieces';
 
 const settings = (await getEntry('settings', 'site'))!.data;
@@ -14,7 +14,8 @@ const pieces = listablePieces(await getCollection('pieces'));
 // frames rather than the small wall set.
 const heroPiece = pieces.find((p) => getSpinRecord(p.data.spin));
 const heroSpin = getSpinRecord(heroPiece?.data.spin);
-const heroSpec = heroSpin ? spinSpec(heroSpin, 'd') : null;
+const heroSpec = heroSpin ? spinSpec(heroSpin, 1200) : null;
+const heroWidth = heroSpin ? widthUpTo(heroSpin, 1200) : 0;
 
 // Everything else, in full. The home page is the gallery: every piece that is
 // still available belongs here, and a sold one drops off the site entirely.
@@ -47,10 +48,12 @@ const posts = (await getCollection('posts', ({ data }) => !data.draft))
           aria-label={`${heroPiece.data.title} — hover to turn the piece`}
         >
           <img
-            src={framePath(heroSpin, 'd', 0)}
+            src={framePath(heroSpin, heroWidth, 0)}
+            srcset={frameSrcSet(heroSpin, 0)}
+            sizes="(max-width: 880px) 92vw, 46vw"
             alt={heroPiece.data.title}
-            width={heroSpin.sizes.d}
-            height={heroSpin.sizes.d}
+            width={heroWidth}
+            height={heroWidth}
             decoding="async"
             fetchpriority="high"
             draggable="false"

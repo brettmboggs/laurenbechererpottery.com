@@ -12,7 +12,7 @@
  * shows intent — see src/scripts/spin.ts.
  */
 import type { CollectionEntry } from 'astro:content';
-import { getSpinRecord, spinSpec, framePath, paletteVars } from '../lib/spins';
+import { getSpinRecord, spinSpec, framePath, frameSrcSet, widthUpTo, paletteVars } from '../lib/spins';
 
 interface Props {
   piece: CollectionEntry<'pieces'>;
@@ -26,9 +26,12 @@ const href = `/portfolio/${piece.id}/`;
 const money = (n: number) => n.toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 });
 
 const spin = getSpinRecord(d.spin);
-const spec = spin ? spinSpec(spin, 'w') : null;
-const still = spin ? framePath(spin, 'w', 0) : d.cover || '';
-const size = spin?.sizes.w ?? 800;
+// A wall can have dozens of pieces turning, so its frames are capped well
+// below what a single piece on its own page may load.
+const spec = spin ? spinSpec(spin, 800) : null;
+const still = spin ? framePath(spin, widthUpTo(spin, 800), 0) : d.cover || '';
+const stillSrcSet = spin ? frameSrcSet(spin, 0) : undefined;
+const size = spin ? widthUpTo(spin, 800) : 800;
 
 // The line under the title. Nothing here is invented: a piece with no
 // collection and no materials recorded simply shows nothing.
@@ -47,6 +50,8 @@ const statusLabel: Record<string, string> = { sold: 'Sold', reserved: 'Reserved'
     {still ? (
       <img
         src={still}
+        srcset={stillSrcSet}
+        sizes="(max-width: 560px) 92vw, (max-width: 1000px) 45vw, 260px"
         alt={d.title}
         width={size}
         height={size}

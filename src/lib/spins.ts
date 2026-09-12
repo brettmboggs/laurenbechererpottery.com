@@ -19,7 +19,10 @@ export interface SpinRecord {
   /** False where the shoot could not be measured and even spacing was assumed. */
   anglesMeasured: boolean;
   anglesNote: string | null;
-  sizes: Record<string, number>;
+  /** Widths actually built for this piece, ascending. Never upscaled. */
+  widths: number[];
+  /** The master's own size — the ceiling of what the camera resolved. */
+  masterPx: number;
   base: string;
   palette: { deep: string; mid: string; light: string; accent: string; linen: string };
   caveats: string[];
@@ -37,24 +40,48 @@ export function getSpinRecord(id?: string | null): SpinRecord | undefined {
 export interface SpinSpec {
   id: string;
   base: string;
-  variant: 'w' | 'd';
   count: number;
   angles: number[];
+  /** Ascending. The runtime picks one by measuring how big the piece is drawn. */
+  widths: number[];
+  /** Largest width this context may load, to bound decoded memory. */
+  cap: number;
 }
 
-export function spinSpec(record: SpinRecord, variant: SpinSpec['variant']): SpinSpec {
+/**
+ * @param cap Largest width worth loading here. A wall of spinning pieces is
+ *   capped low because decoded frames, not downloads, are what runs a browser
+ *   out of memory; a single piece on its own page can afford much more.
+ */
+export function spinSpec(record: SpinRecord, cap: number): SpinSpec {
   return {
     id: record.id,
     base: record.base,
-    variant,
     count: record.count,
     angles: record.angles,
+    widths: record.widths,
+    cap,
   };
 }
 
-/** Path to a single frame, for the one frame a tile ships in its markup. */
-export function framePath(record: SpinRecord, variant: SpinSpec['variant'], index = 0): string {
-  return `${record.base}/${variant}/${String(index).padStart(2, '0')}.webp`;
+/** Path to one frame at one width. */
+export function framePath(record: SpinRecord, width: number, index = 0): string {
+  return `${record.base}/${width}/${String(index).padStart(2, '0')}.webp`;
+}
+
+/** The widest built size not above a ceiling. */
+export function widthUpTo(record: SpinRecord, ceiling: number): number {
+  const fit = record.widths.filter((w) => w <= ceiling);
+  return fit.length ? fit[fit.length - 1] : record.widths[0];
+}
+
+/**
+ * A srcset across every built width, so the browser picks for the screen it is
+ * actually on. Paired with a `sizes` hint describing how wide the image is
+ * drawn, this is what makes one frame look right on a phone and on a 4K panel.
+ */
+export function frameSrcSet(record: SpinRecord, index = 0): string {
+  return record.widths.map((w) => `${framePath(record, w, index)} ${w}w`).join(', ');
 }
 
 /**

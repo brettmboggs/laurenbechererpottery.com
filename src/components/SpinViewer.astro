@@ -12,15 +12,16 @@
  * frame is a real photograph and nothing between them is invented.
  */
 import type { SpinRecord } from '../lib/spins';
-import { spinSpec, framePath, paletteVars } from '../lib/spins';
+import { spinSpec, framePath, frameSrcSet, widthUpTo, paletteVars } from '../lib/spins';
 
 interface Props {
   record: SpinRecord;
   title: string;
 }
 const { record, title } = Astro.props;
-const spec = spinSpec(record, 'd');
-const size = record.sizes.d;
+// One piece, one viewer: it can afford the largest size the screen justifies.
+const spec = spinSpec(record, 1200);
+const size = widthUpTo(record, 1200);
 ---
 <figure class="spin-figure" style={paletteVars(record)}>
   <div
@@ -32,7 +33,9 @@ const size = record.sizes.d;
     aria-label={`${title}, a 360 degree view. Drag, or use the left and right arrow keys, to turn it.`}
   >
     <img
-      src={framePath(record, 'd', 0)}
+      src={framePath(record, size, 0)}
+      srcset={frameSrcSet(record, 0)}
+      sizes="(max-width: 900px) 92vw, 46vw"
       alt={title}
       width={size}
       height={size}
