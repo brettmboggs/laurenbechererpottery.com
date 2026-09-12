@@ -1,4 +1,26 @@
-# Admin login — one-time setup
+# Admin login
+
+**Setup is done.** Lauren signs in at <https://laurenbechererpottery.com/admin/>
+with **Sign in with GitHub**. Nothing below needs doing again unless something
+breaks or the client secret has to be rotated.
+
+| Piece | Where it lives |
+| --- | --- |
+| GitHub account | `laurenbecherer`, Write access on this repo |
+| OAuth app | `Lauren Becherer Pottery Studio`, under Brett's GitHub developer settings |
+| OAuth proxy | Cloudflare Worker `sveltia-cms-auth`, in the **Lauren Becherer Pottery** account |
+| Worker URL | `https://sveltia-cms-auth.lauren-becherer-pottery.workers.dev` |
+| Client id + allowed domain | Plain Worker variables, redeployed from `wrangler.toml` |
+| Client secret | Encrypted Worker secret `GITHUB_CLIENT_SECRET`, set in the Cloudflare dashboard. Never in this repo. |
+
+**If the client secret is ever exposed**, generate a new one in the GitHub OAuth
+app, delete the old one, and replace the Worker secret in the Cloudflare
+dashboard under Workers & Pages → sveltia-cms-auth → Settings → Variables and
+secrets. Nothing else changes; the client id stays the same.
+
+---
+
+## Original setup notes
 
 The studio at `/admin/` is Sveltia CMS. It talks directly to GitHub, so Lauren
 needs a way to prove to GitHub that she's allowed to edit the repo. There are
