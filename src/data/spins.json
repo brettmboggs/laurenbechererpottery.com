@@ -207,7 +207,7 @@
         800,
         1200
       ],
-      "masterPx": 3128,
+      "masterPx": 3132,
       "base": "/spins/sand-bottle-vase",
       "palette": {
         "deep": "#9f8256",
@@ -246,9 +246,9 @@
       "widths": [
         400,
         800,
-        1000
+        1200
       ],
-      "masterPx": 1000,
+      "masterPx": 2472,
       "base": "/spins/forest-round-planter",
       "palette": {
         "deep": "#485042",
@@ -291,9 +291,9 @@
       "widths": [
         400,
         800,
-        1000
+        1200
       ],
-      "masterPx": 1000,
+      "masterPx": 2824,
       "base": "/spins/sage-planter",
       "palette": {
         "deep": "#717d59",
@@ -334,9 +334,9 @@
       "widths": [
         400,
         800,
-        1000
+        1200
       ],
-      "masterPx": 1000,
+      "masterPx": 2480,
       "base": "/spins/butter-planter",
       "palette": {
         "deep": "#beb867",
@@ -379,9 +379,9 @@
       "widths": [
         400,
         800,
-        1000
+        1200
       ],
-      "masterPx": 1000,
+      "masterPx": 1888,
       "base": "/spins/teal-bottle-vase",
       "palette": {
         "deep": "#3d5046",
@@ -429,9 +429,9 @@
       "widths": [
         400,
         800,
-        1000
+        1200
       ],
-      "masterPx": 1000,
+      "masterPx": 3288,
       "base": "/spins/olive-mug",
       "palette": {
         "deep": "#423c22",
@@ -472,9 +472,9 @@
       "widths": [
         400,
         800,
-        1000
+        1200
       ],
-      "masterPx": 1000,
+      "masterPx": 2588,
       "base": "/spins/rose-planter",
       "palette": {
         "deep": "#64523e",
@@ -508,9 +508,9 @@
       "widths": [
         400,
         800,
-        1000
+        1200
       ],
-      "masterPx": 1000,
+      "masterPx": 2292,
       "base": "/spins/white-planter",
       "palette": {
         "deep": "#c2b499",
@@ -554,7 +554,7 @@
         800,
         1200
       ],
-      "masterPx": 2200,
+      "masterPx": 2188,
       "base": "/spins/oatmeal-bowl",
       "palette": {
         "deep": "#988e65",
