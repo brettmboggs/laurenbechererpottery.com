@@ -2,9 +2,10 @@
 /**
  * About.
  *
- * The photograph is hung, not parked: it leads the page at full column width
- * with the writing beneath it. It used to sit in a side column far shorter
- * than the text next to it, which left it floating against a void.
+ * The photograph leads the page as a hero: wider than the writing, full bleed
+ * on a phone, and dissolving into the paper on every edge rather than stopping
+ * at one. It used to hang in a gold frame, which put a second, louder object on
+ * a page that only wants the one.
  */
 import Base from '../layouts/Base.astro';
 import { getEntry, render } from 'astro:content';
@@ -12,31 +13,20 @@ import EditLink from '../components/EditLink.astro';
 
 const about = (await getEntry('pages', 'about'))!;
 const { Content } = await render(about);
-const framed = about.data.portraitFramed;
 ---
 <Base title={about.data.title} description={about.data.subtitle}>
   <section class="section">
-    <div class="wrap about">
-      {about.data.portrait && (
-        <figure class="portrait" data-framed={framed ? 'true' : 'false'}>
-          <span class="opening">
-            <img
-              class="photo"
-              src={about.data.portrait}
-              alt={`Portrait of ${about.data.title.replace('About ', '')}`}
-            />
-          </span>
-          {framed && (
-            /* The frame is a PNG with a genuinely transparent opening, so the
-               photograph sits behind it rather than inside a cropped box. The
-               insets in the stylesheet are measured from that opening, minus a
-               hair so the photo tucks under the inner lip instead of leaving a
-               gap. Turn it off in Site content if it stops earning its keep. */
-            <img class="frame" src="/images/uploads/about-frame.webp" alt="" aria-hidden="true" />
-          )}
-        </figure>
-      )}
+    {about.data.portrait && (
+      <figure class="hero">
+        <img
+          src={about.data.portrait}
+          alt={`Portrait of ${about.data.title.replace('About ', '')}`}
+          fetchpriority="high"
+        />
+      </figure>
+    )}
 
+    <div class="wrap about">
       <div class="body">
         <p class="eyebrow">About</p>
         <h1>{about.data.title}</h1>
@@ -56,48 +46,40 @@ const framed = about.data.portraitFramed;
 </Base>
 
 <style>
+  /* The hero runs wider than the reading column and ignores the page gutter, so
+     the photograph is the first thing the page does rather than an illustration
+     beside the writing. */
+  .hero {
+    margin: 0 auto clamp(2rem, 5vw, 3.5rem);
+    width: min(100%, 1500px);
+  }
+
+  /* Every edge dissolves into the paper instead of ending on a line. Two
+     gradients, one per axis, intersected: a single gradient would only soften
+     one pair of sides. The stops are asymmetric on purpose - the top holds
+     longer because that is where the room and her face are, and the bottom
+     lets the table of pots fade out. */
+  .hero img {
+    width: 100%;
+    height: auto;
+    -webkit-mask-image:
+      linear-gradient(to right, transparent 0, #000 19%, #000 81%, transparent 100%),
+      linear-gradient(to bottom, transparent 0, #000 13%, #000 74%, transparent 100%);
+    mask-image:
+      linear-gradient(to right, transparent 0, #000 19%, #000 81%, transparent 100%),
+      linear-gradient(to bottom, transparent 0, #000 13%, #000 74%, transparent 100%);
+    -webkit-mask-composite: source-in;
+    mask-composite: intersect;
+  }
+
+  /* A browser without mask-composite would apply only the last gradient and
+     leave the left and right edges hard. Fall back to no fade at all rather
+     than a fade on one axis, which reads as a mistake. */
+  @supports not ((mask-composite: intersect) or (-webkit-mask-composite: source-in)) {
+    .hero img { -webkit-mask-image: none; mask-image: none; }
+  }
+
   .about { display: grid; justify-items: center; }
-
-  .portrait {
-    margin: 0 0 clamp(2.5rem, 6vw, 4.5rem);
-    width: 100%;
-    max-width: 820px;
-  }
-
-  /* Unframed: the photograph meets the page directly. */
-  .portrait[data-framed="false"] .opening { display: block; }
-  .portrait[data-framed="false"] .photo { width: 100%; height: auto; display: block; }
-
-  /* Framed: the frame sets the shape and the photograph fills its opening. */
-  .portrait[data-framed="true"] {
-    position: relative;
-    aspect-ratio: 1440 / 1080;
-  }
-  /* The opening carries the measurements; the photograph simply fills it.
-     An absolutely positioned <img> falls back to its intrinsic size rather
-     than stretching to its offsets, so it needs this wrapper to be clipped. */
-  .portrait[data-framed="true"] .opening {
-    position: absolute;
-    top: 15.7%;
-    bottom: 16.2%;
-    left: 11.7%;
-    right: 11.8%;
-    overflow: hidden;
-  }
-  .portrait[data-framed="true"] .photo {
-    width: 100%;
-    height: 100%;
-    display: block;
-    object-fit: cover;
-  }
-  .portrait[data-framed="true"] .frame {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-  }
-
   .body { width: 100%; max-width: 68ch; }
   .body .prose { max-width: none; }
 

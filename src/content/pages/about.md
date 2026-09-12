@@ -2,7 +2,6 @@
 title: About Lauren
 subtitle: Wheel-thrown and hand-built, from a home studio.
 portrait: /images/uploads/lauren-portrait.webp
-portraitFramed: true
 studioImages: []
 ---
 

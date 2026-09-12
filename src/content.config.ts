@@ -105,8 +105,6 @@ const pages = defineCollection({
     title: z.string(),
     subtitle: z.string().optional(),
     portrait: optionalPath,
-    /** Hang the portrait in the decorative frame. Off shows the bare photo. */
-    portraitFramed: z.boolean().default(false),
     studioImages: z.array(z.object({ image: z.string(), alt: z.string().optional() })).default([]),
   }),
 });
