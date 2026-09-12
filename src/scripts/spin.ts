@@ -400,12 +400,27 @@ export class Spin {
     return -1;
   }
 
+  /**
+   * The still ships with a srcset so the browser can pick for the display it
+   * is on. Once the piece starts turning, that responsive choice is finished:
+   * the runtime has measured the element and picked a rung itself, and every
+   * frame from here is an explicit src. A srcset with width descriptors wins
+   * over src outright, so leaving it in place silently pins the element to
+   * frame zero and the piece never appears to turn.
+   */
+  private takeOverFromSrcset() {
+    if (!this.img.srcset) return;
+    this.img.removeAttribute('srcset');
+    this.img.removeAttribute('sizes');
+  }
+
   render() {
     const index = this.nearestReady(this.targetIndex());
     if (index < 0 || index === this.shownIndex) return;
     const img = this.set?.images[index];
     if (!img) return;
     this.shownIndex = index;
+    this.takeOverFromSrcset();
     this.img.src = img.src;
   }
 
