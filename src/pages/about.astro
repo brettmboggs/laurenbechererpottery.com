@@ -8,9 +8,14 @@ const { Content } = await render(about);
 <Base title={about.data.title} description={about.data.subtitle}>
   <section class="section">
     <div class="wrap about">
-      <div class="portrait">
-        {about.data.portrait && <img src={about.data.portrait} alt={`Portrait of ${about.data.title.replace('About ', '')}`} />}
-      </div>
+      {about.data.portrait && (
+        /* No frame, no mat, no rule. The photograph meets the page directly —
+           anything drawn around it read as an object sitting on top of the
+           page rather than part of it. */
+        <div class="portrait">
+          <img src={about.data.portrait} alt={`Portrait of ${about.data.title.replace('About ', '')}`} />
+        </div>
+      )}
       <div>
         <p class="eyebrow">About</p>
         <h1>{about.data.title}</h1>
@@ -27,17 +32,14 @@ const { Content } = await render(about);
 </Base>
 
 <style>
-  .about { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(2rem, 5vw, 4.5rem); align-items: start; }
-  .portrait img {
-    width: 100%; height: auto;
-    border-radius: var(--radius);
-    border: 1px solid var(--line);
-    position: sticky; top: 100px;
-  }
+  .about { display: grid; grid-template-columns: 0.95fr 1.05fr; gap: clamp(2rem, 5vw, 4.5rem); align-items: start; }
+
+  .portrait { position: sticky; top: 100px; }
+  .portrait img { width: 100%; height: auto; display: block; }
   .studio { margin-top: 4rem; }
   .studio img { border-radius: var(--radius); aspect-ratio: 1; object-fit: cover; }
   @media (max-width: 800px) {
     .about { grid-template-columns: 1fr; }
-    .portrait img { position: static; }
+    .portrait { position: static; }
   }
 </style>
