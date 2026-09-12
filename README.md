@@ -2,7 +2,7 @@
 
 Handmade ceramics by Lauren Becherer. A fast, free-to-host static site built
 around 360° turntable photography of the real pieces, with a no-code admin
-portal, Stripe checkout, and private client project pages.
+portal and Stripe checkout.
 
 Every frame in every spin is a real photograph. Nothing is interpolated, and it
 stays that way: the point of the site is that no two pieces are alike, so the
@@ -23,7 +23,6 @@ glaze has to read true. A steppy honest turn beats a smooth fake one.
 | 360° viewer | Turntable runtime (`src/scripts/spin.ts`) driving the wall and the piece pages | Free |
 | 3D viewer | Google `<model-viewer>` for `.glb`/`.gltf` — wired up but dormant, no scan exists yet | Free |
 | Payments | Stripe Payment Links pasted into each piece | Per-sale fee only |
-| Commission form | Visitor's email app by default; optional Formspree/Web3Forms endpoint | Free |
 | Domain | Namecheap (DNS → GitHub Pages, see `docs/DNS.md`) | Yearly renewal |
 
 Every time content is saved in the admin (or code is pushed to `main`), the
@@ -32,14 +31,12 @@ about a minute.
 
 ## Site map
 
-- `/` — home (hero, featured pieces, commission CTA, latest journal)
+- `/` — home (hero, featured pieces, latest journal)
 - `/portfolio/` — the wall: every piece, hover one to turn it
 - `/portfolio/<piece>/` — one piece: turntable, dimensions, materials, care, price, more photos, scenes
 - `/shop/` — pieces marked *for sale*, with Stripe buy buttons
 - `/journal/` — posts
 - `/about/` — bio
-- `/client/` — project-code lookup + commission request form
-- `/client/<code>/` — private per-client progress page (unlisted, `noindex`)
 - `/admin/` — studio login
 
 ## Local development

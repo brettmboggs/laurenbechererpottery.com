@@ -30,7 +30,7 @@ One entry per pot. This is the heart of the site.
 - **Show in portfolio** — on for anything you want in the gallery (including sold work).
 - **This is a working title** — leave on until the piece has a real name. The page says "working title" rather than pretending it is named.
 - **For sale** — on to list it in the Shop. Add a **Price**.
-- **Status** — Available / Reserved / Sold / Commission. Sold pieces stay in the portfolio with a "Sold" tag and disappear from the shop's buy button.
+- **Status** — Available / Reserved / Sold. Sold pieces stay in the portfolio with a "Sold" tag and disappear from the shop's buy button.
 - **Stripe payment link** — how people pay. See "Taking payments" below.
 - **More photos** — add as many as you like.
 - **360° spin folder** — the folder name for a piece Brett has photographed on the turntable, e.g. `stoneware-planter`. Fill this in and the piece turns when someone hovers it on the wall, and can be dragged around on its own page. Leave it blank for a piece with ordinary photos.
@@ -41,18 +41,6 @@ One entry per pot. This is the heart of the site.
 
 ### Journal
 Blog posts: kiln openings, market dates, process notes. Tick **Draft** to keep a post hidden while you write it.
-
-### Clients
-One private page per commission.
-
-1. Click **New Client project**.
-2. Fill in the name, what you're making, and a **Project code**. Make the code something nobody could guess, like `smith-plates-7h3k` (lowercase letters, numbers, dashes).
-3. Save. The page is now at `https://laurenbechererpottery.com/client/smith-plates-7h3k/` — text or email that link to the client.
-4. As the work progresses, change the **Stage** and add **Progress updates** with a note and a photo. The client sees a progress bar and a timeline.
-5. Paste Stripe links into **Deposit** / **Balance** to collect payment right from their page.
-6. When it's done, turn **Active** off to take the page down.
-
-The client portal page (`/client/`) also has a "start a commission" form that emails you.
 
 ### Pages → About
 Your bio, portrait, and studio photos.
@@ -69,8 +57,6 @@ Your name, tagline, home-page headline and intro text, contact email, Instagram 
 3. In the studio, open the piece and paste the link into **Stripe payment link**. Save.
 
 The piece now shows a **Buy now** button. When it sells, mark the **Status** as Sold. Stripe deposits money to your bank on a rolling basis and only charges a small fee per sale — there is no monthly cost.
-
-For deposits on commissions, make a Payment Link for the deposit amount and paste it into the client's page.
 
 ---
 

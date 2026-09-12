@@ -106,6 +106,4 @@ Saves write to the files on disk; commit and push them when you're ready.
 ## Upgrade paths (when you want them)
 
 - **Real cart / multi-item checkout:** add a Cloudflare Worker that creates a Stripe Checkout Session; the front end already isolates purchase buttons in `src/pages/portfolio/[slug].astro`.
-- **Real client login (email + password):** Supabase Auth (free tier) or Cloudflare Access. The current portal is private-by-link, which is appropriate for progress photos but not for anything sensitive.
 - **Bigger 3D assets:** GitHub caps files at 100 MB and repos at ~1 GB. Move to Cloudflare Pages + R2 (10 GB free) when scans get heavy; the build output is identical.
-- **Contact form without an email app:** create a free https://formspree.io or https://web3forms.com form and paste the endpoint into *Site settings → Form service endpoint*.

@@ -34,7 +34,6 @@ const posts = (await getCollection('posts', ({ data }) => !data.draft))
         <p class="lead">{settings.heroSubheading}</p>
         <div class="cta">
           <a class="btn" href="/portfolio/">See the work</a>
-          <a class="btn ghost" href="/client/">Commission a piece</a>
         </div>
       </div>
 
@@ -75,25 +74,6 @@ const posts = (await getCollection('posts', ({ data }) => !data.draft))
       <div class="grid cols-3">
         {latest.map((p) => <PieceCard piece={p} showPrice={p.data.forSale} />)}
       </div>
-    </div>
-  </section>
-  <section class="section band">
-    <div class="wrap band-grid">
-      <div>
-        <p class="eyebrow">Made to order</p>
-        <h2>Commission a piece</h2>
-        <p class="lead">
-          Dinnerware for your table, a vase for the mantel, mugs for the whole family. Tell me what
-          you have in mind and follow it along on your own project page.
-        </p>
-        <a class="btn" href="/client/">{settings.commissionsOpen ? 'Start a commission' : 'Join the waitlist'}</a>
-      </div>
-      <ol class="steps">
-        <li><span>01</span> Tell me your idea</li>
-        <li><span>02</span> Deposit and sketch approval</li>
-        <li><span>03</span> Watch it take shape</li>
-        <li><span>04</span> Delivered to your door</li>
-      </ol>
     </div>
   </section>
 
@@ -172,7 +152,7 @@ const posts = (await getCollection('posts', ({ data }) => !data.draft))
   .post-excerpt { margin: 0; color: var(--fg-faint); font-size: 0.9rem; }
 
   @media (max-width: 880px) {
-    .hero-grid, .band-grid { grid-template-columns: 1fr; }
+    .hero-grid { grid-template-columns: 1fr; }
     .hero-piece { max-width: 440px; }
   }
 </style>

@@ -28,7 +28,7 @@ const pieces = defineCollection({
     featured: z.boolean().default(false),
     showInPortfolio: z.boolean().default(true),
     forSale: z.boolean().default(false),
-    status: z.enum(['available', 'sold', 'reserved', 'commission']).default('available'),
+    status: z.enum(['available', 'sold', 'reserved']).default('available'),
     price: z.number().nonnegative().optional(),
     stripeLink: optionalUrl,
     collection: z.string().optional(),
@@ -80,25 +80,6 @@ const posts = defineCollection({
   }),
 });
 
-const clients = defineCollection({
-  loader: glob({ pattern: '**/*.md', base: './src/content/clients' }),
-  schema: z.object({
-    name: z.string(),
-    code: z.string().min(6),
-    project: z.string(),
-    status: z
-      .enum(['inquiry', 'deposit', 'in-progress', 'drying', 'firing', 'glazing', 'ready', 'shipped', 'complete'])
-      .default('inquiry'),
-    estimatedCompletion: z.string().optional(),
-    depositLink: optionalUrl,
-    balanceLink: optionalUrl,
-    updates: z
-      .array(z.object({ date: z.coerce.date(), note: z.string(), image: optionalPath }))
-      .default([]),
-    active: z.boolean().default(true),
-  }),
-});
-
 const pages = defineCollection({
   loader: glob({ pattern: '**/*.md', base: './src/content/pages' }),
   schema: z.object({
@@ -126,11 +107,9 @@ const settings = defineCollection({
     email: z.string().optional(),
     instagram: z.string().optional(),
     location: z.string().optional(),
-    commissionsOpen: z.boolean().default(true),
-    formEndpoint: z.string().optional(),
     /** Shared care note shown on every piece page unless the piece overrides it. */
     careNote: z.string().optional(),
   }),
 });
 
-export const collections = { pieces, posts, clients, pages, settings };
+export const collections = { pieces, posts, pages, settings };

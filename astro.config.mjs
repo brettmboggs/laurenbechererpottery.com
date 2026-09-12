@@ -8,10 +8,7 @@ export default defineConfig({
   output: 'static',
   trailingSlash: 'always',
   integrations: [
-    sitemap({
-      // Client portal pages are private-by-link; keep them out of the sitemap.
-      filter: (page) => !page.includes('/client/'),
-    }),
+    sitemap(),
   ],
   vite: {
     // model-viewer ships as an ES module; make sure it is bundled for the browser.

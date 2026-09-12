@@ -14,7 +14,3 @@ Every piece starts as a lump of stoneware and ends up somewhere it can be used: 
 ## Process
 
 I throw on the wheel and hand-build, bisque fire, then glaze and fire again to cone 6. Small batches, slow work, no two alike.
-
-## Commissions
-
-I take a limited number of commissions each season. If you have something in mind, head to the [client portal](/client/) and tell me about it.

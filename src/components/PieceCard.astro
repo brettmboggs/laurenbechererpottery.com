@@ -36,7 +36,7 @@ const size = spin ? widthUpTo(spin, 800) : 800;
 // The line under the title. Nothing here is invented: a piece with no
 // collection and no materials recorded simply shows nothing.
 const meta = d.collection ?? d.materials ?? '';
-const statusLabel: Record<string, string> = { sold: 'Sold', reserved: 'Reserved', commission: 'Commission' };
+const statusLabel: Record<string, string> = { sold: 'Sold', reserved: 'Reserved' };
 ---
 <a
   class="tile"

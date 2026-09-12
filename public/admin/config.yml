@@ -85,7 +85,6 @@ collections:
           - { label: Available, value: available }
           - { label: Reserved, value: reserved }
           - { label: Sold, value: sold }
-          - { label: Commission (not for sale), value: commission }
         default: available
       - { label: Description, name: body, widget: markdown, required: false }
 
@@ -166,56 +165,6 @@ collections:
       - { label: Draft (hide from site), name: draft, widget: boolean, default: false }
       - { label: Post, name: body, widget: markdown }
 
-  # ---------------------------------------------------------------- Clients
-  - name: clients
-    label: Clients
-    label_singular: Client project
-    description: One private page per commission. Share the link laurenbechererpottery.com/client/CODE/ with the client.
-    folder: src/content/clients
-    create: true
-    delete: true
-    slug: "{{code}}"
-    summary: "{{name}} — {{project}} ({{status}})"
-    editor:
-      preview: false
-    fields:
-      - { label: Client name, name: name, widget: string }
-      - label: Project code
-        name: code
-        widget: string
-        pattern: ["^[a-z0-9-]{6,}$", "Lowercase letters, numbers and dashes only, at least 6 characters"]
-        hint: "Make it unguessable, e.g. smith-plates-7h3k. The page will be at /client/<code>/"
-      - { label: Project, name: project, widget: string, hint: "e.g. Set of six dinner plates" }
-      - label: Stage
-        name: status
-        widget: select
-        options:
-          - { label: Inquiry, value: inquiry }
-          - { label: Deposit, value: deposit }
-          - { label: Making, value: in-progress }
-          - { label: Drying, value: drying }
-          - { label: Bisque fire, value: firing }
-          - { label: Glazing, value: glazing }
-          - { label: Ready, value: ready }
-          - { label: Shipped, value: shipped }
-          - { label: Complete, value: complete }
-        default: inquiry
-      - { label: Estimated completion, name: estimatedCompletion, widget: string, required: false, hint: "e.g. October 2026" }
-      - { label: Deposit payment link (Stripe), name: depositLink, widget: string, required: false }
-      - { label: Balance payment link (Stripe), name: balanceLink, widget: string, required: false }
-      - label: Progress updates
-        name: updates
-        widget: list
-        required: false
-        collapsed: false
-        summary: "{{fields.date}} — {{fields.note}}"
-        fields:
-          - { label: Date, name: date, widget: datetime, time_format: false, format: "YYYY-MM-DD" }
-          - { label: Note, name: note, widget: text }
-          - { label: Photo, name: image, widget: image, required: false }
-      - { label: Active (show page), name: active, widget: boolean, default: true, hint: "Turn off to take the page down once the project is done." }
-      - { label: Welcome message, name: body, widget: markdown, required: false }
-
   # ---------------------------------------------------------------- Pages
   - name: pages
     label: Pages
@@ -264,6 +213,4 @@ collections:
           - { label: Contact email, name: email, widget: string, required: false }
           - { label: Instagram handle, name: instagram, widget: string, required: false, hint: "Just the handle, e.g. laurenbechererpottery" }
           - { label: Location, name: location, widget: string, required: false, hint: "e.g. St. Louis, MO" }
-          - { label: Commissions open, name: commissionsOpen, widget: boolean, default: true }
-          - { label: Form service endpoint, name: formEndpoint, widget: string, required: false, hint: "Advanced. A Formspree/Web3Forms URL for the commission form. Blank = opens the visitor's email app." }
           - { label: Care note (shown on every piece), name: careNote, widget: text, required: false, hint: "e.g. “Food safe and dishwasher safe. Hand wash to keep the glaze at its best.” A piece can override this with its own care note." }

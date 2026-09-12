@@ -39,7 +39,6 @@ const statusLabel: Record<string, string> = {
   available: 'Available',
   sold: 'Sold',
   reserved: 'Reserved',
-  commission: 'Commission piece',
 };
 
 const care =
@@ -56,7 +55,7 @@ const sceneLabel: Record<string, string> = {
 
 // Structured data. Only what is actually known goes in: no price is better
 // than a made-up one, and Google is happier with an omitted field than a wrong one.
-const availability: Record<string, string> = { available: 'InStock', reserved: 'PreOrder', sold: 'SoldOut', commission: 'PreOrder' };
+const availability: Record<string, string> = { available: 'InStock', reserved: 'PreOrder', sold: 'SoldOut' };
 const images = [hero, ...d.gallery.map((g) => g.image), ...d.scenes.map((s) => s.image)].filter(Boolean) as string[];
 const jsonLd = {
   '@context': 'https://schema.org',
@@ -122,7 +121,6 @@ const jsonLd = {
             )}
             {canBuy && !d.stripeLink && <a class="btn" href={inquire}>Inquire to purchase</a>}
             {!canBuy && d.status !== 'sold' && <a class="btn ghost" href={inquire}>Ask about this piece</a>}
-            {d.status === 'sold' && <a class="btn ghost" href="/client/">Commission something similar</a>}
           </div>
 
           <dl class="specs">
