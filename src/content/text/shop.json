@@ -1,14 +1,13 @@
 {
-  "description": "Buy one-of-a-kind handmade pottery by Lauren Becherer.",
   "eyebrow": "Shop",
   "heading": "Available work",
-  "intro": "Each piece is one of a kind. When it's gone, it's gone — but I'm always making more.",
-  "emptyText": "The shelves are empty right now. Check back after the next firing.",
-  "emptyLink": "See the rest of the work",
+  "intro": "Current work available for purchase.",
+  "emptyText": "coming soon...",
+  "emptyLink": "To the Gallery",
   "faq": [
     {
       "heading": "Shipping",
-      "text": "Pieces ship within the US, packed with care. Local pickup is free.",
+      "text": "Shipped within the US via USPS, packaged with care.",
       "emailLink": ""
     },
     {
@@ -17,9 +16,10 @@
       "emailLink": ""
     },
     {
-      "heading": "Questions",
-      "text": "Questions about sizing or gifting?",
-      "emailLink": "Email me"
+      "heading": "Questions?",
+      "text": "Email me!",
+      "emailLink": "Email me!"
     }
-  ]
+  ],
+  "description": "Buy one-of-a-kind handmade pottery by Lauren Becherer."
 }
