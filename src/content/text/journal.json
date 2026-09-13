@@ -1,8 +1,8 @@
 {
-  "description": "Studio notes, kiln openings, and what's in progress.",
   "eyebrow": "Journal",
-  "heading": "Studio notes",
-  "intro": "Kiln openings, glaze tests, market dates, and the occasional cracked pot.",
-  "empty": "Nothing here yet.",
-  "backLink": "← All posts"
+  "heading": "studio notes",
+  "intro": "Published thoughts and ideas.",
+  "empty": "pondering...",
+  "backLink": "← All posts",
+  "description": ""
 }
