@@ -1,10 +1,10 @@
 {
-  "description": "Every piece Lauren Becherer has made, photographed all the way around.",
   "eyebrow": "The work",
-  "heading": "Every piece, all the way around",
-  "intro": "Each piece was photographed a frame at a time on a turntable. Hover one to turn it, or open it to take a closer look.",
+  "heading": "completed pieces",
+  "intro": "",
   "allFilter": "All",
   "empty": "No pieces yet — add one from the studio login.",
   "archiveHeading": "Found a home",
-  "archiveIntro": "Pieces that have sold and gone to live somewhere else."
+  "archiveIntro": "Pieces that have sold and gone to live somewhere else.",
+  "description": "Every piece Lauren Becherer has made, photographed all the way around."
 }
