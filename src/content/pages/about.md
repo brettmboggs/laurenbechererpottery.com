@@ -1,18 +1,14 @@
 ---
-eyebrow: About
-title: About Lauren
-subtitle: Wheel-thrown and hand-built, from a home studio.
+eyebrow: Bio
+title: About the Artist
+subtitle: Home studio potter in St. Charles, Missouri.
 portrait: /images/uploads/lauren-portrait.webp
 studioImages: []
 signature: Lauren
 ---
 
-*This is placeholder text. Replace it from the studio login → Pages → About.*
+_This is placeholder text. Replace it from the studio login → Pages → About._
 
-Hi, I'm Lauren. I make functional and sculptural ceramics from my home studio.
+I have always had an interest and respect for all art forms. When I discovered pottery, I realized I had an even greater appreciation for it due to its functionality and building experience. Making pottery is a long process with many steps that take multiple days if not weeks. It's taught me patience and deepened my respect for hand built items. In an era where things are mass produced without a humans touch, I hope I can provide a unique hand-built item to add to your home. I'm so happy you're here! 
 
-Every piece starts as a lump of stoneware and ends up somewhere it can be used: a mug that fits your hand, a bowl for the good salad, a vase for the flowers you cut on the way home.
-
-## Process
-
-I throw on the wheel and hand-build, bisque fire, then glaze and fire again to cone 6. Small batches, slow work, no two alike.
+##
