@@ -13,7 +13,7 @@ import PieceCard from '../../components/PieceCard.astro';
 import EditLink from '../../components/EditLink.astro';
 import { getCollection, getEntry, render } from 'astro:content';
 import { getSpinRecord, framePath, widthUpTo, paletteVars } from '../../lib/spins';
-import { sortPieces } from '../../lib/pieces';
+import { sortPieces, transitionName } from '../../lib/pieces';
 
 export async function getStaticPaths() {
   const pieces = await getCollection('pieces');
@@ -90,6 +90,7 @@ const jsonLd = {
       <div class="piece">
         <div class="viewer-col">
           <PieceViewer
+            transitionName={transitionName(piece)}
             title={d.title}
             cover={d.cover || undefined}
             gallery={d.gallery}

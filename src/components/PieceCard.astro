@@ -12,6 +12,7 @@
  * shows intent — see src/scripts/spin.ts.
  */
 import { getEntry, type CollectionEntry } from 'astro:content';
+import { transitionName } from '../lib/pieces';
 import { getSpinRecord, spinSpec, framePath, frameSrcSet, widthUpTo, paletteVars } from '../lib/spins';
 
 interface Props {
@@ -19,8 +20,10 @@ interface Props {
   showPrice?: boolean;
   /** Loading priority for the first row of the wall. */
   eager?: boolean;
+  /** Shown in "Found a home": faded until hovered, with no price. */
+  archived?: boolean;
 }
-const { piece, showPrice = false, eager = false } = Astro.props;
+const { piece, showPrice = false, eager = false, archived = false } = Astro.props;
 const d = piece.data;
 const href = `/portfolio/${piece.id}/`;
 const money = (n: number) => n.toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 });
@@ -40,14 +43,14 @@ const t = (await getEntry('piece', 'piece'))!.data;
 const statusLabel: Record<string, string> = { sold: t.sold, reserved: t.reserved };
 ---
 <a
-  class="tile"
+  class:list={['tile', { archived }]}
   href={href}
   style={paletteVars(spin)}
   data-spin={spec ? JSON.stringify(spec) : undefined}
   data-spin-mode={spec ? 'hover' : undefined}
   aria-label={spec ? `${d.title} — hover or focus to turn the piece` : d.title}
 >
-  <div class="plate">
+  <div class="plate" style={`view-transition-name: ${transitionName(piece)}`}>
     {still ? (
       <img
         src={still}
@@ -123,6 +126,19 @@ const statusLabel: Record<string, string> = { sold: t.sold, reserved: t.reserved
   }
   .tile[data-spin-state="spinning"] .turn,
   .tile[data-spin-state="loading"] .turn { opacity: 0; }
+
+  /* A sold piece rests a little faded and warms back to its true colour when
+     someone looks at it, so the archive reads as memory, not stock. */
+  .archived .plate img {
+    filter: saturate(0.55) brightness(1.04);
+    opacity: 0.82;
+    transition: filter 0.4s ease, opacity 0.4s ease;
+  }
+  .archived:hover .plate img,
+  .archived:focus-visible .plate img,
+  .archived[data-spin-state="spinning"] .plate img { filter: none; opacity: 1; }
+  .archived .body h3 { font-size: 0.95rem; color: var(--fg-soft); }
+  .archived .meta { font-size: 0.78rem; }
 
   .body { padding: 0.9rem 0.1rem 0; }
   .body h3 { margin: 0 0 0.15rem; font-size: 1.1rem; }

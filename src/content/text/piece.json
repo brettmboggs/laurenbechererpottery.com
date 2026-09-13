@@ -30,6 +30,8 @@
   "dragHint": "Drag to turn",
   "turnButton": "Turn it",
   "stopButton": "Stop",
+  "tiltButton": "Tilt to turn",
+  "tiltStop": "Stop tilting",
   "modelHint": "Drag to spin · scroll or pinch to zoom",
   "arButton": "View in your space"
 }

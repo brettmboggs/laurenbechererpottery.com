@@ -32,6 +32,7 @@ const { Content } = await render(about);
         <h1>{about.data.title}</h1>
         {about.data.subtitle && <p class="lead">{about.data.subtitle}</p>}
         <div class="prose"><Content /></div>
+        {about.data.signature && <p class="signature">{about.data.signature}</p>}
       </div>
     </div>
 
@@ -80,6 +81,23 @@ const { Content } = await render(about);
   }
 
   .about { display: grid; justify-items: center; }
+
+  /* Her own hand, from the font traced off her lettering sheet
+     (docs/HAND-DRAWN-FONT.md). Loaded on this page only, for this one line. */
+  @font-face {
+    font-family: 'Lauren Hand';
+    src: url('/fonts/lauren-hand-regular.woff2') format('woff2');
+    font-display: swap;
+  }
+  .signature {
+    margin: 2.25rem 0 0;
+    font-family: 'Lauren Hand', var(--font-display);
+    font-size: clamp(2rem, 4.5vw, 2.75rem);
+    line-height: 1;
+    color: var(--fg-soft);
+    transform: rotate(-3deg);
+    transform-origin: left center;
+  }
   .body { width: 100%; max-width: 68ch; }
   .body .prose { max-width: none; }
 

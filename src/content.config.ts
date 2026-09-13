@@ -88,6 +88,8 @@ const pages = defineCollection({
     subtitle: z.string().optional(),
     portrait: optionalPath,
     studioImages: z.array(z.object({ image: z.string(), alt: z.string().optional() })).default([]),
+    /** Signed under the story in Lauren's own handwriting. */
+    signature: z.string().optional(),
   }),
 });
 
@@ -152,6 +154,8 @@ const work = single('work', {
   intro: text,
   allFilter: text,
   empty: text,
+  archiveHeading: text,
+  archiveIntro: text,
 });
 
 const piece = single('piece', {
@@ -186,6 +190,8 @@ const piece = single('piece', {
   dragHint: text,
   turnButton: text,
   stopButton: text,
+  tiltButton: text,
+  tiltStop: text,
   modelHint: text,
   arButton: text,
 });

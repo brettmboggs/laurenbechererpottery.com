@@ -93,6 +93,7 @@ collections:
       - label: Status
         name: status
         widget: select
+        hint: "Sold pieces leave the Work wall, home page and shop, and move to “Found a home” at the bottom of the Work page."
         options:
           - { label: Available, value: available }
           - { label: Reserved, value: reserved }
@@ -218,6 +219,8 @@ collections:
           - { label: Intro, name: intro, widget: text, required: false, hint: "Leave blank to hide." }
           - { label: “All” filter button, name: allFilter, widget: string, hint: "Filter buttons only appear once pieces are in more than one collection / series." }
           - { label: Message when there are no pieces, name: empty, widget: string, required: false }
+          - { label: Sold pieces heading, name: archiveHeading, widget: string, hint: "The section at the bottom of the Work page for pieces marked Sold. It only appears once something has sold." }
+          - { label: Sold pieces intro, name: archiveIntro, widget: text, required: false, hint: "Leave blank to hide." }
           - { label: Search engine description, name: description, widget: text, required: false, hint: "The short summary Google shows under the page name." }
 
       - name: piece
@@ -255,6 +258,8 @@ collections:
           - { label: Hint on the 360° viewer, name: dragHint, widget: string, required: false, hint: "Leave blank to hide." }
           - { label: Spin button, name: turnButton, widget: string }
           - { label: Stop button, name: stopButton, widget: string }
+          - { label: Tilt button, name: tiltButton, widget: string, hint: "Phones only. Tilting the phone turns the piece." }
+          - { label: Stop tilting button, name: tiltStop, widget: string }
           - { label: Hint under the 3D model, name: modelHint, widget: string, required: false, hint: "Leave blank to hide." }
           - { label: Augmented reality button, name: arButton, widget: string, hint: "Only appears on phones that support it." }
           - { label: Search engine description, name: searchDescription, widget: text, required: false, hint: "Added after the piece's name and materials in Google results." }
@@ -353,6 +358,7 @@ collections:
               - { label: Photo, name: image, widget: image }
               - { label: Description, name: alt, widget: string, required: false }
           - { label: Your story, name: body, widget: markdown }
+          - { label: Signature, name: signature, widget: string, required: false, hint: "Signed under your story in your own handwriting. Leave blank to hide." }
 
   # ---------------------------------------------------------------- Settings
   - name: settings

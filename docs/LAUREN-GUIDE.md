@@ -46,7 +46,7 @@ One entry per pot. This is the heart of the site.
 Blog posts: kiln openings, market dates, process notes. Tick **Draft** to keep a post hidden while you write it.
 
 ### Pages → About
-Your bio, portrait, and studio photos.
+Your bio, portrait, and studio photos. Fill in **Signature** and it's signed under your story in your own handwriting.
 
 ### Page text
 Every other word on the site, one page at a time: the home-page headline and intro, headings, buttons, the menu and footer, the shop's info boxes, the labels on each piece page, even the page-not-found message. Change anything and save. Fields marked **Leave blank to hide** disappear from the site when you empty them.
@@ -84,7 +84,7 @@ Replying: when you hit Reply in Gmail, the reply comes from your Gmail address. 
 2. In Stripe go to **Payment Links → + New**. Add the piece name, price, a photo, and turn on **Collect shipping address**. Click **Create link**, then **Copy**.
 3. In the studio, open the piece and paste the link into **Stripe payment link**. Save.
 
-The piece now shows a **Buy now** button. When it sells, mark the **Status** as Sold. Stripe deposits money to your bank on a rolling basis and only charges a small fee per sale — there is no monthly cost.
+The piece now shows a **Buy now** button. When it sells, mark the **Status** as Sold: it leaves the shop and the Work wall and moves to **Found a home** at the bottom of the Work page, faded, where people can still see it turn. Stripe deposits money to your bank on a rolling basis and only charges a small fee per sale — there is no monthly cost.
 
 ---
 

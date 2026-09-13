@@ -10,17 +10,23 @@
  * through them so the piece turns at a constant rate even though the
  * photographed steps are uneven. The turn is a little steppy because every
  * frame is a real photograph and nothing between them is invented.
+ *
+ * Arriving from a tile, the piece grows out of that tile (a view transition
+ * named in `transitionName`) and carries on from the angle it was showing. On
+ * a phone it can also follow the phone's tilt, as if turned in the hands.
  */
+import { getEntry } from 'astro:content';
 import type { SpinRecord } from '../lib/spins';
 import { spinSpec, framePath, frameSrcSet, widthUpTo, paletteVars } from '../lib/spins';
 
 interface Props {
   record: SpinRecord;
   title: string;
+  /** Shared with the tile that links here, so one morphs into the other. */
+  transitionName?: string;
 }
-import { getEntry } from 'astro:content';
 
-const { record, title } = Astro.props;
+const { record, title, transitionName } = Astro.props;
 const t = (await getEntry('piece', 'piece'))!.data;
 // One piece, one viewer: it can afford the largest size the screen justifies.
 const spec = spinSpec(record, 1200);
@@ -34,6 +40,7 @@ const size = widthUpTo(record, 1200);
     tabindex="0"
     role="img"
     aria-label={`${title}, a 360 degree view. Drag, or use the left and right arrow keys, to turn it.`}
+    style={transitionName ? `view-transition-name: ${transitionName}` : undefined}
   >
     <img
       src={framePath(record, size, 0)}
@@ -47,11 +54,41 @@ const size = widthUpTo(record, 1200);
     />
     {t.dragHint && <span class="hint" aria-hidden="true">{t.dragHint}</span>}
   </div>
+  <!-- Runs as the page is parsed, before it first paints: if a tile on the
+       previous page left a note for this spin, show the frame it had on screen
+       and start from its angle, so the view transition lands on the same view
+       of the pot. The key and shape match bindHandoff in src/scripts/spin.ts. -->
+  <script is:inline define:vars={{ spinId: record.id }}>
+    (() => {
+      const stage = document.currentScript.previousElementSibling;
+      try {
+        const raw = sessionStorage.getItem('spin-handoff');
+        if (!raw) return;
+        sessionStorage.removeItem('spin-handoff');
+        const note = JSON.parse(raw);
+        if (note.id !== spinId || Date.now() - note.at > 10000) return;
+        const img = stage.querySelector('img');
+        if (note.src) {
+          img.removeAttribute('srcset');
+          img.removeAttribute('sizes');
+          img.src = note.src;
+        }
+        stage.dataset.spinStart = String(note.rotation);
+        if (note.spinning) stage.dataset.spinContinue = 'true';
+      } catch (e) {
+        /* no note, or storage unavailable: open at the front */
+      }
+    })();
+  </script>
 
   <div class="controls">
     <button type="button" class="ctl" data-action="toggle-spin" aria-pressed="false">
       <span class="when-off">{t.turnButton}</span>
       <span class="when-on">{t.stopButton}</span>
+    </button>
+    <button type="button" class="ctl" data-action="tilt" aria-pressed="false" hidden>
+      <span class="when-off">{t.tiltButton}</span>
+      <span class="when-on">{t.tiltStop}</span>
     </button>
   </div>
 </figure>
@@ -81,7 +118,7 @@ const size = widthUpTo(record, 1200);
   }
   .stage[data-spin-state="spinning"] .hint { opacity: 0; }
 
-  .controls { margin-top: 0.9rem; }
+  .controls { margin-top: 0.9rem; display: flex; gap: 0.5rem; flex-wrap: wrap; }
   .ctl {
     border: 1px solid var(--line-strong);
     background: transparent;
@@ -104,6 +141,10 @@ const size = widthUpTo(record, 1200);
 
   initSpins();
 
+  const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  /** Degrees of turn per degree of tilt: a quarter tilt is a full turn. */
+  const TILT_GAIN = 4;
+
   document.querySelectorAll<HTMLElement>('.spin-figure').forEach((figure) => {
     const stage = figure.querySelector<HTMLElement>('.stage');
     if (!stage) return;
@@ -111,14 +152,98 @@ const size = widthUpTo(record, 1200);
     if (!spin) return;
 
     const toggle = figure.querySelector<HTMLButtonElement>('[data-action="toggle-spin"]');
+    const tiltBtn = figure.querySelector<HTMLButtonElement>('[data-action="tilt"]');
+    const pressed = (b: HTMLButtonElement | null, on: boolean) => b?.setAttribute('aria-pressed', String(on));
+
+    // -- tilt ---------------------------------------------------------
+    // The phone's side-to-side tilt turns the piece. iOS asks permission
+    // the first time, which it only allows from a tap, hence the button.
+    let tilting = false;
+    let zero: number | null = null;
+    let base = 0;
+    let eased = 0;
+    let heard = 0;
+
+    const reading = (e: DeviceOrientationEvent) => {
+      const angle = screen.orientation?.angle ?? 0;
+      if (angle === 90) return e.beta;
+      if (angle === 270 || angle === -90) return e.beta == null ? null : -e.beta;
+      return e.gamma;
+    };
+
+    const onOrient = (e: DeviceOrientationEvent) => {
+      const tilt = reading(e);
+      if (tilt == null) return;
+      heard++;
+      if (zero === null) {
+        zero = tilt;
+        eased = 0;
+      }
+      // Eased toward the target so a shaky hand turns the piece smoothly.
+      eased += ((tilt - zero) * TILT_GAIN - eased) * 0.2;
+      spin.rotation = base + eased;
+      spin.render();
+    };
+
+    const stopTilt = () => {
+      if (!tilting) return;
+      tilting = false;
+      window.removeEventListener('deviceorientation', onOrient);
+      pressed(tiltBtn, false);
+    };
+
+    const startTilt = async () => {
+      const DOE = DeviceOrientationEvent as unknown as { requestPermission?: () => Promise<string> };
+      if (typeof DOE.requestPermission === 'function') {
+        try {
+          if ((await DOE.requestPermission()) !== 'granted') return;
+        } catch {
+          return;
+        }
+      }
+      spin.stop();
+      pressed(toggle, false);
+      await spin.load();
+      base = spin.rotation;
+      zero = null;
+      heard = 0;
+      tilting = true;
+      window.addEventListener('deviceorientation', onOrient);
+      pressed(tiltBtn, true);
+      // Some devices have the API but no sensor. Nothing arriving means no tilt.
+      window.setTimeout(() => {
+        if (tilting && heard === 0) {
+          stopTilt();
+          if (tiltBtn) tiltBtn.hidden = true;
+        }
+      }, 1200);
+    };
+
+    if (tiltBtn && 'DeviceOrientationEvent' in window && matchMedia('(pointer: coarse)').matches) {
+      tiltBtn.hidden = false;
+      tiltBtn.addEventListener('click', () => (tilting ? stopTilt() : startTilt()));
+    }
+
+    // -- turn it ------------------------------------------------------
     toggle?.addEventListener('click', () => {
+      stopTilt();
       const on = toggle.getAttribute('aria-pressed') === 'true';
       if (on) spin.stop();
       else spin.load().then(() => spin.spinFreely());
-      toggle.setAttribute('aria-pressed', String(!on));
+      pressed(toggle, !on);
     });
 
-    // Taking hold of the piece stops it turning itself; keep the button honest.
-    stage.addEventListener('pointerdown', () => toggle?.setAttribute('aria-pressed', 'false'));
+    stage.addEventListener('pointerdown', () => {
+      stopTilt();
+      pressed(toggle, false);
+    });
+
+    // Arrived from a tile that was turning: keep it turning.
+    if (stage.dataset.spinContinue === 'true' && !reduceMotion) {
+      spin.load().then(() => spin.spinFreely());
+      pressed(toggle, true);
+    } else if (stage.dataset.spinStart) {
+      spin.load().then(() => spin.render());
+    }
   });
 </script>

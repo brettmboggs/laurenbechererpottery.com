@@ -10,9 +10,11 @@ import Base from '../../layouts/Base.astro';
 import PieceCard from '../../components/PieceCard.astro';
 import EditLink from '../../components/EditLink.astro';
 import { getCollection, getEntry } from 'astro:content';
-import { listablePieces, spreadByHue } from '../../lib/pieces';
+import { listablePieces, soldPieces, spreadByHue } from '../../lib/pieces';
 
-const pieces = spreadByHue(listablePieces(await getCollection('pieces')));
+const all = await getCollection('pieces');
+const pieces = spreadByHue(listablePieces(all));
+const sold = soldPieces(all);
 
 const collections = [...new Set(pieces.map((p) => p.data.collection).filter(Boolean))] as string[];
 const t = (await getEntry('work', 'work'))!.data;
@@ -46,12 +48,42 @@ const nav = (await getEntry('layout', 'layout'))!.data;
     </div>
   </section>
 
+  {sold.length > 0 && (
+    <section class="section archive" aria-labelledby="archive-heading">
+      <div class="wrap">
+        <div class="archive-head">
+          <h2 id="archive-heading">{t.archiveHeading}</h2>
+          {t.archiveIntro && <p>{t.archiveIntro}</p>}
+        </div>
+        <div class="archive-wall">
+          {sold.map((p) => <PieceCard piece={p} archived />)}
+        </div>
+      </div>
+    </section>
+  )}
+
   <EditLink collection="pieces" label="add or edit pieces" />
 </Base>
 
 <style>
   .wall-head { max-width: 46rem; margin-bottom: clamp(2.5rem, 6vw, 4rem); }
   .wall-head h1 { margin-bottom: 0.6rem; }
+
+  /* Found a home: the pieces that sold, smaller and quieter than the wall. */
+  .archive { padding-top: 0; }
+  .archive-head {
+    display: flex; align-items: baseline; justify-content: space-between; gap: 1rem 2rem; flex-wrap: wrap;
+    padding-top: clamp(2rem, 5vw, 3rem);
+    margin-bottom: clamp(1.5rem, 4vw, 2.5rem);
+    border-top: 1px solid var(--line);
+  }
+  .archive-head h2 { margin: 0; font-size: clamp(1.1rem, 2vw, 1.4rem); }
+  .archive-head p { margin: 0; color: var(--fg-faint); font-size: 0.9rem; max-width: 36rem; }
+  .archive-wall {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 170px), 1fr));
+    gap: clamp(1.25rem, 3vw, 2rem) clamp(1rem, 2vw, 1.5rem);
+  }
 
   .filters { display: flex; gap: 0.4rem; flex-wrap: wrap; margin-bottom: 2.5rem; }
   .chip {

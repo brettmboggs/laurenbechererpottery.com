@@ -13,6 +13,14 @@ import { spinLibrary } from './spins';
 type Piece = CollectionEntry<'pieces'>;
 
 /**
+ * The view-transition name a piece's picture carries on every page, so a tile
+ * on the wall and the viewer on the piece's own page are recognised as the same
+ * thing and the one grows into the other. Only one element per page may hold a
+ * name, and every page lists each piece at most once.
+ */
+export const transitionName = (p: Piece) => `piece-${p.id}`;
+
+/**
  * Newest first, with featured pieces pinned to the front. Pieces made on the
  * same day fall back to `order` (lowest first), then to the title, so the
  * result is the same on every build.
@@ -43,6 +51,14 @@ export function sortPieces(pieces: Piece[]): Piece[] {
  */
 export function listablePieces(pieces: Piece[]): Piece[] {
   return sortPieces(pieces.filter((p) => p.data.showInPortfolio && p.data.status !== 'sold'));
+}
+
+/**
+ * Pieces that have sold, for the "Found a home" archive at the foot of the
+ * wall. `showInPortfolio` still applies, so a sale can be kept private.
+ */
+export function soldPieces(pieces: Piece[]): Piece[] {
+  return sortPieces(pieces.filter((p) => p.data.showInPortfolio && p.data.status === 'sold'));
 }
 
 /** Hue of a piece's glaze, in degrees, from its sampled mid tone. */

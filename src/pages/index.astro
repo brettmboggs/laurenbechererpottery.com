@@ -4,7 +4,7 @@ import PieceCard from '../components/PieceCard.astro';
 import EditLink from '../components/EditLink.astro';
 import { getCollection, getEntry } from 'astro:content';
 import { getSpinRecord, spinSpec, framePath, frameSrcSet, widthUpTo, paletteVars } from '../lib/spins';
-import { listablePieces, spreadByHue } from '../lib/pieces';
+import { listablePieces, spreadByHue, transitionName } from '../lib/pieces';
 
 const t = (await getEntry('home', 'home'))!.data;
 const pieces = listablePieces(await getCollection('pieces'));
@@ -41,7 +41,7 @@ const posts = (await getCollection('posts', ({ data }) => !data.draft))
         <a
           class="hero-piece"
           href={`/portfolio/${heroPiece.id}/`}
-          style={paletteVars(heroSpin)}
+          style={`${paletteVars(heroSpin)}; view-transition-name: ${transitionName(heroPiece)}`}
           data-spin={JSON.stringify(heroSpec)}
           data-spin-mode="hover"
           aria-label={`${heroPiece.data.title} — hover to turn the piece`}

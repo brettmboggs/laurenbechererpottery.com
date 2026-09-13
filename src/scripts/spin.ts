@@ -57,6 +57,12 @@ export interface SpinSpec {
 
 /** One full turn, in milliseconds, when spinning on its own. */
 const REVOLUTION_MS = 3400;
+/** How quickly a flicked piece slows: its speed falls by e every this many ms. */
+const FLING_DECAY_MS = 520;
+/** Slower than this (degrees per ms) and a flick is a let-go, not a throw. */
+const FLING_MIN_SPEED = 0.12;
+/** How long a tile's rotation stays claimable by the page it links to. */
+const HANDOFF_KEY = 'spin-handoff'; // read by the inline script in SpinViewer
 /** Hover must survive this long before anything is fetched. */
 const INTENT_DWELL_MS = 90;
 /** Frames decoded before the turn is allowed to start. */
@@ -339,13 +345,25 @@ export class Spin {
   private dragStartX = 0;
   private dragStartRotation = 0;
   private dragMoved = false;
+  /** Recent pointer positions during a drag, for the speed of a flick. */
+  private dragSamples: { x: number; t: number }[] = [];
+  /** True while a flick is coasting to a stop rather than turning steadily. */
+  private coasting = false;
+  /** Whether the piece was turning when the pointer went down on it. */
+  private spinningAtPress = false;
 
   constructor(el: HTMLElement, spec: SpinSpec, private opts: SpinOptions) {
     this.el = el;
     this.spec = spec;
     this.lut = buildLookup(spec.angles);
     this.img = el.querySelector('img')!;
-    if (opts.mode === 'hover') this.bindHover();
+    // A page opened from a tile starts at the angle the tile was showing.
+    const start = Number(el.dataset.spinStart);
+    if (Number.isFinite(start)) this.rotation = start;
+    if (opts.mode === 'hover') {
+      this.bindHover();
+      this.bindHandoff();
+    }
     this.bindDrag();
   }
 
@@ -428,6 +446,10 @@ export class Spin {
 
   advance(dt: number) {
     this.rotation += this.speed * dt;
+    if (this.coasting) {
+      this.speed *= Math.exp(-dt / FLING_DECAY_MS);
+      if (Math.abs(this.speed) < 0.01) this.stop();
+    }
     if (this.stopAt !== null && this.rotation >= this.stopAt) {
       this.rotation = this.stopAt;
       this.stopAt = null;
@@ -439,14 +461,31 @@ export class Spin {
   /** Turn continuously at a constant rate. */
   spinFreely(rate = 360 / REVOLUTION_MS) {
     this.stopAt = null;
+    this.coasting = false;
     this.speed = rate;
     spinning.add(this);
     this.opts.onStateChange?.('spinning');
     wake();
   }
 
+  /** Throw the piece at a speed (degrees per ms) and let it slow to a stop. */
+  fling(speed: number) {
+    this.stopAt = null;
+    this.speed = speed;
+    this.coasting = true;
+    spinning.add(this);
+    this.opts.onStateChange?.('spinning');
+    wake();
+  }
+
+  /** True while the piece is turning on its own. */
+  get isSpinning() {
+    return spinning.has(this);
+  }
+
   stop() {
     this.speed = 0;
+    this.coasting = false;
     this.stopAt = null;
     spinning.delete(this);
     this.opts.onStateChange?.(this.set ? 'ready' : 'idle');
@@ -520,6 +559,36 @@ export class Spin {
     this.el.addEventListener('focusout', leave);
   }
 
+  /* -- handing off to the piece's page ---------------------------- */
+
+  /**
+   * When a tile is followed to its piece's page, leave a note of the angle it
+   * was showing, the frame it had on screen, and whether it was turning. The
+   * page picks the note up before it first paints (the inline script in
+   * SpinViewer, which sets data-spin-start for the constructor above), so the
+   * piece that grows into the big viewer is the same view of the same pot,
+   * still turning, rather than snapping back to the front.
+   */
+  private bindHandoff() {
+    this.el.addEventListener('click', (e) => {
+      if (e.defaultPrevented) return;
+      try {
+        sessionStorage.setItem(
+          HANDOFF_KEY,
+          JSON.stringify({
+            id: this.spec.id,
+            rotation: ((this.rotation % 360) + 360) % 360,
+            src: this.img.currentSrc || this.img.src,
+            spinning: this.spinningAtPress || (this.isSpinning && this.stopAt === null),
+            at: Date.now(),
+          })
+        );
+      } catch {
+        /* private browsing: the page simply opens at the front */
+      }
+    });
+  }
+
   /* -- dragging --------------------------------------------------- */
 
   private bindDrag() {
@@ -532,6 +601,10 @@ export class Spin {
       this.dragPointer = e.pointerId;
       this.dragStartX = e.clientX;
       this.dragStartRotation = this.rotation;
+      this.dragSamples = [{ x: e.clientX, t: e.timeStamp }];
+      // Pressing stops the turn so a drag can take hold; remember whether it
+      // was turning, so a tap that follows the link can say so.
+      this.spinningAtPress = this.isSpinning && this.stopAt === null;
       this.stop();
       this.load().then(() => this.render());
       el.dataset.spinActive = 'true';
@@ -550,6 +623,8 @@ export class Spin {
           /* capture is a nicety, not a requirement */
         }
       }
+      this.dragSamples.push({ x: e.clientX, t: e.timeStamp });
+      if (this.dragSamples.length > 6) this.dragSamples.shift();
       if (!this.dragMoved) return;
       e.preventDefault();
       // A drag of roughly one and a quarter widths is one full turn.
@@ -562,6 +637,17 @@ export class Spin {
       if (e.pointerId !== this.dragPointer) return;
       this.dragging = false;
       this.dragPointer = -1;
+      // On a piece's own page, a quick drag throws the piece and it coasts to a
+      // stop, the way a turntable does. Tiles on the wall settle home instead.
+      if (this.dragMoved && this.opts.mode === 'manual' && !reduceMotion) {
+        const last = this.dragSamples[this.dragSamples.length - 1];
+        const first = this.dragSamples.find((s) => last.t - s.t <= 90) ?? last;
+        const dt = last.t - first.t;
+        if (dt > 0 && e.timeStamp - last.t < 60) {
+          const speed = ((last.x - first.x) / dt) * (360 / (el.clientWidth * 1.25));
+          if (Math.abs(speed) > FLING_MIN_SPEED) this.fling(speed);
+        }
+      }
       if (this.dragMoved) {
         // Suppress the click that would otherwise follow a drag on a linked tile.
         const swallow = (ev: Event) => ev.preventDefault();

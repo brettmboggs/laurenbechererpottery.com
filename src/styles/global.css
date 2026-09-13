@@ -103,6 +103,26 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+/* Moving between pages.
+
+   The browser's own cross-document view transitions: no router, no script,
+   and a browser without them simply loads the next page. Each piece's picture
+   carries the same view-transition-name everywhere it appears (see
+   transitionName in src/lib/pieces.ts), so tapping a tile grows that tile into
+   the viewer on the piece's page, and going back shrinks it home. Everything
+   else crossfades, except the header, which holds still. */
+@view-transition { navigation: auto; }
+::view-transition-group(*) {
+  animation-duration: 0.42s;
+  animation-timing-function: cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+::view-transition-old(root),
+::view-transition-new(root) { animation-duration: 0.28s; }
+.site-header { view-transition-name: site-header; }
+@media (prefers-reduced-motion: reduce) {
+  @view-transition { navigation: none; }
+}
+
 img, video, svg { max-width: 100%; display: block; }
 a { color: inherit; text-decoration: none; }
 button { font: inherit; cursor: pointer; }
