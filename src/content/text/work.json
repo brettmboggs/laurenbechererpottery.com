@@ -1,10 +1,10 @@
 {
   "eyebrow": "The work",
-  "heading": "completed pieces",
+  "heading": "available work",
   "intro": "",
   "allFilter": "All",
-  "empty": "No pieces yet — add one from the studio login.",
-  "archiveHeading": "Found a home",
-  "archiveIntro": "Pieces that have sold and gone to live somewhere else.",
-  "description": "Every piece Lauren Becherer has made, photographed all the way around."
+  "empty": "more work in progress",
+  "archiveHeading": "sold work",
+  "archiveIntro": "",
+  "description": ""
 }
